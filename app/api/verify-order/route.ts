@@ -32,21 +32,12 @@ export async function POST(request: Request) {
       );
     }
 
-    const lineItem = session.line_items?.data?.[0];
+   const productName =
+  session.metadata?.product_name ||
+  session.line_items?.data?.[0]?.description ||
+  "QoRacle Product";
 
-    const productName = lineItem?.description || "QoRacle Product";
-
-    const themeMatch =
-      lineItem?.price?.product &&
-      typeof lineItem.price.product === "object" &&
-      "description" in lineItem.price.product
-        ? lineItem.price.product.description
-        : null;
-
-    const theme =
-      typeof themeMatch === "string"
-        ? themeMatch.replace("QoRacle theme: ", "")
-        : "classic";
+const theme = session.metadata?.theme || "classic";
 
     const { data: existingOrder } = await supabase
       .from("orders")

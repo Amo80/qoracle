@@ -30,6 +30,11 @@ export async function POST(request: Request) {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
 customer_creation: "always",
+
+metadata: {
+  product_name: product,
+  theme: theme,
+},
 customer_email: undefined,
       line_items: [
         {
