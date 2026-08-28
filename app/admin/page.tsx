@@ -13,6 +13,9 @@ type QRCodeRow = {
   theme: string;
   active: boolean;
   created_at: string;
+  product_name: string | null;
+  customer_name: string | null;
+  notes: string | null;
 };
 
 type ScanRow = {
@@ -27,6 +30,10 @@ export default function AdminPage() {
   const router = useRouter();
   const supabase = createClient();
   const [theme, setTheme] = useState("classic");
+  const [productName, setProductName] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [notes, setNotes] = useState("");
+  const [editingCode, setEditingCode] = useState<string | null>(null);
   const [codes, setCodes] = useState<DashboardQR[]>([]);
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
@@ -55,7 +62,7 @@ export default function AdminPage() {
 
     const { data: qrData, error: qrError } = await supabase
       .from("qr_codes")
-      .select("code, theme, active, created_at")
+      .select("code, theme, active, created_at, product_name, customer_name, notes")
       .order("created_at", { ascending: false });
 
     if (qrError) {
@@ -85,28 +92,126 @@ export default function AdminPage() {
 
     setLoading(false);
   }
+function startEditing(item: DashboardQR) {
+  setEditingCode(item.code);
+  setProductName(item.product_name || "");
+  setCustomerName(item.customer_name || "");
+  setNotes(item.notes || "");
+  setTheme(item.theme);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+async function saveEdit() {
+  if (!editingCode) return;
 
-  async function generateQR() {
-    setStatus("Creating QoRacle...");
+  setStatus(`Saving ${editingCode}...`);
 
-    const randomCode =
-      "QOR-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-
-    const { error } = await supabase.from("qr_codes").insert({
-      code: randomCode,
+  const { error } = await supabase
+    .from("qr_codes")
+    .update({
+      product_name: productName.trim() || null,
+      customer_name: customerName.trim() || null,
+      notes: notes.trim() || null,
       theme,
-      active: true,
-    });
+    })
+    .eq("code", editingCode);
 
-    if (error) {
-      setStatus(error.message);
-      return;
-    }
-
-    setStatus(`Created ${randomCode}`);
-    await loadDashboard();
+  if (error) {
+    setStatus(error.message);
+    return;
   }
 
+  setStatus(`Updated ${editingCode}`);
+  setEditingCode(null);
+  setProductName("");
+  setCustomerName("");
+  setNotes("");
+  setTheme("classic");
+
+  await loadDashboard();
+}
+async function toggleActive(item: DashboardQR) {
+  const newStatus = !item.active;
+
+  setStatus(
+    `${newStatus ? "Activating" : "Deactivating"} ${item.code}...`
+  );
+
+  const { error } = await supabase
+    .from("qr_codes")
+    .update({
+      active: newStatus,
+    })
+    .eq("code", item.code);
+
+  if (error) {
+    setStatus(error.message);
+    return;
+  }
+
+  setStatus(
+    `${item.code} is now ${newStatus ? "ACTIVE" : "INACTIVE"}`
+  );
+
+  await loadDashboard();
+}
+
+async function generateQR() {
+  setStatus("Creating QoRacle...");
+
+  const randomCode =
+    "QOR-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+
+  const { error } = await supabase.from("qr_codes").insert({
+    code: randomCode,
+    theme,
+    active: true,
+    product_name: productName.trim() || null,
+    customer_name: customerName.trim() || null,
+    notes: notes.trim() || null,
+  });
+
+  if (error) {
+    setStatus(error.message);
+    return;
+  }
+
+  setStatus(`Created ${randomCode}`);
+
+  setProductName("");
+  setCustomerName("");
+  setNotes("");
+
+  await loadDashboard();
+}
+async function generateQR() {
+  setStatus("Creating QoRacle...");
+
+  const randomCode =
+    "QOR-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+
+  const { error } = await supabase.from("qr_codes").insert({
+    code: randomCode,
+    theme,
+    active: true,
+    product_name: productName.trim() || null,
+    customer_name: customerName.trim() || null,
+    notes: notes.trim() || null,
+  });
+
+  if (error) {
+    setStatus(error.message);
+    return;
+  }
+
+  setStatus(`Created ${randomCode}`);
+
+  setProductName("");
+  setCustomerName("");
+  setNotes("");
+
+  await loadDashboard();
+}
+ 
   async function downloadQR(code: string) {
     const url = `${window.location.origin}/q/${code}`;
 
@@ -243,7 +348,59 @@ export default function AdminPage() {
           }}
         >
           <h2 style={{ marginTop: 0 }}>Generate New QoRacle</h2>
+<div
+  style={{
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+    gap: "12px",
+    marginBottom: "16px",
+  }}
+>
+  <input
+    type="text"
+    placeholder="Product name"
+    value={productName}
+    onChange={(e) => setProductName(e.target.value)}
+    style={{
+      padding: "14px",
+      borderRadius: "10px",
+      background: "#090910",
+      color: "white",
+      border: "1px solid #3b3b50",
+      fontSize: "16px",
+    }}
+  />
 
+  <input
+    type="text"
+    placeholder="Customer name"
+    value={customerName}
+    onChange={(e) => setCustomerName(e.target.value)}
+    style={{
+      padding: "14px",
+      borderRadius: "10px",
+      background: "#090910",
+      color: "white",
+      border: "1px solid #3b3b50",
+      fontSize: "16px",
+    }}
+  />
+
+  <input
+    type="text"
+    placeholder="Notes"
+    value={notes}
+    onChange={(e) => setNotes(e.target.value)}
+    style={{
+      padding: "14px",
+      borderRadius: "10px",
+      background: "#090910",
+      color: "white",
+      border: "1px solid #3b3b50",
+      fontSize: "16px",
+    }}
+  />
+</div>
           <div
             style={{
               display: "flex",
@@ -273,7 +430,7 @@ export default function AdminPage() {
             </select>
 
             <button
-              onClick={generateQR}
+              onClick={editingCode ? saveEdit : generateQR}
               style={{
                 padding: "14px 24px",
                 borderRadius: "10px",
@@ -284,7 +441,30 @@ export default function AdminPage() {
                 cursor: "pointer",
               }}
             >
-              GENERATE QORACLE
+              {editingCode ? "SAVE CHANGES" : "GENERATE QORACLE"}
+{editingCode && (
+  <button
+    onClick={() => {
+      setEditingCode(null);
+      setProductName("");
+      setCustomerName("");
+      setNotes("");
+      setTheme("classic");
+      setStatus("");
+    }}
+    style={{
+      padding: "14px 24px",
+      borderRadius: "10px",
+      border: "1px solid #3b3b50",
+      background: "#181822",
+      color: "white",
+      fontWeight: "bold",
+      cursor: "pointer",
+    }}
+  >
+    CANCEL EDIT
+  </button>
+)}
             </button>
 
             <button
@@ -341,14 +521,16 @@ export default function AdminPage() {
                 }}
               >
                 <thead>
-                  <tr style={{ textAlign: "left", color: "#aaa" }}>
-                    <th style={tableHeader}>Code</th>
-                    <th style={tableHeader}>Theme</th>
-                    <th style={tableHeader}>Scans</th>
-                    <th style={tableHeader}>Status</th>
-                    <th style={tableHeader}>Created</th>
-                    <th style={tableHeader}>QR</th>
-                  </tr>
+                 <tr style={{ textAlign: "left", color: "#aaa" }}>
+  <th style={tableHeader}>Code</th>
+  <th style={tableHeader}>Product</th>
+  <th style={tableHeader}>Customer</th>
+  <th style={tableHeader}>Theme</th>
+  <th style={tableHeader}>Scans</th>
+  <th style={tableHeader}>Status</th>
+  <th style={tableHeader}>Created</th>
+  <th style={tableHeader}>QR</th>
+</tr>
                 </thead>
 
                 <tbody>
@@ -359,22 +541,42 @@ export default function AdminPage() {
                         borderTop: "1px solid #29293a",
                       }}
                     >
-                      <td style={tableCell}>
-                        <strong style={{ color: "#c4b5fd" }}>
-                          {item.code}
-                        </strong>
-                      </td>
+                     <td style={tableCell}>
+  <strong style={{ color: "#c4b5fd" }}>
+    {item.code}
+  </strong>
+</td>
 
-                      <td style={tableCell}>
-                        {item.theme.toUpperCase()}
-                      </td>
+<td style={tableCell}>
+  {item.product_name || "—"}
+</td>
 
+<td style={tableCell}>
+  {item.customer_name || "—"}
+</td>
+
+<td style={tableCell}>
+  {item.theme.toUpperCase()}
+</td>
                       <td style={tableCell}>
                         {item.scans}
                       </td>
 
                       <td style={tableCell}>
-                        {item.active ? "ACTIVE" : "INACTIVE"}
+                        <button
+  onClick={() => toggleActive(item)}
+  style={{
+    padding: "8px 12px",
+    borderRadius: "8px",
+    border: "1px solid #3b3b50",
+    background: item.active ? "#16351f" : "#351616",
+    color: "white",
+    fontWeight: "bold",
+    cursor: "pointer",
+  }}
+>
+  {item.active ? "ACTIVE" : "INACTIVE"}
+</button>
                       </td>
 
                       <td style={tableCell}>
@@ -382,6 +584,21 @@ export default function AdminPage() {
                       </td>
 
                       <td style={tableCell}>
+<button
+  onClick={() => startEditing(item)}
+  style={{
+    padding: "9px 14px",
+    borderRadius: "8px",
+    border: "1px solid #3b3b50",
+    background: "#181822",
+    color: "white",
+    fontWeight: "bold",
+    cursor: "pointer",
+    marginRight: "8px",
+  }}
+>
+  EDIT
+</button>
                         <button
                           onClick={() => downloadQR(item.code)}
                           style={{
