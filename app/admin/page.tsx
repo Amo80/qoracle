@@ -2,12 +2,9 @@
 
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/browser";
+import { useRouter } from "next/navigation";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
-);
 
 const themes = ["classic", "chaos", "love", "dark", "dnd"];
 
@@ -27,14 +24,31 @@ type DashboardQR = QRCodeRow & {
 };
 
 export default function AdminPage() {
+  const router = useRouter();
+  const supabase = createClient();
   const [theme, setTheme] = useState("classic");
   const [codes, setCodes] = useState<DashboardQR[]>([]);
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
+  const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
-    loadDashboard();
+    checkAuth();
   }, []);
+
+  async function checkAuth() {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+      router.replace("/admin/login");
+      return;
+    }
+
+    setCheckingAuth(false);
+    await loadDashboard();
+  }
 
   async function loadDashboard() {
     setLoading(true);
@@ -110,7 +124,31 @@ export default function AdminPage() {
     document.body.removeChild(link);
   }
 
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    router.replace("/admin/login");
+    router.refresh();
+  }
+
   const totalScans = codes.reduce((total, item) => total + item.scans, 0);
+
+  if (checkingAuth) {
+    return (
+      <main
+        style={{
+          minHeight: "100vh",
+          background: "#07070d",
+          color: "white",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontFamily: "Arial, sans-serif",
+        }}
+      >
+        <p>Checking admin access...</p>
+      </main>
+    );
+  }
 
   return (
     <main
@@ -128,30 +166,55 @@ export default function AdminPage() {
           margin: "0 auto",
         }}
       >
-        <div style={{ marginBottom: "30px" }}>
-          <p
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            gap: "20px",
+            marginBottom: "30px",
+          }}
+        >
+          <div>
+            <p
+              style={{
+                color: "#a78bfa",
+                letterSpacing: "4px",
+                fontWeight: "bold",
+                marginBottom: "8px",
+              }}
+            >
+              QORACLE ADMIN
+            </p>
+
+            <h1
+              style={{
+                fontSize: "42px",
+                margin: 0,
+              }}
+            >
+              Dashboard
+            </h1>
+
+            <p style={{ color: "#999" }}>
+              Create, track and manage your QoRacle QR codes.
+            </p>
+          </div>
+
+          <button
+            onClick={handleLogout}
             style={{
-              color: "#a78bfa",
-              letterSpacing: "4px",
+              padding: "11px 18px",
+              borderRadius: "10px",
+              border: "1px solid #3b3b50",
+              background: "#181822",
+              color: "white",
               fontWeight: "bold",
-              marginBottom: "8px",
+              cursor: "pointer",
             }}
           >
-            QORACLE ADMIN
-          </p>
-
-          <h1
-            style={{
-              fontSize: "42px",
-              margin: 0,
-            }}
-          >
-            Dashboard
-          </h1>
-
-          <p style={{ color: "#999" }}>
-            Create, track and manage your QoRacle QR codes.
-          </p>
+            LOG OUT
+          </button>
         </div>
 
         <div
