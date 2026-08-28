@@ -309,6 +309,22 @@ const filteredCodes = codes.filter((item) => {
 >
   VIEW SCAN ANALYTICS
 </Link>
+<Link
+  href="/admin/orders"
+  style={{
+    display: "inline-block",
+    marginLeft: "10px",
+    padding: "10px 16px",
+    borderRadius: "10px",
+    background: "#181822",
+    border: "1px solid #3b3b50",
+    color: "white",
+    textDecoration: "none",
+    fontWeight: "bold",
+  }}
+>
+  VIEW ORDERS
+</Link>
             <p style={{ color: "#999" }}>
               Create, track and manage your QoRacle QR codes.
             </p>
