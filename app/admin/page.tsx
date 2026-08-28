@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import { createClient } from "@/lib/supabase/browser";
 import { useRouter } from "next/navigation";
-
+import Link from "next/link";
 
 const themes = ["classic", "chaos", "love", "dark", "dnd"];
 
@@ -596,9 +596,16 @@ const filteredCodes = codes.filter((item) => {
                       }}
                     >
                      <td style={tableCell}>
-  <strong style={{ color: "#c4b5fd" }}>
-    {item.code}
-  </strong>
+  <Link
+  href={`/admin/products/${item.code}`}
+  style={{
+    color: "#c4b5fd",
+    fontWeight: "bold",
+    textDecoration: "none",
+  }}
+>
+  {item.code}
+</Link>
 </td>
 
 <td style={tableCell}>
