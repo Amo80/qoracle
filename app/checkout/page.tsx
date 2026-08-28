@@ -10,7 +10,24 @@ function CheckoutContent() {
   const product = searchParams.get("product") || "QoRacle Product";
   const theme = searchParams.get("theme") || "classic";
   const price = searchParams.get("price") || "$0.00";
+async function handlePayment() {
+  const response = await fetch("/api/checkout", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      product,
+      theme,
+    }),
+  });
 
+  const data = await response.json();
+
+  if (data.url) {
+    window.location.href = data.url;
+  }
+}
   return (
     <main
       style={{
@@ -86,9 +103,10 @@ function CheckoutContent() {
             </p>
           </div>
 
-          <button
-            disabled
-            style={{
+         
+           <button
+  onClick={handlePayment}
+  style={{            
               width: "100%",
               marginTop: "24px",
               padding: "15px",
@@ -101,7 +119,7 @@ function CheckoutContent() {
               fontSize: "16px",
             }}
           >
-            PAYMENT COMING NEXT
+            PAY WITH STRIPE
           </button>
         </div>
       </div>
