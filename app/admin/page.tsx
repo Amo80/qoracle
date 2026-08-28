@@ -1,24 +1,79 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import { createClient } from "@supabase/supabase-js";
-
-const themes = ["classic", "chaos", "love", "dark", "dnd"];
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
 );
 
+const themes = ["classic", "chaos", "love", "dark", "dnd"];
+
+type QRCodeRow = {
+  code: string;
+  theme: string;
+  active: boolean;
+  created_at: string;
+};
+
+type ScanRow = {
+  qr_code_id: string;
+};
+
+type DashboardQR = QRCodeRow & {
+  scans: number;
+};
+
 export default function AdminPage() {
   const [theme, setTheme] = useState("classic");
-  const [code, setCode] = useState("");
-  const [qrImage, setQrImage] = useState("");
+  const [codes, setCodes] = useState<DashboardQR[]>([]);
   const [status, setStatus] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadDashboard();
+  }, []);
+
+  async function loadDashboard() {
+    setLoading(true);
+
+    const { data: qrData, error: qrError } = await supabase
+      .from("qr_codes")
+      .select("code, theme, active, created_at")
+      .order("created_at", { ascending: false });
+
+    if (qrError) {
+      setStatus(qrError.message);
+      setLoading(false);
+      return;
+    }
+
+    const { data: scanData, error: scanError } = await supabase
+      .from("scans")
+      .select("qr_code_id");
+
+    const scans = (scanData || []) as ScanRow[];
+
+    const dashboardCodes = ((qrData || []) as QRCodeRow[]).map((qr) => ({
+      ...qr,
+      scans: scans.filter((scan) => scan.qr_code_id === qr.code).length,
+    }));
+
+    setCodes(dashboardCodes);
+
+    if (scanError) {
+      setStatus("QR codes loaded. Scan totals could not be loaded yet.");
+    } else {
+      setStatus("");
+    }
+
+    setLoading(false);
+  }
 
   async function generateQR() {
-    setStatus("Creating...");
+    setStatus("Creating QoRacle...");
 
     const randomCode =
       "QOR-" + Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -34,17 +89,28 @@ export default function AdminPage() {
       return;
     }
 
-    const url = `${window.location.origin}/q/${randomCode}`;
+    setStatus(`Created ${randomCode}`);
+    await loadDashboard();
+  }
+
+  async function downloadQR(code: string) {
+    const url = `${window.location.origin}/q/${code}`;
 
     const image = await QRCode.toDataURL(url, {
-      width: 320,
-      margin: 2,
+      width: 1200,
+      margin: 4,
+      errorCorrectionLevel: "H",
     });
 
-    setCode(randomCode);
-    setQrImage(image);
-    setStatus("Saved to Supabase.");
+    const link = document.createElement("a");
+    link.href = image;
+    link.download = `${code}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
+
+  const totalScans = codes.reduce((total, item) => total + item.scans, 0);
 
   return (
     <main
@@ -52,132 +118,226 @@ export default function AdminPage() {
         minHeight: "100vh",
         background: "#07070d",
         color: "white",
-        padding: "40px 20px",
+        padding: "30px 20px 60px",
         fontFamily: "Arial, sans-serif",
       }}
     >
       <div
         style={{
-          maxWidth: "650px",
+          maxWidth: "1100px",
           margin: "0 auto",
-          textAlign: "center",
         }}
       >
-        <p
+        <div style={{ marginBottom: "30px" }}>
+          <p
+            style={{
+              color: "#a78bfa",
+              letterSpacing: "4px",
+              fontWeight: "bold",
+              marginBottom: "8px",
+            }}
+          >
+            QORACLE ADMIN
+          </p>
+
+          <h1
+            style={{
+              fontSize: "42px",
+              margin: 0,
+            }}
+          >
+            Dashboard
+          </h1>
+
+          <p style={{ color: "#999" }}>
+            Create, track and manage your QoRacle QR codes.
+          </p>
+        </div>
+
+        <div
           style={{
-            color: "#a78bfa",
-            letterSpacing: "4px",
-            fontWeight: "bold",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gap: "16px",
+            marginBottom: "30px",
           }}
         >
-          QoRacle ADMIN
-        </p>
-
-        <h1
-          style={{
-            fontSize: "42px",
-            marginBottom: "10px",
-          }}
-        >
-          QR Generator
-        </h1>
-
-        <p style={{ color: "#aaa", marginBottom: "35px" }}>
-          Create a unique QoRacle code and QR image.
-        </p>
+          <StatCard title="Total QR Codes" value={codes.length} />
+          <StatCard title="Total Scans" value={totalScans} />
+          <StatCard
+            title="Active Codes"
+            value={codes.filter((item) => item.active).length}
+          />
+        </div>
 
         <div
           style={{
             background: "#11111a",
             border: "1px solid #29293a",
             borderRadius: "18px",
-            padding: "30px",
+            padding: "25px",
+            marginBottom: "30px",
           }}
         >
-          <label
-            style={{
-              display: "block",
-              textAlign: "left",
-              marginBottom: "8px",
-              fontWeight: "bold",
-            }}
-          >
-            Choose Theme
-          </label>
+          <h2 style={{ marginTop: 0 }}>Generate New QoRacle</h2>
 
-          <select
-            value={theme}
-            onChange={(e) => setTheme(e.target.value)}
+          <div
             style={{
-              width: "100%",
-              padding: "14px",
-              borderRadius: "10px",
-              marginBottom: "20px",
-              background: "#090910",
-              color: "white",
-              border: "1px solid #3b3b50",
-              fontSize: "16px",
+              display: "flex",
+              gap: "12px",
+              flexWrap: "wrap",
             }}
           >
-            {themes.map((item) => (
-              <option key={item} value={item}>
-                {item.toUpperCase()}
-              </option>
-            ))}
-          </select>
+            <select
+              value={theme}
+              onChange={(e) => setTheme(e.target.value)}
+              style={{
+                flex: 1,
+                minWidth: "180px",
+                padding: "14px",
+                borderRadius: "10px",
+                background: "#090910",
+                color: "white",
+                border: "1px solid #3b3b50",
+                fontSize: "16px",
+              }}
+            >
+              {themes.map((item) => (
+                <option key={item} value={item}>
+                  {item.toUpperCase()}
+                </option>
+              ))}
+            </select>
 
-          <button
-            onClick={generateQR}
-            style={{
-              width: "100%",
-              padding: "16px",
-              borderRadius: "12px",
-              border: "none",
-              background: "#7c3aed",
-              color: "white",
-              fontWeight: "bold",
-              fontSize: "17px",
-              cursor: "pointer",
-            }}
-          >
-            GENERATE QORACLE
-          </button>
+            <button
+              onClick={generateQR}
+              style={{
+                padding: "14px 24px",
+                borderRadius: "10px",
+                border: "none",
+                background: "#7c3aed",
+                color: "white",
+                fontWeight: "bold",
+                cursor: "pointer",
+              }}
+            >
+              GENERATE QORACLE
+            </button>
+
+            <button
+              onClick={loadDashboard}
+              style={{
+                padding: "14px 24px",
+                borderRadius: "10px",
+                border: "1px solid #3b3b50",
+                background: "#181822",
+                color: "white",
+                fontWeight: "bold",
+                cursor: "pointer",
+              }}
+            >
+              REFRESH
+            </button>
+          </div>
 
           {status && (
-            <p style={{ marginTop: "20px", color: "#aaa" }}>{status}</p>
+            <p
+              style={{
+                color: "#c4b5fd",
+                marginBottom: 0,
+              }}
+            >
+              {status}
+            </p>
           )}
+        </div>
 
-          {code && (
-            <div style={{ marginTop: "30px" }}>
-              <p style={{ color: "#aaa" }}>Generated Code</p>
+        <div
+          style={{
+            background: "#11111a",
+            border: "1px solid #29293a",
+            borderRadius: "18px",
+            padding: "25px",
+          }}
+        >
+          <h2 style={{ marginTop: 0 }}>Your QoRacle Codes</h2>
 
-              <h2
+          {loading ? (
+            <p style={{ color: "#999" }}>Loading dashboard...</p>
+          ) : codes.length === 0 ? (
+            <p style={{ color: "#999" }}>
+              No QoRacle codes found yet.
+            </p>
+          ) : (
+            <div style={{ overflowX: "auto" }}>
+              <table
                 style={{
-                  color: "#c4b5fd",
-                  letterSpacing: "2px",
+                  width: "100%",
+                  borderCollapse: "collapse",
+                  minWidth: "700px",
                 }}
               >
-                {code}
-              </h2>
+                <thead>
+                  <tr style={{ textAlign: "left", color: "#aaa" }}>
+                    <th style={tableHeader}>Code</th>
+                    <th style={tableHeader}>Theme</th>
+                    <th style={tableHeader}>Scans</th>
+                    <th style={tableHeader}>Status</th>
+                    <th style={tableHeader}>Created</th>
+                    <th style={tableHeader}>QR</th>
+                  </tr>
+                </thead>
 
-              <p style={{ color: "#888" }}>
-                Theme: {theme.toUpperCase()}
-              </p>
+                <tbody>
+                  {codes.map((item) => (
+                    <tr
+                      key={item.code}
+                      style={{
+                        borderTop: "1px solid #29293a",
+                      }}
+                    >
+                      <td style={tableCell}>
+                        <strong style={{ color: "#c4b5fd" }}>
+                          {item.code}
+                        </strong>
+                      </td>
 
-              {qrImage && (
-                <img
-                  src={qrImage}
-                  alt="QoRacle QR Code"
-                  style={{
-                    marginTop: "20px",
-                    width: "280px",
-                    maxWidth: "100%",
-                    background: "white",
-                    padding: "10px",
-                    borderRadius: "14px",
-                  }}
-                />
-              )}
+                      <td style={tableCell}>
+                        {item.theme.toUpperCase()}
+                      </td>
+
+                      <td style={tableCell}>
+                        {item.scans}
+                      </td>
+
+                      <td style={tableCell}>
+                        {item.active ? "ACTIVE" : "INACTIVE"}
+                      </td>
+
+                      <td style={tableCell}>
+                        {new Date(item.created_at).toLocaleDateString()}
+                      </td>
+
+                      <td style={tableCell}>
+                        <button
+                          onClick={() => downloadQR(item.code)}
+                          style={{
+                            padding: "9px 14px",
+                            borderRadius: "8px",
+                            border: "none",
+                            background: "#7c3aed",
+                            color: "white",
+                            fontWeight: "bold",
+                            cursor: "pointer",
+                          }}
+                        >
+                          DOWNLOAD QR
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
@@ -185,3 +345,49 @@ export default function AdminPage() {
     </main>
   );
 }
+
+function StatCard({
+  title,
+  value,
+}: {
+  title: string;
+  value: number;
+}) {
+  return (
+    <div
+      style={{
+        background: "#11111a",
+        border: "1px solid #29293a",
+        borderRadius: "16px",
+        padding: "22px",
+      }}
+    >
+      <p
+        style={{
+          color: "#999",
+          margin: "0 0 8px",
+        }}
+      >
+        {title}
+      </p>
+
+      <div
+        style={{
+          fontSize: "32px",
+          fontWeight: "bold",
+          color: "#c4b5fd",
+        }}
+      >
+        {value}
+      </div>
+    </div>
+  );
+}
+
+const tableHeader = {
+  padding: "14px 12px",
+};
+
+const tableCell = {
+  padding: "16px 12px",
+};
