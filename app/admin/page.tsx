@@ -34,6 +34,9 @@ export default function AdminPage() {
   const [customerName, setCustomerName] = useState("");
   const [notes, setNotes] = useState("");
   const [editingCode, setEditingCode] = useState<string | null>(null);
+const [searchTerm, setSearchTerm] = useState("");
+const [themeFilter, setThemeFilter] = useState("all");
+const [statusFilter, setStatusFilter] = useState("all");
   const [codes, setCodes] = useState<DashboardQR[]>([]);
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
@@ -208,7 +211,25 @@ async function generateQR() {
   }
 
   const totalScans = codes.reduce((total, item) => total + item.scans, 0);
+const filteredCodes = codes.filter((item) => {
+  const search = searchTerm.toLowerCase();
 
+  const matchesSearch =
+    item.code.toLowerCase().includes(search) ||
+    (item.product_name || "").toLowerCase().includes(search) ||
+    (item.customer_name || "").toLowerCase().includes(search) ||
+    (item.notes || "").toLowerCase().includes(search);
+
+  const matchesTheme =
+    themeFilter === "all" || item.theme === themeFilter;
+
+  const matchesStatus =
+    statusFilter === "all" ||
+    (statusFilter === "active" && item.active) ||
+    (statusFilter === "inactive" && !item.active);
+
+  return matchesSearch && matchesTheme && matchesStatus;
+});
   if (checkingAuth) {
     return (
       <main
@@ -476,7 +497,68 @@ async function generateQR() {
           }}
         >
           <h2 style={{ marginTop: 0 }}>Your QoRacle Codes</h2>
+<input
+  type="text"
+  placeholder="Search code, product, customer, or notes..."
+  value={searchTerm}
+  onChange={(e) => setSearchTerm(e.target.value)}
+  style={{
+    width: "100%",
+    padding: "14px",
+    marginBottom: "16px",
+    borderRadius: "10px",
+    background: "#090910",
+    color: "white",
+    border: "1px solid #3b3b50",
+    fontSize: "16px",
+    boxSizing: "border-box",
+  }}
+/>
+<div
+  style={{
+    display: "flex",
+    gap: "12px",
+    flexWrap: "wrap",
+    marginBottom: "20px",
+  }}
+>
+  <select
+    value={themeFilter}
+    onChange={(e) => setThemeFilter(e.target.value)}
+    style={{
+      padding: "12px",
+      borderRadius: "10px",
+      background: "#090910",
+      color: "white",
+      border: "1px solid #3b3b50",
+      fontSize: "15px",
+    }}
+  >
+    <option value="all">ALL THEMES</option>
+    {themes.map((item) => (
+      <option key={item} value={item}>
+        {item.toUpperCase()}
+      </option>
+    ))}
+  </select>
 
+  <select
+    value={statusFilter}
+    onChange={(e) => setStatusFilter(e.target.value)}
+    style={{
+      padding: "12px",
+      borderRadius: "10px",
+      background: "#090910",
+      color: "white",
+      border: "1px solid #3b3b50",
+      fontSize: "15px",
+    }}
+  >
+    <option value="all">ALL STATUS</option>
+    <option value="active">ACTIVE</option>
+    <option value="inactive">INACTIVE</option>
+  </select>
+</div>
           {loading ? (
             <p style={{ color: "#999" }}>Loading dashboard...</p>
           ) : codes.length === 0 ? (
@@ -506,7 +588,7 @@ async function generateQR() {
                 </thead>
 
                 <tbody>
-                  {codes.map((item) => (
+                  {filteredCodes.map((item) => (
                     <tr
                       key={item.code}
                       style={{
