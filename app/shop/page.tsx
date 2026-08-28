@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
+import { useRouter } from "next/navigation";
 const products = [
   {
     name: "QoRacle Sticker",
@@ -24,7 +24,7 @@ const themes = ["classic", "chaos", "love", "dark", "dnd"];
 
 export default function ShopPage() {
   const [selectedTheme, setSelectedTheme] = useState("classic");
-
+const router = useRouter();
   return (
     <main
       style={{
@@ -162,6 +162,11 @@ export default function ShopPage() {
               </p>
 
               <button
+onClick={() =>
+  router.push(
+    `/checkout?product=${encodeURIComponent(product.name)}&theme=${encodeURIComponent(selectedTheme)}&price=${encodeURIComponent(product.price)}`
+  )
+}
                 style={{
                   width: "100%",
                   padding: "14px",
