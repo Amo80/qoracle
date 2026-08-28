@@ -1,13 +1,52 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 function SuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
   const sessionId = searchParams.get("session_id");
+const [verifying, setVerifying] = useState(true);
+const [verified, setVerified] = useState(false);
+const [error, setError] = useState("");
+useEffect(() => {
+  if (!sessionId) {
+    setError("Missing payment session.");
+    setVerifying(false);
+    return;
+  }
+
+  async function verifyOrder() {
+    try {
+      const response = await fetch("/api/verify-order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          session_id: sessionId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || "Unable to verify order.");
+        return;
+      }
+
+      setVerified(true);
+    } catch {
+      setError("Unable to verify order.");
+    } finally {
+      setVerifying(false);
+    }
+  }
+
+  verifyOrder();
+}, [sessionId]);
 
   return (
     <main
@@ -44,17 +83,27 @@ function SuccessContent() {
           QORACLE
         </p>
 
-        <h1 style={{ marginTop: 0 }}>Payment Successful</h1>
+        <h1 style={{ marginTop: 0 }}>
+  {verifying
+    ? "Verifying Payment..."
+    : verified
+    ? "Payment Successful"
+    : "Order Verification Problem"}
+</h1>
 
         <p
-          style={{
-            color: "#aaa",
-            fontSize: "18px",
-            lineHeight: "1.6",
-          }}
-        >
-          Your test payment was completed successfully.
-        </p>
+  style={{
+    color: error ? "#fca5a5" : "#aaa",
+    fontSize: "18px",
+    lineHeight: "1.6",
+  }}
+>
+  {verifying
+    ? "Please wait while we verify your payment and create your QoRacle order."
+    : verified
+    ? "Your payment was verified and your QoRacle order was created successfully."
+    : error}
+</p>
 
         {sessionId && (
           <p
