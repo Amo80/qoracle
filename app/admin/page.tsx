@@ -183,34 +183,6 @@ async function generateQR() {
 
   await loadDashboard();
 }
-async function generateQR() {
-  setStatus("Creating QoRacle...");
-
-  const randomCode =
-    "QOR-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-
-  const { error } = await supabase.from("qr_codes").insert({
-    code: randomCode,
-    theme,
-    active: true,
-    product_name: productName.trim() || null,
-    customer_name: customerName.trim() || null,
-    notes: notes.trim() || null,
-  });
-
-  if (error) {
-    setStatus(error.message);
-    return;
-  }
-
-  setStatus(`Created ${randomCode}`);
-
-  setProductName("");
-  setCustomerName("");
-  setNotes("");
-
-  await loadDashboard();
-}
  
   async function downloadQR(code: string) {
     const url = `${window.location.origin}/q/${code}`;
