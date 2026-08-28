@@ -28,6 +28,7 @@ export default function ProductDetailPage() {
 
   const [product, setProduct] = useState<QRCodeRow | null>(null);
   const [scans, setScans] = useState<ScanRow[]>([]);
+const [totalScans, setTotalScans] = useState(0);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState("");
 
@@ -58,9 +59,15 @@ export default function ProductDetailPage() {
       .eq("qr_code_id", code)
       .order("scanned_at", { ascending: false })
       .limit(10);
+const { count: scanCount, error: countError } = await supabase
+  .from("scans")
+  .select("*", { count: "exact", head: true })
+  .eq("qr_code_id", code);
 
     setProduct(productData);
-
+if (!countError) {
+  setTotalScans(scanCount || 0);
+}
     if (scanError) {
       setStatus("Product loaded, but recent scans could not be loaded.");
       setScans([]);
@@ -209,7 +216,7 @@ export default function ProductDetailPage() {
               title="Status"
               value={product.active ? "ACTIVE" : "INACTIVE"}
             />
-            <InfoCard title="Total Scans" value={String(scans.length)} />
+            <InfoCard title="Total Scans" value={String(totalScans)} />
             <InfoCard
               title="Created"
               value={new Date(product.created_at).toLocaleDateString()}
