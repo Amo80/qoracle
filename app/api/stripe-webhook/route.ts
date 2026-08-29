@@ -42,6 +42,10 @@ export async function POST(request: Request) {
     const session = event.data.object as Stripe.Checkout.Session;
 
     if (session.payment_status === "paid") {
+const paymentIntentId =
+  typeof session.payment_intent === "string"
+    ? session.payment_intent
+    : session.payment_intent?.id || null;
       const productName =
         session.metadata?.product_name || "QoRacle Product";
 
@@ -63,6 +67,7 @@ const customerName =
             product_name: productName,
             theme,
             customer_name: customerName,
+            stripe_payment_id: paymentIntentId,
             amount_total: session.amount_total,
             currency: session.currency,
             customer_email: session.customer_details?.email || null,
