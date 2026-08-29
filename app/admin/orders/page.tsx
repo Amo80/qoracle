@@ -82,6 +82,18 @@ export default async function OrdersPage() {
     currentStatus={order.order_status || "New"}
   />
 </td>
+<td style={cellStyle}>
+  <a
+    href={`/admin/orders/${order.id}`}
+    style={{
+      color: "white",
+      textDecoration: "none",
+      fontWeight: "bold",
+    }}
+  >
+    VIEW
+  </a>
+</td>
 
               </tr>
             ))}
