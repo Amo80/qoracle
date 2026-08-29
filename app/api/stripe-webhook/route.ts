@@ -57,6 +57,11 @@ export async function POST(request: Request) {
       const customerEmail =
         session.customer_details?.email || null;
 
+const shippingAddress =
+  session.customer_details?.address
+    ? JSON.stringify(session.customer_details.address)
+    : null;
+
       const { data: existingOrder, error: lookupError } =
         await supabase
           .from("orders")
