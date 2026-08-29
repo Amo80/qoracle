@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 type Props = {
   orderId: number;
@@ -13,6 +14,7 @@ export default function OrderStatus({
 }: Props) {
   const [status, setStatus] = useState(currentStatus);
   const [saving, setSaving] = useState(false);
+  const router = useRouter();
 
   async function updateStatus(newStatus: string) {
     setStatus(newStatus);
@@ -34,6 +36,10 @@ export default function OrderStatus({
         setStatus(currentStatus);
         alert("Unable to update order status.");
       }
+
+if (response.ok) {
+  router.refresh();
+}
     } catch {
       setStatus(currentStatus);
       alert("Unable to update order status.");
