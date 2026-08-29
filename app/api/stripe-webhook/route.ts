@@ -89,7 +89,8 @@ const shippingAddress =
             amount_total: session.amount_total,
             currency: session.currency,
             customer_email: customerEmail,
-            payment_status: session.payment_status,
+            shipping_address: shippingAddress,
+           payment_status: session.payment_status,
           })
           .eq("stripe_session_id", session.id);
 
@@ -115,9 +116,10 @@ const shippingAddress =
             stripe_payment_id: paymentIntentId,
             amount_total: session.amount_total,
             currency: session.currency,
-            customer_email: customerEmail,
-            payment_status: session.payment_status,
-          });
+             customer_email: customerEmail,
+shipping_address: shippingAddress,
+payment_status: session.payment_status,
+        });
 
         if (insertError) {
           console.error(
