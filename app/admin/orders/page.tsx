@@ -1,4 +1,6 @@
+
 import { createClient } from "@supabase/supabase-js";
+import OrderStatus from "./OrderStatus/page";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -74,6 +76,13 @@ export default async function OrdersPage() {
                 <td style={cellStyle}>
                   {order.payment_status}
                 </td>
+<td style={cellStyle}>
+  <OrderStatus
+    orderId={order.id}
+    currentStatus={order.order_status || "New"}
+  />
+</td>
+
               </tr>
             ))}
           </tbody>
