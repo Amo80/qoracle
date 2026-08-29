@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import Link from "next/link";
+import OrderStatus from "../OrderStatus/page";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -107,11 +108,16 @@ export default async function OrderDetailsPage({
             {order.payment_status || "—"}
           </p>
 
-          <p>
-            <strong>Order Status:</strong>{" "}
-            {order.order_status || "New"}
-          </p>
+        <div style={{ marginTop: "16px" }}>
+  <strong>Order Status:</strong>
 
+  <div style={{ marginTop: "8px" }}>
+    <OrderStatus
+      orderId={order.id}
+      currentStatus={order.order_status || "New"}
+    />
+  </div>
+</div>
           <p>
             <strong>Stripe Payment ID:</strong>{" "}
             {order.stripe_payment_id || "—"}
