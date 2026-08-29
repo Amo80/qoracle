@@ -85,7 +85,29 @@ export default async function OrderDetailsPage({
             <strong>Email:</strong>{" "}
             {order.customer_email || "—"}
           </p>
+<p>
+  <strong>Shipping Address:</strong>{" "}
+  {order.shipping_address
+    ? (() => {
+        try {
+          const address = JSON.parse(order.shipping_address);
 
+          return [
+            address.line1,
+            address.line2,
+            address.city,
+            address.state,
+            address.postal_code,
+            address.country,
+          ]
+            .filter(Boolean)
+            .join(", ");
+        } catch {
+          return order.shipping_address;
+        }
+      })()
+    : "—"}
+</p>
           <p>
             <strong>Product:</strong>{" "}
             {order.product_name}
