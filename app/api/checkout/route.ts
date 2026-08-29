@@ -29,6 +29,7 @@ export async function POST(request: Request) {
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
+billing_address_collection: "auto",
 customer_creation: "always",
 
 metadata: {

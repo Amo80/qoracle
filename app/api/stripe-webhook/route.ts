@@ -46,6 +46,8 @@ export async function POST(request: Request) {
         session.metadata?.product_name || "QoRacle Product";
 
       const theme = session.metadata?.theme || "classic";
+const customerName =
+  session.customer_details?.name || null;
 
       const { data: existingOrder } = await supabase
         .from("orders")
@@ -60,6 +62,7 @@ export async function POST(request: Request) {
             stripe_session_id: session.id,
             product_name: productName,
             theme,
+            customer_name: customerName,
             amount_total: session.amount_total,
             currency: session.currency,
             customer_email: session.customer_details?.email || null,
