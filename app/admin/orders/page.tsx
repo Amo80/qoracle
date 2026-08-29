@@ -27,6 +27,35 @@ export default async function OrdersPage() {
       }}
     >
       <h1>QoRacle Orders</h1>
+<div
+  style={{
+    display: "flex",
+    gap: "12px",
+    flexWrap: "wrap",
+    marginTop: "20px",
+    marginBottom: "25px",
+  }}
+>
+  <div style={summaryCardStyle}>
+    <strong>New</strong>
+    <div>{orders?.filter((order) => (order.order_status || "New") === "New").length || 0}</div>
+  </div>
+
+  <div style={summaryCardStyle}>
+    <strong>Processing</strong>
+    <div>{orders?.filter((order) => order.order_status === "Processing").length || 0}</div>
+  </div>
+
+  <div style={summaryCardStyle}>
+    <strong>Shipped</strong>
+    <div>{orders?.filter((order) => order.order_status === "Shipped").length || 0}</div>
+  </div>
+
+  <div style={summaryCardStyle}>
+    <strong>Completed</strong>
+    <div>{orders?.filter((order) => order.order_status === "Completed").length || 0}</div>
+  </div>
+</div>
 
       <p style={{ color: "#aaa" }}>
         Paid customer orders will appear here.
@@ -109,6 +138,13 @@ const headerStyle = {
   padding: "12px",
   borderBottom: "1px solid #333",
   color: "#aaa",
+};
+const summaryCardStyle = {
+  background: "#11111a",
+  border: "1px solid #29293a",
+  borderRadius: "12px",
+  padding: "14px 18px",
+  minWidth: "120px",
 };
 
 const cellStyle = {
