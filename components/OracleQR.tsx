@@ -131,31 +131,25 @@ export default function OracleQR({
               Trust what the Oracle reveals.
             </p>
 
-            <div
-              className="love-crystal"
-              onClick={ask}
-              role="button"
-              tabIndex={0}
-              aria-label="Ask the Love Oracle"
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  ask();
-                }
-              }}
-            >
-              <div className="love-crystal-glow" />
-              <div className="love-crystal-inner">
-
-                <div className="love-crystal-heart">
-                  ♥
-                </div>
-
-                <div className="love-crystal-question">
-                  ?
-                </div>
-
-              </div>
-            </div>
+          <div
+  className="love-crystal love-crystal-image"
+  onClick={ask}
+  role="button"
+  tabIndex={0}
+  aria-label="Ask the Love Oracle"
+  onKeyDown={(e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      ask();
+    }
+  }}
+>
+  <img
+    src="/themes/love-crystal-ball.png"
+    alt="Glowing Love Oracle crystal ball with a heart inside"
+    className="love-crystal-ball-image"
+  />
+</div>
+                         
 
             <p className="love-instruction">
               Tap the crystal ball
