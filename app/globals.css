@@ -46,3 +46,85 @@ h1 span { color: var(--accent); }
   .cards { grid-template-columns: repeat(2, 1fr); }
   .orb { width: min(270px, 70vw); }
 }
+/* ================================
+   QoRacle LOVE Theme
+   ================================ */
+
+.theme-love {
+  --bg: #16070d;
+  --panel: #241019;
+  --text: #fff4f7;
+  --muted: #d8aebc;
+  --accent: #ff6f91;
+  --accent2: #e73567;
+
+  background:
+    radial-gradient(circle at 50% 15%, #5a1733 0, #16070d 45%),
+    #16070d;
+}
+
+.theme-love h1 span {
+  color: #ff6f91;
+}
+
+.theme-love .eyebrow {
+  color: #ff9eb5;
+}
+
+.theme-love .orb {
+  background:
+    radial-gradient(
+      circle at 32% 25%,
+      #ff9eb5 0 5%,
+      #a82f55 22%,
+      #3d0d20 52%,
+      #10040a 75%
+    );
+
+  box-shadow:
+    inset -20px -25px 40px #000,
+    inset 10px 10px 25px #ffb6c955,
+    0 25px 80px #ff3f6c66;
+}
+
+.theme-love .triangle {
+  background:
+    linear-gradient(
+      145deg,
+      #5c102d,
+      #d82d61
+    );
+
+  box-shadow: 0 0 30px #ff4f7c66;
+}
+
+.theme-love .primary {
+  background:
+    linear-gradient(
+      135deg,
+      #ff8fac,
+      #e73567
+    );
+
+  box-shadow:
+    0 12px 35px #e7356755;
+}
+
+.theme-love .secondary {
+  background: #421525;
+}
+
+.theme-love .question input {
+  background: #1d0b12;
+  border-color: #542133;
+}
+
+.theme-love .question input:focus {
+  border-color: #ff6f91;
+  box-shadow: 0 0 0 3px #ff6f9122;
+}
+
+.theme-love .result {
+  background: #241019;
+  border-color: #64263d;
+}
