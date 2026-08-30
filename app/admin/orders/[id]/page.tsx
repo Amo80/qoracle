@@ -123,6 +123,15 @@ export default async function OrderDetailsPage({
       })()
     : "—"}
 </p>
+<p>
+  <strong>Shipping Carrier:</strong>{" "}
+  {order.shipping_carrier || "Not shipped"}
+</p>
+
+<p>
+  <strong>Tracking Number:</strong>{" "}
+  {order.tracking_number || "Not shipped"}
+</p>
           <p>
             <strong>Product:</strong>{" "}
             {order.product_name}
