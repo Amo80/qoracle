@@ -63,7 +63,7 @@ h1 span { color: var(--accent); }
     rgba(22, 7, 13, 0.35),
     rgba(22, 7, 13, 0.65)
   ),
-  url("/themes/love.webp") center center / cover fixed;}
+  url("/themes/love.png") center center / cover fixed;}
 
 .theme-love h1 span {
   color: #ff6f91;
