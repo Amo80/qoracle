@@ -53,12 +53,19 @@ export default function OracleQR({ theme, code }: { theme: string; code: string 
     </div>
   )}
 
-  <div className="window">
+<div className={`window ${theme === "love" ? "love-window" : ""}`}>
+  {theme === "love" ? (
+    <div className="love-heart-core">
+      <div className="love-heart">♥</div>
+      <span>{answer || "?"}</span>
+    </div>
+  ) : (
     <div className="triangle">
       <span>{answer || "?"}</span>
     </div>
-  </div>
+  )}
 </div>
+  </div>
      <div className="question">
         <input value={question} onChange={e => setQuestion(e.target.value)} placeholder="Ask a yes/no question..." />
         <button className="primary" onClick={ask} disabled={!question.trim() || busy}>
