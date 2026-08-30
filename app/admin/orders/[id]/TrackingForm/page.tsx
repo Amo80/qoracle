@@ -25,7 +25,7 @@ export default function TrackingForm({
     setMessage("");
 
     try {
-      const response = await fetch("/api/orders", {
+      const response = await fetch("/api/admin/orders", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
