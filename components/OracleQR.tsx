@@ -25,7 +25,7 @@ export default function OracleQR({ theme, code }: { theme: string; code: string 
   }
 
   return (
-    <main className="oracle-page">
+    <main className={`oracle-page theme-${theme}`}>
       <p className="eyebrow">QoRacle • {theme.toUpperCase()}</p>
       <h1>ASK THE <span>ORACLE</span></h1>
       <div className={`orb ${busy ? "shaking" : ""}`} onClick={ask}>
