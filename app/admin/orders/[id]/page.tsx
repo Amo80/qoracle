@@ -37,6 +37,21 @@ export default async function OrderDetailsPage({
         >
           Back to Orders
         </Link>
+<Link
+  href={`/admin/orders/${order.id}/packing-slip`}
+  style={{
+    display: "inline-block",
+    marginTop: "15px",
+    padding: "10px 16px",
+    background: "#222",
+    color: "white",
+    textDecoration: "none",
+    borderRadius: "8px",
+    fontWeight: "bold",
+  }}
+>
+  🖨️ Packing Slip
+</Link>
       </main>
     );
   }
