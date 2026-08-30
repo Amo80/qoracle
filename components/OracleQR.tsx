@@ -41,10 +41,25 @@ export default function OracleQR({ theme, code }: { theme: string; code: string 
       <p className="eyebrow">QoRacle • {theme.toUpperCase()}</p>
       <h1>ASK THE <span>ORACLE</span></h1>
       <div className={`orb ${busy ? "shaking" : ""}`} onClick={ask}>
-        <div className="orb-shine" />
-        <div className="window"><div className="triangle"><span>{answer || "?"}</span></div></div>
-      </div>
-      <div className="question">
+  <div className="orb-glow" />
+  <div className="orb-shine" />
+
+  {theme === "love" && (
+    <div className="love-orb-hearts" aria-hidden="true">
+      <span>♥</span>
+      <span>♥</span>
+      <span>♥</span>
+      <span>♥</span>
+    </div>
+  )}
+
+  <div className="window">
+    <div className="triangle">
+      <span>{answer || "?"}</span>
+    </div>
+  </div>
+</div>
+     <div className="question">
         <input value={question} onChange={e => setQuestion(e.target.value)} placeholder="Ask a yes/no question..." />
         <button className="primary" onClick={ask} disabled={!question.trim() || busy}>
           {busy ? "CONSULTING..." : "SHAKE THE ORACLE"}
