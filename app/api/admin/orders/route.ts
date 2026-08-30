@@ -48,10 +48,13 @@ export async function PATCH(request: Request) {
     }
 
     const { error } = await supabase
-      .from("orders")
-      .update({ order_status: orderStatus })
-      .eq("id", id);
-
+   .from("orders")
+.update({
+  order_status: orderStatus,
+  shipping_carrier: body.shipping_carrier,
+  tracking_number: body.tracking_number,
+})
+.eq("id", id);
     if (error) {
       console.error(error);
 
