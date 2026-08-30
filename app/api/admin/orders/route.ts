@@ -23,30 +23,43 @@ export async function PATCH(request: Request) {
   try {
     const body = await request.json();
 
-    const id = body.id;
-    const orderStatus = body.order_status;
+    const id = body.id || body.orderId;
+const orderStatus = body.order_status;
 
-    if (!id || !orderStatus) {
-      return NextResponse.json(
-        { error: "Missing order ID or status" },
-        { status: 400 }
-      );
-    }
+const hasTrackingUpdate =
+  body.shipping_carrier !== undefined ||
+  body.tracking_number !== undefined;
 
-    const allowedStatuses = [
-      "New",
-      "Processing",
-      "Shipped",
-      "Completed",
-    ];
+if (!id) {
+  return NextResponse.json(
+    { error: "Missing order ID" },
+    { status: 400 }
+  );
+}
 
-    if (!allowedStatuses.includes(orderStatus)) {
-      return NextResponse.json(
-        { error: "Invalid order status" },
-        { status: 400 }
-      );
-    }
+if (!orderStatus && !hasTrackingUpdate) {
+  return NextResponse.json(
+    { error: "Missing order update" },
+    { status: 400 }
+  );
+}
 
+const allowedStatuses = [
+  "New",
+  "Processing",
+  "Shipped",
+  "Completed",
+];
+
+if (
+  orderStatus &&
+  !allowedStatuses.includes(orderStatus)
+) {
+  return NextResponse.json(
+    { error: "Invalid order status" },
+    { status: 400 }
+  );
+}
     const { error } = await supabase
    .from("orders")
 .update({
