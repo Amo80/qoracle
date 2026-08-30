@@ -56,6 +56,29 @@ export default async function OrdersPage() {
 </div>
 <div
   style={{
+    background: "#11111a",
+    border: "1px solid #29293a",
+    borderRadius: "12px",
+    padding: "18px",
+    marginBottom: "20px",
+    fontSize: "22px",
+    fontWeight: "bold",
+  }}
+>
+  Average Order Value: $
+  {orders?.length
+    ? (
+        (orders.reduce(
+          (total, order) => total + (order.amount_total || 0),
+          0
+        ) /
+          orders.length) /
+        100
+      ).toFixed(2)
+    : "0.00"}
+</div>
+<div
+  style={{
     display: "flex",
     gap: "12px",
     flexWrap: "wrap",
