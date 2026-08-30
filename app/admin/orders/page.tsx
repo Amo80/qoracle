@@ -29,6 +29,19 @@ export default async function OrdersPage() {
       <h1>QoRacle Orders</h1>
 <div
   style={{
+    background: "#11111a",
+    border: "1px solid #29293a",
+    borderRadius: "12px",
+    padding: "18px",
+    marginBottom: "20px",
+    fontSize: "22px",
+    fontWeight: "bold",
+  }}
+>
+  Total Orders: {orders?.length || 0}
+</div>
+<div
+  style={{
     display: "flex",
     gap: "12px",
     flexWrap: "wrap",
