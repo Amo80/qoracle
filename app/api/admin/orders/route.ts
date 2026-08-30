@@ -60,14 +60,24 @@ if (
     { status: 400 }
   );
 }
-    const { error } = await supabase
-   .from("orders")
-.update({
-  order_status: orderStatus,
-  shipping_carrier: body.shipping_carrier,
-  tracking_number: body.tracking_number,
-})
-.eq("id", id);
+   const updateData: Record<string, string> = {};
+
+if (orderStatus) {
+  updateData.order_status = orderStatus;
+}
+
+if (body.shipping_carrier !== undefined) {
+  updateData.shipping_carrier = body.shipping_carrier;
+}
+
+if (body.tracking_number !== undefined) {
+  updateData.tracking_number = body.tracking_number;
+}
+
+const { error } = await supabase
+  .from("orders")
+  .update(updateData)
+  .eq("id", id);
     if (error) {
       console.error(error);
 
