@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import Link from "next/link";
+import TrackingForm from "./TrackingForm/page";
 import OrderStatus from "../OrderStatus/page";
 
 const supabase = createClient(
@@ -132,6 +133,11 @@ export default async function OrderDetailsPage({
   <strong>Tracking Number:</strong>{" "}
   {order.tracking_number || "Not shipped"}
 </p>
+<TrackingForm
+  orderId={order.id}
+  currentCarrier={order.shipping_carrier}
+  currentTrackingNumber={order.tracking_number}
+/>
           <p>
             <strong>Product:</strong>{" "}
             {order.product_name}
