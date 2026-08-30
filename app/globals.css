@@ -130,3 +130,110 @@ h1 span { color: var(--accent); }
   background: #241019;
   border-color: #64263d;
 }
+/* LOVE THEME — FLOATING HEARTS */
+.love-hearts {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.love-hearts span {
+  position: absolute;
+  bottom: -60px;
+  left: var(--left);
+  font-size: var(--size);
+  color: #ff6f91;
+  opacity: 0;
+  filter: drop-shadow(0 0 8px #ff4f7b);
+  animation: loveHeartFloat var(--duration) linear infinite;
+  animation-delay: var(--delay);
+}
+
+.love-hearts span:nth-child(1) {
+  --left: 8%;
+  --size: 18px;
+  --duration: 8s;
+  --delay: 0s;
+}
+
+.love-hearts span:nth-child(2) {
+  --left: 20%;
+  --size: 30px;
+  --duration: 11s;
+  --delay: 2s;
+}
+
+.love-hearts span:nth-child(3) {
+  --left: 34%;
+  --size: 14px;
+  --duration: 7s;
+  --delay: 4s;
+}
+
+.love-hearts span:nth-child(4) {
+  --left: 48%;
+  --size: 26px;
+  --duration: 10s;
+  --delay: 1s;
+}
+
+.love-hearts span:nth-child(5) {
+  --left: 63%;
+  --size: 16px;
+  --duration: 9s;
+  --delay: 5s;
+}
+
+.love-hearts span:nth-child(6) {
+  --left: 76%;
+  --size: 32px;
+  --duration: 12s;
+  --delay: 3s;
+}
+
+.love-hearts span:nth-child(7) {
+  --left: 88%;
+  --size: 20px;
+  --duration: 8s;
+  --delay: 6s;
+}
+
+.love-hearts span:nth-child(8) {
+  --left: 55%;
+  --size: 12px;
+  --duration: 6s;
+  --delay: 7s;
+}
+
+@keyframes loveHeartFloat {
+  0% {
+    transform: translate3d(0, 0, 0) scale(.7) rotate(-8deg);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: .8;
+  }
+
+  50% {
+    transform: translate3d(25px, -50vh, 0) scale(1) rotate(8deg);
+    opacity: .65;
+  }
+
+  80% {
+    opacity: .4;
+  }
+
+  100% {
+    transform: translate3d(-25px, -115vh, 0) scale(.8) rotate(-5deg);
+    opacity: 0;
+  }
+}
+
+/* Keep the real QoRacle interface above the hearts */
+.oracle-page > *:not(.love-hearts) {
+  position: relative;
+  z-index: 1;
+}
