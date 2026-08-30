@@ -44,6 +44,47 @@ const filteredOrders = (orders || []).filter((order) => {
       }}
     >
       <h1>QoRacle Orders</h1>
+<form
+  method="GET"
+  style={{
+    marginTop: "20px",
+    marginBottom: "25px",
+    display: "flex",
+    gap: "10px",
+  }}
+>
+  <input
+    type="text"
+    name="q"
+    defaultValue={q}
+    placeholder="Search customer, email, product, or order ID..."
+    style={{
+      width: "100%",
+      maxWidth: "500px",
+      padding: "12px 14px",
+      borderRadius: "10px",
+      border: "1px solid #3b3b50",
+      background: "#11111a",
+      color: "white",
+      fontSize: "16px",
+    }}
+  />
+
+  <button
+    type="submit"
+    style={{
+      padding: "12px 18px",
+      borderRadius: "10px",
+      border: "1px solid #3b3b50",
+      background: "#222230",
+      color: "white",
+      fontWeight: "bold",
+      cursor: "pointer",
+    }}
+  >
+    Search
+  </button>
+</form>
 <div
   style={{
     background: "#11111a",
