@@ -56,7 +56,25 @@ export default async function OrdersPage() {
     <div>{orders?.filter((order) => order.order_status === "Completed").length || 0}</div>
   </div>
 </div>
-
+<div
+  style={{
+    background: "#11111a",
+    border: "1px solid #29293a",
+    borderRadius: "12px",
+    padding: "18px",
+    marginBottom: "20px",
+    fontSize: "22px",
+    fontWeight: "bold",
+  }}
+>
+  Total Revenue: $
+  {(
+    (orders || []).reduce(
+      (total, order) => total + (order.amount_total || 0),
+      0
+    ) / 100
+  ).toFixed(2)}
+</div>
       <p style={{ color: "#aaa" }}>
         Paid customer orders will appear here.
       </p>
