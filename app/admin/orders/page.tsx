@@ -7,12 +7,29 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-export default async function OrdersPage() {
-  const { data: orders, error } = await supabase
-    .from("orders")
-    .select("*")
-    .order("created_at", { ascending: false });
+export default async function OrdersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
+  const { q = "" } = await searchParams;
+ const { data: orders, error } = await supabase
+  .from("orders")
+  .select("*")
+  .order("created_at", { ascending: false });
 
+const filteredOrders = (orders || []).filter((order) => {
+  if (!q) return true;
+
+  const search = q.toLowerCase();
+
+  return (
+    String(order.id).toLowerCase().includes(search) ||
+    (order.customer_name || "").toLowerCase().includes(search) ||
+    (order.customer_email || "").toLowerCase().includes(search) ||
+    (order.product_name || "").toLowerCase().includes(search)
+  );
+});
   if (error) {
     return <div style={{ padding: "30px" }}>Unable to load orders.</div>;
   }
@@ -148,7 +165,7 @@ export default async function OrdersPage() {
           </thead>
 
           <tbody>
-            {orders?.map((order) => (
+           {filteredOrders.map((order) => ( 
               <tr key={order.id}>
                 <td style={cellStyle}>
                   {new Date(order.created_at).toLocaleString()}
