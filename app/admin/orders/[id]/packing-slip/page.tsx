@@ -91,20 +91,7 @@ export default async function PackingSlipPage({
           ← Back to Order
         </a>
 
-        <button
-          onClick={() => {}}
-          style={{
-            padding: "10px 16px",
-            background: "#222",
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
-          }}
-        >
-          Print
-        </button>
-      </div>
+             </div>
 
       <div
         style={{
