@@ -73,6 +73,17 @@ if (body.shipping_carrier !== undefined) {
 if (body.tracking_number !== undefined) {
   updateData.tracking_number = body.tracking_number;
 }
+if (orderStatus === "Shipped") {
+  const { data: existingOrder } = await supabase
+    .from("orders")
+    .select("shipped_email_sent")
+    .eq("id", id)
+    .single();
+
+  if (!existingOrder?.shipped_email_sent) {
+    console.log(`Order ${id} is being marked Shipped.`);
+  }
+}
 
 const { error } = await supabase
   .from("orders")
