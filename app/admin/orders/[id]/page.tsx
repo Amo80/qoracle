@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import Link from "next/link";
 import TrackingForm from "./TrackingForm/page";
 import OrderStatus from "../OrderStatus/page";
+import ShippingEmail from "./ShippingEmail/page";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -137,6 +138,11 @@ export default async function OrderDetailsPage({
   orderId={order.id}
   currentCarrier={order.shipping_carrier}
   currentTrackingNumber={order.tracking_number}
+/>
+<ShippingEmail
+  orderId={order.id}
+  customerEmail={order.customer_email}
+  trackingNumber={order.tracking_number}
 />
           <p>
             <strong>Product:</strong>{" "}
