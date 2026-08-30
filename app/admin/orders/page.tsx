@@ -1,4 +1,5 @@
 export const dynamic = "force-dynamic";
+
 import { createClient } from "@supabase/supabase-js";
 import OrderStatus from "./OrderStatus/page";
 
@@ -13,26 +14,68 @@ export default async function OrdersPage({
   searchParams: Promise<{ q?: string }>;
 }) {
   const { q = "" } = await searchParams;
- const { data: orders, error } = await supabase
-  .from("orders")
-  .select("*")
-  .order("created_at", { ascending: false });
 
-const filteredOrders = (orders || []).filter((order) => {
-  if (!q) return true;
+  const { data: orders, error } = await supabase
+    .from("orders")
+    .select("*")
+    .order("created_at", { ascending: false });
 
-  const search = q.toLowerCase();
-
-  return (
-    String(order.id).toLowerCase().includes(search) ||
-    (order.customer_name || "").toLowerCase().includes(search) ||
-    (order.customer_email || "").toLowerCase().includes(search) ||
-    (order.product_name || "").toLowerCase().includes(search)
-  );
-});
   if (error) {
-    return <div style={{ padding: "30px" }}>Unable to load orders.</div>;
+    return (
+      <div style={{ padding: "30px" }}>
+        Unable to load orders.
+      </div>
+    );
   }
+
+  const filteredOrders = (orders || []).filter((order) => {
+    if (!q) return true;
+
+    const search = q.toLowerCase();
+
+    return (
+      String(order.id).toLowerCase().includes(search) ||
+      (order.customer_name || "").toLowerCase().includes(search) ||
+      (order.customer_email || "").toLowerCase().includes(search) ||
+      (order.product_name || "").toLowerCase().includes(search)
+    );
+  });
+
+  const totalRevenue =
+    (orders || []).reduce(
+      (total, order) => total + (order.amount_total || 0),
+      0
+    ) / 100;
+
+  const averageOrderValue =
+    orders && orders.length
+      ? totalRevenue / orders.length
+      : 0;
+
+  const totalPaid =
+    orders?.filter(
+      (order) => order.payment_status === "paid"
+    ).length || 0;
+
+  const newOrders =
+    orders?.filter(
+      (order) => (order.order_status || "New") === "New"
+    ).length || 0;
+
+  const processingOrders =
+    orders?.filter(
+      (order) => order.order_status === "Processing"
+    ).length || 0;
+
+  const shippedOrders =
+    orders?.filter(
+      (order) => order.order_status === "Shipped"
+    ).length || 0;
+
+  const completedOrders =
+    orders?.filter(
+      (order) => order.order_status === "Completed"
+    ).length || 0;
 
   return (
     <main
@@ -44,150 +87,137 @@ const filteredOrders = (orders || []).filter((order) => {
       }}
     >
       <h1>QoRacle Orders</h1>
-<form
-  method="GET"
-  style={{
-    marginTop: "20px",
-    marginBottom: "25px",
-    display: "flex",
-    gap: "10px",
-  }}
->
-  <input
-    type="text"
-    name="q"
-    defaultValue={q}
-    placeholder="Search customer, email, product, or order ID..."
-    style={{
-      width: "100%",
-      maxWidth: "500px",
-      padding: "12px 14px",
-      borderRadius: "10px",
-      border: "1px solid #3b3b50",
-      background: "#11111a",
-      color: "white",
-      fontSize: "16px",
-    }}
-  />
 
-  <button
-    type="submit"
-    style={{
-      padding: "12px 18px",
-      borderRadius: "10px",
-      border: "1px solid #3b3b50",
-      background: "#222230",
-      color: "white",
-      fontWeight: "bold",
-      cursor: "pointer",
-    }}
-  >
-    Search
-  </button>
-</form>
-<div
-  style={{
-    background: "#11111a",
-    border: "1px solid #29293a",
-    borderRadius: "12px",
-    padding: "18px",
-    marginBottom: "20px",
-    fontSize: "22px",
-    fontWeight: "bold",
-  }}
->
-  Total Orders: {orders?.length || 0}
-</div>
-<div
-  style={{
-    background: "#11111a",
-    border: "1px solid #29293a",
-    borderRadius: "12px",
-    padding: "18px",
-    marginBottom: "20px",
-    fontSize: "22px",
-    fontWeight: "bold",
-  }}
->
-  Total Paid:{" "}
-  {orders?.filter((order) => order.payment_status === "paid").length || 0}
-</div>
-<div
-  style={{
-    background: "#11111a",
-    border: "1px solid #29293a",
-    borderRadius: "12px",
-    padding: "18px",
-    marginBottom: "20px",
-    fontSize: "22px",
-    fontWeight: "bold",
-  }}
->
-  Average Order Value: $
-  {orders?.length
-    ? (
-        (orders.reduce(
-          (total, order) => total + (order.amount_total || 0),
-          0
-        ) /
-          orders.length) /
-        100
-      ).toFixed(2)
-    : "0.00"}
-</div>
-<div
-  style={{
-    display: "flex",
-    gap: "12px",
-    flexWrap: "wrap",
-    marginTop: "20px",
-    marginBottom: "25px",
-  }}
->
-  <div style={summaryCardStyle}>
-    <strong>New</strong>
-    <div>{orders?.filter((order) => (order.order_status || "New") === "New").length || 0}</div>
-  </div>
+      <form
+        method="GET"
+        style={{
+          marginTop: "20px",
+          marginBottom: "25px",
+          display: "flex",
+          gap: "10px",
+          flexWrap: "wrap",
+        }}
+      >
+        <input
+          type="text"
+          name="q"
+          defaultValue={q}
+          placeholder="Search customer, email, product, or order ID..."
+          style={{
+            width: "100%",
+            maxWidth: "500px",
+            padding: "12px 14px",
+            borderRadius: "10px",
+            border: "1px solid #3b3b50",
+            background: "#11111a",
+            color: "white",
+            fontSize: "16px",
+          }}
+        />
 
-  <div style={summaryCardStyle}>
-    <strong>Processing</strong>
-    <div>{orders?.filter((order) => order.order_status === "Processing").length || 0}</div>
-  </div>
+        <button
+          type="submit"
+          style={{
+            padding: "12px 18px",
+            borderRadius: "10px",
+            border: "1px solid #3b3b50",
+            background: "#222230",
+            color: "white",
+            fontWeight: "bold",
+            cursor: "pointer",
+          }}
+        >
+          Search
+        </button>
 
-  <div style={summaryCardStyle}>
-    <strong>Shipped</strong>
-    <div>{orders?.filter((order) => order.order_status === "Shipped").length || 0}</div>
-  </div>
+        <a
+          href="/admin/orders"
+          style={{
+            padding: "12px 18px",
+            borderRadius: "10px",
+            border: "1px solid #3b3b50",
+            background: "#11111a",
+            color: "white",
+            textDecoration: "none",
+            fontWeight: "bold",
+          }}
+        >
+          Clear
+        </a>
+      </form>
 
-  <div style={summaryCardStyle}>
-    <strong>Completed</strong>
-    <div>{orders?.filter((order) => order.order_status === "Completed").length || 0}</div>
-  </div>
-</div>
-<div
-  style={{
-    background: "#11111a",
-    border: "1px solid #29293a",
-    borderRadius: "12px",
-    padding: "18px",
-    marginBottom: "20px",
-    fontSize: "22px",
-    fontWeight: "bold",
-  }}
->
-  Total Revenue: $
-  {(
-    (orders || []).reduce(
-      (total, order) => total + (order.amount_total || 0),
-      0
-    ) / 100
-  ).toFixed(2)}
-</div>
+      <div
+        style={{
+          display: "flex",
+          gap: "12px",
+          flexWrap: "wrap",
+          marginBottom: "25px",
+        }}
+      >
+        <div style={summaryCardStyle}>
+          <strong>New</strong>
+          <div>{newOrders}</div>
+        </div>
+
+        <div style={summaryCardStyle}>
+          <strong>Processing</strong>
+          <div>{processingOrders}</div>
+        </div>
+
+        <div style={summaryCardStyle}>
+          <strong>Shipped</strong>
+          <div>{shippedOrders}</div>
+        </div>
+
+        <div style={summaryCardStyle}>
+          <strong>Completed</strong>
+          <div>{completedOrders}</div>
+        </div>
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          gap: "12px",
+          flexWrap: "wrap",
+          marginBottom: "25px",
+        }}
+      >
+        <div style={summaryCardStyle}>
+          <strong>Total Orders</strong>
+          <div>{orders?.length || 0}</div>
+        </div>
+
+        <div style={summaryCardStyle}>
+          <strong>Total Paid</strong>
+          <div>{totalPaid}</div>
+        </div>
+
+        <div style={summaryCardStyle}>
+          <strong>Total Revenue</strong>
+          <div>${totalRevenue.toFixed(2)}</div>
+        </div>
+
+        <div style={summaryCardStyle}>
+          <strong>Average Order</strong>
+          <div>${averageOrderValue.toFixed(2)}</div>
+        </div>
+      </div>
+
       <p style={{ color: "#aaa" }}>
-        Paid customer orders will appear here.
+        {q
+          ? `Showing ${filteredOrders.length} matching order${
+              filteredOrders.length === 1 ? "" : "s"
+            }.`
+          : "Paid customer orders will appear here."}
       </p>
 
-      <div style={{ overflowX: "auto", marginTop: "30px" }}>
+      <div
+        style={{
+          overflowX: "auto",
+          marginTop: "30px",
+        }}
+      >
         <table
           style={{
             width: "100%",
@@ -201,18 +231,24 @@ const filteredOrders = (orders || []).filter((order) => {
               <th style={headerStyle}>Theme</th>
               <th style={headerStyle}>Customer</th>
               <th style={headerStyle}>Amount</th>
-              <th style={headerStyle}>Status</th>
+              <th style={headerStyle}>Payment</th>
+              <th style={headerStyle}>Order Status</th>
+              <th style={headerStyle}>Action</th>
             </tr>
           </thead>
 
           <tbody>
-           {filteredOrders.map((order) => ( 
+            {filteredOrders.map((order) => (
               <tr key={order.id}>
                 <td style={cellStyle}>
-                  {new Date(order.created_at).toLocaleString()}
+                  {new Date(
+                    order.created_at
+                  ).toLocaleString()}
                 </td>
 
-                <td style={cellStyle}>{order.product_name}</td>
+                <td style={cellStyle}>
+                  {order.product_name}
+                </td>
 
                 <td style={cellStyle}>
                   {order.theme?.toUpperCase()}
@@ -224,32 +260,37 @@ const filteredOrders = (orders || []).filter((order) => {
 
                 <td style={cellStyle}>
                   {order.amount_total
-                    ? `$${(order.amount_total / 100).toFixed(2)}`
+                    ? `$${(
+                        order.amount_total / 100
+                      ).toFixed(2)}`
                     : "—"}
                 </td>
 
                 <td style={cellStyle}>
                   {order.payment_status}
                 </td>
-<td style={cellStyle}>
-  <OrderStatus
-    orderId={order.id}
-    currentStatus={order.order_status || "New"}
-  />
-</td>
-<td style={cellStyle}>
-  <a
-    href={`/admin/orders/${order.id}`}
-    style={{
-      color: "white",
-      textDecoration: "none",
-      fontWeight: "bold",
-    }}
-  >
-    VIEW
-  </a>
-</td>
 
+                <td style={cellStyle}>
+                  <OrderStatus
+                    orderId={order.id}
+                    currentStatus={
+                      order.order_status || "New"
+                    }
+                  />
+                </td>
+
+                <td style={cellStyle}>
+                  <a
+                    href={`/admin/orders/${order.id}`}
+                    style={{
+                      color: "white",
+                      textDecoration: "none",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    VIEW
+                  </a>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -265,6 +306,7 @@ const headerStyle = {
   borderBottom: "1px solid #333",
   color: "#aaa",
 };
+
 const summaryCardStyle = {
   background: "#11111a",
   border: "1px solid #29293a",
