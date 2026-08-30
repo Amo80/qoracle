@@ -353,3 +353,62 @@ h1 span { color: var(--accent); }
     transform: scale(1.12);
   }
 }
+/* =========================================================
+   LOVE ORACLE — CLEAN BACKGROUND
+   ========================================================= */
+
+.theme-love {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+
+  background-image:
+    linear-gradient(
+      rgba(25, 0, 20, 0.18),
+      rgba(25, 0, 20, 0.35)
+    ),
+    url("/themes/love-background.png");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+}
+
+.theme-love::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at 50% 42%,
+      rgba(255, 80, 160, 0.12),
+      transparent 42%
+    );
+  z-index: 0;
+}
+
+.theme-love .love-stage {
+  position: relative;
+  z-index: 2;
+  width: min(700px, 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 35px 20px 50px;
+}
+
+/* Keep floating hearts behind the crystal ball */
+.theme-love .love-hearts {
+  z-index: 1;
+}
+
+/* Make sure our Love interface is above the background */
+.theme-love .love-stage > * {
+  position: relative;
+  z-index: 3;
+}
