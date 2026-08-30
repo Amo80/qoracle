@@ -1,84 +1,403 @@
- "use client";
+"use client";
 
 import { useState } from "react";
 
 const byTheme: Record<string, string[]> = {
-  classic: ["YES.", "NO.", "ASK AGAIN.", "WITHOUT A DOUBT.", "VERY LIKELY.", "NOT TODAY."],
-  chaos: ["ABSOLUTELY NOT. 😂", "DO IT. WHAT COULD GO WRONG?", "THE CHAOS GODS APPROVE.", "YOU ALREADY KNOW.", "MAYBE... IF YOU BRING SNACKS."],
-  love: ["YES — SHOOT YOUR SHOT. ❤️", "WAIT A LITTLE LONGER.", "THE FEELING MAY BE MUTUAL.", "PROBABLY NOT.", "TEXT THEM. 📱"],
-  dark: ["DON'T.", "YOU SHOULD HAVE ASKED SOONER.", "THE SIGNS ARE NOT GOOD.", "RUN.", "THE ORACLE REFUSES TO ANSWER. 👻"],
-  dnd: ["ROLL FOR INITIATIVE. 🎲", "NAT 20. YES.", "CRITICAL FAIL.", "THE DUNGEON AWAITS.", "ASK YOUR DUNGEON MASTER."]
+  classic: [
+    "YES.",
+    "NO.",
+    "ASK AGAIN.",
+    "WITHOUT A DOUBT.",
+    "VERY LIKELY.",
+    "NOT TODAY.",
+  ],
+
+  chaos: [
+    "ABSOLUTELY NOT. 😂",
+    "DO IT. WHAT COULD GO WRONG?",
+    "THE CHAOS GODS APPROVE.",
+    "YOU ALREADY KNOW.",
+    "MAYBE... IF YOU BRING SNACKS.",
+  ],
+
+  love: [
+    "YES — SHOOT YOUR SHOT. ❤️",
+    "WAIT A LITTLE LONGER.",
+    "THE FEELING MAY BE MUTUAL.",
+    "PROBABLY NOT.",
+    "TEXT THEM. 📱",
+  ],
+
+  dark: [
+    "DON'T.",
+    "YOU SHOULD HAVE ASKED SOONER.",
+    "THE SIGNS ARE NOT GOOD.",
+    "RUN.",
+    "THE ORACLE REFUSES TO ANSWER. 👻",
+  ],
+
+  dnd: [
+    "ROLL FOR INITIATIVE. 🎲",
+    "NAT 20. YES.",
+    "CRITICAL FAIL.",
+    "THE DUNGEON AWAITS.",
+    "ASK YOUR DUNGEON MASTER.",
+  ],
 };
 
-export default function OracleQR({ theme, code }: { theme: string; code: string }) {
+export default function OracleQR({
+  theme,
+  code,
+}: {
+  theme: string;
+  code: string;
+}) {
   const [answer, setAnswer] = useState("");
   const [busy, setBusy] = useState(false);
   const [question, setQuestion] = useState("");
+  const [lovePage, setLovePage] = useState<1 | 2 | 3>(1);
 
   async function ask() {
     if (!question.trim() || busy) return;
-    setBusy(true); setAnswer("");
-    await new Promise(r => setTimeout(r, 1500));
+
+    setBusy(true);
+    setAnswer("");
+
+    if (theme === "love") {
+      setLovePage(2);
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 1800));
+
     const list = byTheme[theme] || byTheme.classic;
-    setAnswer(list[Math.floor(Math.random() * list.length)]);
+    const newAnswer = list[Math.floor(Math.random() * list.length)];
+
+    setAnswer(newAnswer);
     setBusy(false);
+
+    if (theme === "love") {
+      setLovePage(3);
+    }
   }
+
+  function askAgain() {
+    setAnswer("");
+    setQuestion("");
+    setBusy(false);
+
+    if (theme === "love") {
+      setLovePage(1);
+    }
+  }
+
+  /* =========================================================
+     LOVE ORACLE — THREE PAGE EXPERIENCE
+     ========================================================= */
+
+  if (theme === "love") {
+    return (
+      <main className="oracle-page theme-love">
+
+        {/* Floating hearts */}
+        <div className="love-hearts" aria-hidden="true">
+          <span>♥</span>
+          <span>♥</span>
+          <span>♥</span>
+          <span>♥</span>
+          <span>♥</span>
+          <span>♥</span>
+          <span>♥</span>
+          <span>♥</span>
+        </div>
+
+        {/* =================================================
+            PAGE 1 — INVITATION
+           ================================================= */}
+
+        {lovePage === 1 && (
+          <section className="love-stage love-stage-one">
+
+            <p className="eyebrow love-eyebrow">
+              QoRacle • LOVE
+            </p>
+
+            <h1 className="love-title">
+              LOVE <span>ORACLE</span>
+            </h1>
+
+            <p className="love-subtitle">
+              Ask with your heart.
+              <br />
+              Trust what the Oracle reveals.
+            </p>
+
+            <div
+              className="love-crystal"
+              onClick={ask}
+              role="button"
+              tabIndex={0}
+              aria-label="Ask the Love Oracle"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  ask();
+                }
+              }}
+            >
+              <div className="love-crystal-glow" />
+              <div className="love-crystal-inner">
+
+                <div className="love-crystal-heart">
+                  ♥
+                </div>
+
+                <div className="love-crystal-question">
+                  ?
+                </div>
+
+              </div>
+            </div>
+
+            <p className="love-instruction">
+              Tap the crystal ball
+              <br />
+              and ask a question about love...
+            </p>
+
+            <div className="love-question-box">
+              <input
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                placeholder="Ask your heart a question..."
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    ask();
+                  }
+                }}
+              />
+
+              <button
+                className="primary love-button"
+                onClick={ask}
+                disabled={!question.trim() || busy}
+              >
+                ♥ REVEAL MY ANSWER ♥
+              </button>
+            </div>
+
+            <p className="small">
+              QR: {code} • For entertainment only.
+            </p>
+
+          </section>
+        )}
+
+        {/* =================================================
+            PAGE 2 — MAGIC / REVEAL
+           ================================================= */}
+
+        {lovePage === 2 && (
+          <section className="love-stage love-stage-two">
+
+            <p className="eyebrow love-eyebrow">
+              QoRacle • LOVE
+            </p>
+
+            <h1 className="love-title">
+              THE ORACLE <span>IS LISTENING</span>
+            </h1>
+
+            <p className="love-subtitle">
+              Your question has been received...
+            </p>
+
+            <div className="love-crystal love-crystal-revealing">
+
+              <div className="love-energy-ring ring-one" />
+              <div className="love-energy-ring ring-two" />
+              <div className="love-energy-ring ring-three" />
+
+              <div className="love-crystal-glow" />
+
+              <div className="love-crystal-inner">
+
+                <div className="love-crystal-heart love-heart-pulsing">
+                  ♥
+                </div>
+
+                <div className="love-magic-sparkles">
+                  ✦ ✧ ✦
+                </div>
+
+              </div>
+
+            </div>
+
+            <div className="love-reveal-message">
+              <div className="love-reveal-heart">
+                ♥
+              </div>
+
+              <h2>
+                Revealing your answer...
+              </h2>
+
+              <p>
+                Trust the magic.
+              </p>
+            </div>
+
+            <div className="love-loading-dots">
+              <span />
+              <span />
+              <span />
+            </div>
+
+          </section>
+        )}
+
+        {/* =================================================
+            PAGE 3 — ANSWER
+           ================================================= */}
+
+        {lovePage === 3 && (
+          <section className="love-stage love-stage-three">
+
+            <p className="eyebrow love-eyebrow">
+              QoRacle • LOVE
+            </p>
+
+            <h1 className="love-title">
+              YOUR LOVE <span>ANSWER</span>
+            </h1>
+
+            <div className="love-crystal love-crystal-answer">
+
+              <div className="love-answer-heart">
+                ♥
+              </div>
+
+              <div className="love-answer-text">
+                {answer}
+              </div>
+
+              <div className="love-answer-decoration">
+                ── ♥ ──
+              </div>
+
+            </div>
+
+            <div className="love-answer-card">
+
+              <span>
+                THE LOVE ORACLE SAYS
+              </span>
+
+              <strong>
+                {answer}
+              </strong>
+
+            </div>
+
+            <button
+              className="primary love-button love-again-button"
+              onClick={askAgain}
+            >
+              ♥ ASK ANOTHER QUESTION ♥
+            </button>
+
+            <p className="love-closing">
+              Ask with an open heart.
+              <br />
+              Trust the answer.
+            </p>
+
+            <p className="small">
+              QR: {code} • For entertainment only.
+            </p>
+
+          </section>
+        )}
+
+      </main>
+    );
+  }
+
+  /* =========================================================
+     EXISTING ORACLE EXPERIENCE — OTHER THEMES
+     ========================================================= */
 
   return (
     <main className={`oracle-page theme-${theme}`}>
-{theme === "love" && (
-  <div className="love-hearts" aria-hidden="true">
-    <span>♥</span>
-    <span>♥</span>
-    <span>♥</span>
-    <span>♥</span>
-    <span>♥</span>
-    <span>♥</span>
-    <span>♥</span>
-    <span>♥</span>
-  </div>
-)}
-      <p className="eyebrow">QoRacle • {theme.toUpperCase()}</p>
-      <h1>ASK THE <span>ORACLE</span></h1>
+
+      <p className="eyebrow">
+        QoRacle • {theme.toUpperCase()}
+      </p>
+
+      <h1>
+        ASK THE <span>ORACLE</span>
+      </h1>
+
       <div
-  className={`orb ${theme === "love" ? "love-orb" : ""} ${
-    busy ? "shaking" : ""
-  }`}
-  onClick={ask}
->
-  <div className="orb-glow" />
-  <div className="orb-shine" />
+        className={`orb ${busy ? "shaking" : ""}`}
+        onClick={ask}
+      >
+        <div className="orb-shine" />
 
-  {theme === "love" && (
-    <div className="love-orb-hearts" aria-hidden="true">
-      <span>♥</span>
-      <span>♥</span>
-      <span>♥</span>
-      <span>♥</span>
-    </div>
-  )}
+        <div className="window">
+          <div className="triangle">
+            <span>
+              {answer || "?"}
+            </span>
+          </div>
+        </div>
+      </div>
 
-<div className={`window ${theme === "love" ? "love-window" : ""}`}>
-  {theme === "love" ? (
-    <div className="love-heart-core">
-      <div className="love-heart">♥</div>
-      <span>{answer || "?"}</span>
-    </div>
-  ) : (
-    <div className="triangle">
-      <span>{answer || "?"}</span>
-    </div>
-  )}
-</div>
-  </div>
-     <div className="question">
-        <input value={question} onChange={e => setQuestion(e.target.value)} placeholder="Ask a yes/no question..." />
-        <button className="primary" onClick={ask} disabled={!question.trim() || busy}>
+      <div className="question">
+
+        <input
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+          placeholder="Ask a yes/no question..."
+        />
+
+        <button
+          className="primary"
+          onClick={ask}
+          disabled={!question.trim() || busy}
+        >
           {busy ? "CONSULTING..." : "SHAKE THE ORACLE"}
         </button>
+
       </div>
-      {answer && !busy && <div className="result"><span>THE ORACLE SAYS</span><strong>{answer}</strong><button className="secondary" onClick={() => {setAnswer(""); setQuestion("")}}>ASK AGAIN</button></div>}
-      <p className="small">QR: {code} • For entertainment only.</p>
+
+      {answer && !busy && (
+        <div className="result">
+
+          <span>
+            THE ORACLE SAYS
+          </span>
+
+          <strong>
+            {answer}
+          </strong>
+
+          <button
+            className="secondary"
+            onClick={() => {
+              setAnswer("");
+              setQuestion("");
+            }}
+          >
+            ASK AGAIN
+          </button>
+
+        </div>
+      )}
+
+      <p className="small">
+        QR: {code} • For entertainment only.
+      </p>
+
     </main>
   );
 }
