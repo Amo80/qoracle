@@ -2042,3 +2042,181 @@ h1 span { color: var(--accent); }
     font-size: 16px;
   }
 }
+
+/* =========================================================
+   QoRacle LOVE — FINAL PAGE 3 ANSWER FIX
+   ========================================================= */
+
+.theme-love .love-answer-crystal {
+  position: relative !important;
+  width: min(82vw, 430px) !important;
+  margin: 12px auto 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: visible !important;
+}
+
+.theme-love .love-answer-crystal-image {
+  position: relative !important;
+  z-index: 1 !important;
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  object-fit: contain !important;
+  margin: 0 auto !important;
+  filter: drop-shadow(0 0 24px rgba(255, 70, 170, .75));
+}
+
+/* Answer belongs INSIDE the crystal ball */
+.theme-love .love-answer-crystal .love-answer-overlay {
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  width: 72% !important;
+  height: 48% !important;
+
+  transform: translate(-50%, -50%) !important;
+
+  z-index: 10 !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  text-align: center !important;
+  pointer-events: none !important;
+}
+
+/* Small glowing heart */
+.theme-love .love-answer-crystal .love-answer-heart {
+  font-size: 28px !important;
+  line-height: 1 !important;
+  margin: 0 0 8px !important;
+  color: #fff !important;
+
+  text-shadow:
+    0 0 6px #fff,
+    0 0 14px #ffb6dc,
+    0 0 28px #ff4fa3 !important;
+
+  animation: loveAnswerHeart 1.6s ease-in-out infinite !important;
+}
+
+/* THE ACTUAL ANSWER */
+.theme-love .love-answer-crystal .love-answer-text {
+  width: 100% !important;
+  max-width: 100% !important;
+
+  margin: 0 !important;
+
+  font-family: Arial, Helvetica, sans-serif !important;
+
+  font-size: clamp(15px, 4vw, 21px) !important;
+  line-height: 1.12 !important;
+
+  font-weight: 900 !important;
+  letter-spacing: 1px !important;
+
+  text-align: center !important;
+  text-transform: uppercase !important;
+
+  color: #ffffff !important;
+
+  transform: none !important;
+
+  text-shadow:
+    0 0 4px rgba(255,255,255,.95),
+    0 0 10px rgba(255,130,200,.95),
+    0 0 22px rgba(255,40,150,.9),
+    0 2px 5px rgba(60,0,30,.95) !important;
+
+  animation: loveAnswerRevealFinal 1.2s ease-out both !important;
+}
+
+/* Decorative hearts underneath answer */
+.theme-love .love-answer-crystal .love-answer-decoration {
+  margin: 8px 0 0 !important;
+
+  font-size: 13px !important;
+  line-height: 1 !important;
+  letter-spacing: 3px !important;
+
+  color: #fff !important;
+
+  transform: none !important;
+
+  text-shadow:
+    0 0 7px #fff,
+    0 0 16px #ff4fa3 !important;
+}
+
+/* Answer reveal */
+@keyframes loveAnswerRevealFinal {
+  0% {
+    opacity: 0;
+    transform: scale(.65);
+    filter: blur(7px);
+  }
+
+  60% {
+    opacity: 1;
+    transform: scale(1.06);
+    filter: blur(0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Heart pulse */
+@keyframes loveAnswerHeart {
+  0%, 100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.18);
+  }
+}
+
+/* =========================================================
+   PHONE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+  .theme-love .love-answer-crystal {
+    width: 82vw !important;
+    max-width: 430px !important;
+    margin-top: 8px !important;
+  }
+
+  .theme-love .love-answer-crystal .love-answer-overlay {
+    width: 70% !important;
+    height: 45% !important;
+  }
+
+  .theme-love .love-answer-crystal .love-answer-text {
+    font-size: 18px !important;
+    line-height: 1.1 !important;
+    letter-spacing: .8px !important;
+  }
+
+}
+
+@media (max-width: 390px) {
+
+  .theme-love .love-answer-crystal {
+    width: 88vw !important;
+  }
+
+  .theme-love .love-answer-crystal .love-answer-text {
+    font-size: 16px !important;
+  }
+
+}
