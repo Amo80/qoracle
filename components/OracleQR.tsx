@@ -185,134 +185,145 @@ export default function OracleQR({
           </section>
         )}
 
-        {/* =================================================
-            PAGE 2 — MAGIC / REVEAL
-           ================================================= */}
+   {/* =================================================
+    PAGE 2 — MAGIC / REVEAL
+   ================================================= */}
 
-        {lovePage === 2 && (
-          <section className="love-stage love-stage-two">
+{lovePage === 2 && (
+  <section className="love-stage love-stage-two">
 
-            <p className="eyebrow love-eyebrow">
-              QoRacle • LOVE
-            </p>
+    <p className="eyebrow love-eyebrow">
+      QoRacle • LOVE
+    </p>
 
-            <h1 className="love-title">
-              THE ORACLE <span>IS LISTENING</span>
-            </h1>
+    <h1 className="love-title">
+      THE ORACLE <span>IS LISTENING</span>
+    </h1>
 
-            <p className="love-subtitle">
-              Your question has been received...
-            </p>
+    <p className="love-subtitle">
+      Your question has been received...
+    </p>
 
-            <div className="love-crystal love-crystal-revealing">
+    <div className="love-crystal-page">
 
-              <div className="love-energy-ring ring-one" />
-              <div className="love-energy-ring ring-two" />
-              <div className="love-energy-ring ring-three" />
+      <div className="love-magic-glow" />
 
-              <div className="love-crystal-glow" />
+      <div className="love-magic-hearts" aria-hidden="true">
+        <span>♥</span>
+        <span>♥</span>
+        <span>♥</span>
+        <span>♥</span>
+        <span>♥</span>
+        <span>♥</span>
+      </div>
 
-              <div className="love-crystal-inner">
+      <img
+        src="/themes/love-crystal-ball.png"
+        alt="Love Oracle crystal ball revealing an answer"
+        className="love-crystal-ball-image"
+      />
 
-                <div className="love-crystal-heart love-heart-pulsing">
-                  ♥
-                </div>
+    </div>
 
-                <div className="love-magic-sparkles">
-                  ✦ ✧ ✦
-                </div>
+    <div className="love-reveal-message">
 
-              </div>
+      <div className="love-reveal-heart">
+        ♥
+      </div>
 
-            </div>
+      <h2>
+        Revealing your answer...
+      </h2>
 
-            <div className="love-reveal-message">
-              <div className="love-reveal-heart">
-                ♥
-              </div>
+      <p>
+        Trust the magic.
+      </p>
 
-              <h2>
-                Revealing your answer...
-              </h2>
+    </div>
 
-              <p>
-                Trust the magic.
-              </p>
-            </div>
+    <div className="love-loading-dots">
+      <span />
+      <span />
+      <span />
+    </div>
 
-            <div className="love-loading-dots">
-              <span />
-              <span />
-              <span />
-            </div>
+  </section>
+)}
 
-          </section>
-        )}
+{/* =================================================
+    PAGE 3 — ANSWER
+   ================================================= */}
 
-        {/* =================================================
-            PAGE 3 — ANSWER
-           ================================================= */}
+{lovePage === 3 && (
+  <section className="love-stage love-stage-three">
 
-        {lovePage === 3 && (
-          <section className="love-stage love-stage-three">
+    <p className="eyebrow love-eyebrow">
+      QoRacle • LOVE
+    </p>
 
-            <p className="eyebrow love-eyebrow">
-              QoRacle • LOVE
-            </p>
+    <h1 className="love-title">
+      YOUR LOVE <span>ANSWER</span>
+    </h1>
 
-            <h1 className="love-title">
-              YOUR LOVE <span>ANSWER</span>
-            </h1>
+    <div className="love-crystal-page love-crystal-answer-page">
 
-            <div className="love-crystal love-crystal-answer">
+      <img
+        src="/themes/love-crystal-ball.png"
+        alt="Love Oracle crystal ball revealing an answer"
+        className="love-crystal-ball-image"
+      />
 
-              <div className="love-answer-heart">
-                ♥
-              </div>
+      <div className="love-answer-overlay">
 
-              <div className="love-answer-text">
-                {answer}
-              </div>
+        <div className="love-answer-heart">
+          ♥
+        </div>
 
-              <div className="love-answer-decoration">
-                ── ♥ ──
-              </div>
+        <div className="love-answer-text">
+          {answer}
+        </div>
 
-            </div>
+        <div className="love-answer-decoration">
+          ── ♥ ──
+        </div>
 
-            <div className="love-answer-card">
+      </div>
 
-              <span>
-                THE LOVE ORACLE SAYS
-              </span>
+    </div>
 
-              <strong>
-                {answer}
-              </strong>
+    <div className="love-answer-card">
 
-            </div>
+      <span>
+        THE LOVE ORACLE SAYS
+      </span>
 
-            <button
-              className="primary love-button love-again-button"
-              onClick={askAgain}
-            >
-              ♥ ASK ANOTHER QUESTION ♥
-            </button>
+      <strong>
+        {answer}
+      </strong>
 
-            <p className="love-closing">
-              Ask with an open heart.
-              <br />
-              Trust the answer.
-            </p>
+    </div>
 
-            <p className="small">
-              QR: {code} • For entertainment only.
-            </p>
+    <button
+      className="primary love-button love-again-button"
+      onClick={askAgain}
+    >
+      ♥ ASK ANOTHER QUESTION ♥
+    </button>
 
-          </section>
-        )}
+    <p className="love-closing">
+      Ask with an open heart.
+      <br />
+      Trust the answer.
+    </p>
 
-      </main>
+    <p className="small">
+      QR: {code} • For entertainment only.
+    </p>
+
+  </section>
+)}
+
+  </main>
     );
   }
 

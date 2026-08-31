@@ -1259,3 +1259,406 @@ h1 span { color: var(--accent); }
     font-size: 14px;
   }
 }
+/* =========================================================
+   LOVE ORACLE — FINAL MOBILE COMPOSITION
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+  .theme-love .love-stage {
+    padding-top: 20px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    padding-bottom: 90px !important;
+  }
+
+  .theme-love .love-title {
+    font-size: 36px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .theme-love .love-subtitle {
+    font-size: 15px !important;
+    line-height: 1.45 !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* Crystal ball */
+  .theme-love .love-crystal-image {
+    width: 52vw !important;
+    max-width: 220px !important;
+    margin: 18px auto 8px !important;
+  }
+
+  .theme-love .love-crystal-ball-image {
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  /* Instructions */
+  .theme-love .love-instruction {
+    font-size: 15px !important;
+    line-height: 1.35 !important;
+    margin: 8px auto 14px !important;
+    max-width: 320px !important;
+  }
+
+  /* Question */
+  .theme-love .love-question-box {
+    width: 100% !important;
+    max-width: 340px !important;
+    margin: 0 auto !important;
+  }
+
+  .theme-love .love-question-box input {
+    width: 100% !important;
+    min-height: 48px !important;
+    font-size: 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Reveal button */
+  .theme-love .love-button {
+    width: 100% !important;
+    max-width: 340px !important;
+    min-height: 48px !important;
+    font-size: 13px !important;
+    margin-top: 8px !important;
+  }
+}
+/* =========================================================
+   LOVE ORACLE — PAGE 2 & PAGE 3 CRYSTAL BALLS
+   ========================================================= */
+
+/* ---------- PAGE 2: REVEAL ---------- */
+
+.theme-love .love-reveal-crystal {
+  position: relative;
+  width: min(58vw, 260px);
+  margin: 18px auto 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-love .love-reveal-crystal-image {
+  position: relative;
+  z-index: 3;
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  animation: loveBallFloat 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 22px rgba(255, 70, 170, .65));
+}
+
+/* Magical rings around the ball */
+
+.theme-love .love-energy-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border: 1px solid rgba(255, 150, 220, .65);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.theme-love .ring-one {
+  width: 108%;
+  height: 108%;
+  animation: loveRingPulse 2s ease-in-out infinite;
+}
+
+.theme-love .ring-two {
+  width: 122%;
+  height: 122%;
+  animation: loveRingPulse 2s ease-in-out infinite .45s;
+}
+
+.theme-love .ring-three {
+  width: 138%;
+  height: 138%;
+  animation: loveRingPulse 2s ease-in-out infinite .9s;
+}
+
+.theme-love .love-floating-hearts {
+  position: absolute;
+  inset: -15%;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.theme-love .love-floating-hearts span {
+  position: absolute;
+  font-size: 15px;
+  opacity: 0;
+  animation: loveFloatingHeart 2.8s ease-in-out infinite;
+}
+
+.theme-love .love-floating-hearts span:nth-child(1) {
+  left: 10%;
+  top: 55%;
+  animation-delay: 0s;
+}
+
+.theme-love .love-floating-hearts span:nth-child(2) {
+  left: 25%;
+  top: 75%;
+  animation-delay: .5s;
+}
+
+.theme-love .love-floating-hearts span:nth-child(3) {
+  left: 75%;
+  top: 65%;
+  animation-delay: 1s;
+}
+
+.theme-love .love-floating-hearts span:nth-child(4) {
+  left: 88%;
+  top: 45%;
+  animation-delay: 1.5s;
+}
+
+.theme-love .love-floating-hearts span:nth-child(5) {
+  left: 65%;
+  top: 20%;
+  animation-delay: 2s;
+}
+
+.theme-love .love-floating-hearts span:nth-child(6) {
+  left: 35%;
+  top: 15%;
+  animation-delay: 2.4s;
+}
+
+.theme-love .love-reveal-message {
+  text-align: center;
+  margin: 12px auto 0;
+}
+
+.theme-love .love-reveal-heart {
+  font-size: 28px;
+  animation: loveHeartBeat 1s ease-in-out infinite;
+}
+
+.theme-love .love-reveal-message h2 {
+  font-size: 21px;
+  margin: 5px 0;
+}
+
+.theme-love .love-reveal-message p {
+  font-size: 15px;
+  margin: 0;
+}
+
+.theme-love .love-loading-dots {
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 14px;
+}
+
+.theme-love .love-loading-dots span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: loveDotPulse 1s ease-in-out infinite;
+}
+
+.theme-love .love-loading-dots span:nth-child(2) {
+  animation-delay: .2s;
+}
+
+.theme-love .love-loading-dots span:nth-child(3) {
+  animation-delay: .4s;
+}
+
+
+/* ---------- PAGE 3: ANSWER ---------- */
+
+.theme-love .love-answer-crystal {
+  position: relative;
+  width: min(58vw, 260px);
+  margin: 12px auto 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-love .love-answer-crystal-image {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 24px rgba(255, 70, 170, .75));
+}
+
+.theme-love .love-answer-overlay {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 48%;
+  width: 62%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.theme-love .love-answer-overlay .love-answer-heart {
+  font-size: 24px;
+  line-height: 1;
+  margin-bottom: 8px;
+  animation: loveHeartBeat 1.4s ease-in-out infinite;
+}
+
+.theme-love .love-answer-overlay .love-answer-text {
+  font-size: clamp(15px, 4vw, 22px);
+  line-height: 1.15;
+  font-weight: 800;
+  text-transform: uppercase;
+  text-shadow:
+    0 0 8px rgba(255, 255, 255, .9),
+    0 0 18px rgba(255, 70, 170, .9);
+}
+
+.theme-love .love-answer-decoration {
+  margin-top: 8px;
+  font-size: 13px;
+  opacity: .9;
+}
+
+.theme-love .love-answer-card {
+  width: min(88vw, 360px);
+  margin: 12px auto;
+  padding: 18px 16px;
+  box-sizing: border-box;
+  text-align: center;
+  border-radius: 22px;
+  background: rgba(75, 5, 45, .72);
+  border: 1px solid rgba(255, 160, 220, .55);
+  box-shadow: 0 0 25px rgba(255, 50, 170, .25);
+}
+
+.theme-love .love-answer-card span {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 4px;
+  margin-bottom: 8px;
+}
+
+.theme-love .love-answer-card strong {
+  display: block;
+  font-size: clamp(23px, 6vw, 34px);
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.theme-love .love-again-button {
+  width: min(88vw, 360px) !important;
+  margin: 10px auto !important;
+}
+
+
+/* ---------- ANIMATIONS ---------- */
+
+@keyframes loveBallFloat {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    transform: translateY(-7px) scale(1.015);
+  }
+}
+
+@keyframes loveRingPulse {
+  0%, 100% {
+    opacity: .15;
+    transform: translate(-50%, -50%) scale(.92);
+  }
+
+  50% {
+    opacity: .75;
+    transform: translate(-50%, -50%) scale(1.04);
+  }
+}
+
+@keyframes loveFloatingHeart {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(.7);
+  }
+
+  25% {
+    opacity: .8;
+  }
+
+  75% {
+    opacity: .6;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-45px) scale(1.15);
+  }
+}
+
+@keyframes loveHeartBeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+@keyframes loveDotPulse {
+  0%, 100% {
+    opacity: .25;
+    transform: scale(.75);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+
+/* ---------- PHONE ---------- */
+
+@media (max-width: 600px) {
+
+  .theme-love .love-reveal-crystal,
+  .theme-love .love-answer-crystal {
+    width: 56vw;
+    max-width: 235px;
+  }
+
+  .theme-love .love-answer-card {
+    margin-top: 10px;
+    padding: 16px 14px;
+  }
+
+  .theme-love .love-answer-card strong {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 390px) {
+
+  .theme-love .love-reveal-crystal,
+  .theme-love .love-answer-crystal {
+    width: 53vw;
+    max-width: 210px;
+  }
+
+  .theme-love .love-answer-card {
+    width: 90vw;
+  }
+}
