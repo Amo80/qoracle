@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+
 
 const byTheme: Record<string, string[]> = {
   classic: [
@@ -56,16 +57,30 @@ export default function OracleQR({
   const [busy, setBusy] = useState(false);
   const [question, setQuestion] = useState("");
   const [lovePage, setLovePage] = useState<1 | 2 | 3>(1);
+  const loveMusicRef = useRef<HTMLAudioElement | null>(null);
 
-  async function ask() {
-    if (!question.trim() || busy) return;
+ async function ask() {
+  if (!question.trim() || busy) return;
 
-    setBusy(true);
-    setAnswer("");
+  setBusy(true);
+  setAnswer("");
 
-    if (theme === "love") {
-      setLovePage(2);
+  if (theme === "love") {
+    setLovePage(2);
+
+    // Start Love Oracle music
+    if (loveMusicRef.current) {
+      loveMusicRef.current.currentTime = 0;
+      loveMusicRef.current.volume = 0.45;
+
+      try {
+        await loveMusicRef.current.play();
+      } catch (error) {
+        console.log("Love Oracle music could not autoplay:", error);
+      }
     }
+  }
+
 
     await new Promise((resolve) => setTimeout(resolve, 1800));
 
@@ -97,6 +112,12 @@ export default function OracleQR({
   if (theme === "love") {
     return (
       <main className="oracle-page theme-love">
+<audio
+  ref={loveMusicRef}
+  src="/themes/qoracle-love-theme.wav"
+  preload="auto"
+  loop
+/>
 
         {/* Floating hearts */}
         <div className="love-hearts" aria-hidden="true">
