@@ -300,11 +300,13 @@ export default function OracleQR({
           ♥
         </div>
 
-        <div className="love-answer-text">
-          {answer}
-        </div>
+         <div className="love-answer-text">
+  <span className="love-answer-text-glow">
+    {answer}
+  </span>
+</div>
 
-        <div className="love-answer-decoration">
+       <div className="love-answer-decoration">
           ── ♥ ──
         </div>
 
