@@ -1326,11 +1326,15 @@ h1 span { color: var(--accent); }
     margin-top: 8px !important;
   }
 }
+
 /* =========================================================
-   LOVE ORACLE — PAGE 2 & PAGE 3 CRYSTAL BALLS
+   QoRacle LOVE — PAGE 2 & PAGE 3
+   CLEAN FINAL VERSION
    ========================================================= */
 
-/* ---------- PAGE 2: REVEAL ---------- */
+/* =========================================================
+   PAGE 2 — THE ORACLE IS LISTENING
+   ========================================================= */
 
 .theme-love .love-reveal-crystal {
   position: relative;
@@ -1348,19 +1352,29 @@ h1 span { color: var(--accent); }
   width: 100%;
   height: auto;
   object-fit: contain;
+
   animation: loveBallFloat 3s ease-in-out infinite;
-  filter: drop-shadow(0 0 22px rgba(255, 70, 170, .65));
+
+  filter:
+    drop-shadow(0 0 12px rgba(255, 70, 170, .55))
+    drop-shadow(0 0 28px rgba(255, 40, 150, .35));
 }
 
-/* Magical rings around the ball */
+
+/* =========================================================
+   PAGE 2 — MAGIC RINGS
+   ========================================================= */
 
 .theme-love .love-energy-ring {
   position: absolute;
   left: 50%;
   top: 50%;
+
   border: 1px solid rgba(255, 150, 220, .65);
   border-radius: 50%;
+
   transform: translate(-50%, -50%);
+
   pointer-events: none;
 }
 
@@ -1382,6 +1396,11 @@ h1 span { color: var(--accent); }
   animation: loveRingPulse 2s ease-in-out infinite .9s;
 }
 
+
+/* =========================================================
+   PAGE 2 — FLOATING HEARTS
+   ========================================================= */
+
 .theme-love .love-floating-hearts {
   position: absolute;
   inset: -15%;
@@ -1393,7 +1412,9 @@ h1 span { color: var(--accent); }
   position: absolute;
   font-size: 15px;
   opacity: 0;
-  animation: loveFloatingHeart 2.8s ease-in-out infinite;
+
+  animation:
+    loveFloatingHeart 2.8s ease-in-out infinite;
 }
 
 .theme-love .love-floating-hearts span:nth-child(1) {
@@ -1432,6 +1453,11 @@ h1 span { color: var(--accent); }
   animation-delay: 2.4s;
 }
 
+
+/* =========================================================
+   PAGE 2 — LISTENING MESSAGE
+   ========================================================= */
+
 .theme-love .love-reveal-message {
   text-align: center;
   margin: 12px auto 0;
@@ -1464,6 +1490,7 @@ h1 span { color: var(--accent); }
   height: 7px;
   border-radius: 50%;
   background: currentColor;
+
   animation: loveDotPulse 1s ease-in-out infinite;
 }
 
@@ -1476,96 +1503,268 @@ h1 span { color: var(--accent); }
 }
 
 
-/* ---------- PAGE 3: ANSWER ---------- */
+/* =========================================================
+   PAGE 3 — ANSWER CRYSTAL
+   ========================================================= */
+
+/*
+   IMPORTANT:
+   The crystal image itself stays untouched.
+   The answer is positioned independently on top of it.
+*/
 
 .theme-love .love-answer-crystal {
   position: relative;
-  width: min(58vw, 260px);
-  margin: 12px auto 8px;
+
+  /* Keep the current ball sizing */
+  width: min(82vw, 430px);
+
+  margin: 12px auto 10px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
+  overflow: visible;
 }
+
+
+/* =========================================================
+   PAGE 3 — CRYSTAL IMAGE
+   ========================================================= */
 
 .theme-love .love-answer-crystal-image {
   position: relative;
+
   z-index: 1;
+
   display: block;
+
   width: 100%;
   height: auto;
+
+  margin: 0 auto;
+
   object-fit: contain;
-  filter: drop-shadow(0 0 24px rgba(255, 70, 170, .75));
+
+  filter:
+    drop-shadow(0 0 14px rgba(255, 70, 170, .65))
+    drop-shadow(0 0 32px rgba(255, 40, 150, .35));
 }
 
-.theme-love .love-answer-overlay {
+
+/* =========================================================
+   PAGE 3 — ANSWER OVERLAY
+   ========================================================= */
+
+/*
+   This is the important fix.
+
+   The overlay is centered against the ENTIRE crystal image.
+   We then move the text slightly downward so it sits naturally
+   in the glass instead of floating near the top.
+*/
+
+.theme-love .love-answer-crystal .love-answer-overlay {
   position: absolute;
-  z-index: 4;
+
   left: 50%;
-  top: 48%;
-  width: 62%;
+  top: 52%;
+
+  width: 52%;
+
   transform: translate(-50%, -50%);
+
+  z-index: 10;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
   text-align: center;
+
   pointer-events: none;
+
+  padding: 0;
+
+  box-sizing: border-box;
 }
 
-.theme-love .love-answer-overlay .love-answer-heart {
-  font-size: 24px;
+
+/* =========================================================
+   PAGE 3 — SMALL HEART
+   ========================================================= */
+
+.theme-love .love-answer-crystal .love-answer-heart {
+  flex-shrink: 0;
+
+  font-size: 25px;
+
   line-height: 1;
-  margin-bottom: 8px;
-  animation: loveHeartBeat 1.4s ease-in-out infinite;
-}
 
-.theme-love .love-answer-overlay .love-answer-text {
-  font-size: clamp(15px, 4vw, 22px);
-  line-height: 1.15;
-  font-weight: 800;
-  text-transform: uppercase;
+  margin: 0 0 5px;
+
+  color: #ffffff;
+
   text-shadow:
-    0 0 8px rgba(255, 255, 255, .9),
-    0 0 18px rgba(255, 70, 170, .9);
+    0 0 5px #ffffff,
+    0 0 12px #ffb6dc,
+    0 0 24px #ff4fa3,
+    0 0 38px #ff238e;
+
+  animation: loveAnswerHeart 1.6s ease-in-out infinite;
 }
 
-.theme-love .love-answer-decoration {
-  margin-top: 8px;
-  font-size: 13px;
-  opacity: .9;
+
+/* =========================================================
+   PAGE 3 — THE ACTUAL ANSWER
+   ========================================================= */
+
+.theme-love .love-answer-crystal .love-answer-text {
+
+  width: 100%;
+  max-width: none;
+
+  margin: 0;
+
+  padding: 0;
+
+  box-sizing: border-box;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  /*
+     Smaller than before so multi-word answers remain
+     inside the glass instead of spreading outside it.
+  */
+  font-size: clamp(14px, 3.8vw, 20px);
+
+  line-height: 1.08;
+
+  font-weight: 900;
+
+  letter-spacing: .5px;
+
+  text-align: center;
+
+  text-transform: uppercase;
+
+  color: #ffffff;
+
+  white-space: normal;
+
+  text-shadow:
+    0 1px 3px rgba(40, 0, 20, .95),
+    0 0 5px rgba(255, 255, 255, .95),
+    0 0 12px rgba(255, 100, 190, .95),
+    0 0 24px rgba(255, 30, 150, .85);
+
+  animation:
+    loveAnswerRevealFinal 1.2s ease-out both;
 }
+
+
+/* =========================================================
+   PAGE 3 — DECORATIVE HEARTS
+   ========================================================= */
+
+.theme-love .love-answer-crystal .love-answer-decoration {
+
+  margin: 5px 0 0;
+
+  font-size: 12px;
+
+  line-height: 1;
+
+  letter-spacing: 3px;
+
+  color: #ffffff;
+
+  text-shadow:
+    0 0 6px #ffffff,
+    0 0 14px #ff4fa3;
+
+}
+
+
+/* =========================================================
+   PAGE 3 — ANSWER CARD
+   ========================================================= */
 
 .theme-love .love-answer-card {
+
   width: min(88vw, 360px);
+
   margin: 12px auto;
+
   padding: 18px 16px;
+
   box-sizing: border-box;
+
   text-align: center;
+
   border-radius: 22px;
-  background: rgba(75, 5, 45, .72);
-  border: 1px solid rgba(255, 160, 220, .55);
-  box-shadow: 0 0 25px rgba(255, 50, 170, .25);
+
+  background:
+    rgba(75, 5, 45, .78);
+
+  border:
+    1px solid rgba(255, 160, 220, .55);
+
+  box-shadow:
+    0 0 25px rgba(255, 50, 170, .25);
 }
 
 .theme-love .love-answer-card span {
+
   display: block;
+
   font-size: 11px;
+
   letter-spacing: 4px;
+
   margin-bottom: 8px;
 }
 
 .theme-love .love-answer-card strong {
+
   display: block;
+
   font-size: clamp(23px, 6vw, 34px);
+
   line-height: 1.1;
+
   text-transform: uppercase;
+
+  color: white;
 }
 
+
+/* =========================================================
+   PAGE 3 — AGAIN BUTTON
+   ========================================================= */
+
 .theme-love .love-again-button {
+
   width: min(88vw, 360px) !important;
+
   margin: 10px auto !important;
 }
 
 
-/* ---------- ANIMATIONS ---------- */
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
 
 @keyframes loveBallFloat {
+
   0%, 100% {
     transform: translateY(0) scale(1);
   }
@@ -1575,22 +1774,32 @@ h1 span { color: var(--accent); }
   }
 }
 
+
 @keyframes loveRingPulse {
+
   0%, 100% {
     opacity: .15;
-    transform: translate(-50%, -50%) scale(.92);
+    transform:
+      translate(-50%, -50%)
+      scale(.92);
   }
 
   50% {
     opacity: .75;
-    transform: translate(-50%, -50%) scale(1.04);
+    transform:
+      translate(-50%, -50%)
+      scale(1.04);
   }
 }
 
+
 @keyframes loveFloatingHeart {
+
   0% {
     opacity: 0;
-    transform: translateY(18px) scale(.7);
+    transform:
+      translateY(18px)
+      scale(.7);
   }
 
   25% {
@@ -1603,11 +1812,15 @@ h1 span { color: var(--accent); }
 
   100% {
     opacity: 0;
-    transform: translateY(-45px) scale(1.15);
+    transform:
+      translateY(-45px)
+      scale(1.15);
   }
 }
 
+
 @keyframes loveHeartBeat {
+
   0%, 100% {
     transform: scale(1);
   }
@@ -1617,7 +1830,9 @@ h1 span { color: var(--accent); }
   }
 }
 
+
 @keyframes loveDotPulse {
+
   0%, 100% {
     opacity: .25;
     transform: scale(.75);
@@ -1630,551 +1845,8 @@ h1 span { color: var(--accent); }
 }
 
 
-/* ---------- PHONE ---------- */
-
-@media (max-width: 600px) {
-
-  .theme-love .love-reveal-crystal,
-  .theme-love .love-answer-crystal {
-    width: 56vw;
-    max-width: 235px;
-  }
-
-  .theme-love .love-answer-card {
-    margin-top: 10px;
-    padding: 16px 14px;
-  }
-
-  .theme-love .love-answer-card strong {
-    font-size: 24px;
-  }
-}
-
-@media (max-width: 390px) {
-
-  .theme-love .love-reveal-crystal,
-  .theme-love .love-answer-crystal {
-    width: 53vw;
-    max-width: 210px;
-  }
-
-  .theme-love .love-answer-card {
-    width: 90vw;
-  }
-}
-/* =========================================================
-   LOVE ORACLE — PAGE 2 & 3 CRYSTAL BALL SIZING
-   ========================================================= */
-
-.theme-love .love-crystal-page {
-  width: 220px !important;
-  max-width: 58vw !important;
-  height: auto !important;
-  margin: 12px auto 12px !important;
-  position: relative !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  overflow: visible !important;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-.theme-love .love-crystal-page .love-crystal-ball-image {
-  width: 100% !important;
-  max-width: 100% !important;
-  height: auto !important;
-  display: block !important;
-  object-fit: contain !important;
-}
-
-/* Keep Page 2 effects around the smaller ball */
-.theme-love .love-magic-glow {
-  position: absolute !important;
-  inset: 8% !important;
-  border-radius: 50% !important;
-  pointer-events: none !important;
-  z-index: 0 !important;
-}
-
-.theme-love .love-crystal-page .love-crystal-ball-image {
-  position: relative !important;
-  z-index: 2 !important;
-}
-
-/* Page 3 answer sits over the crystal */
-.theme-love .love-crystal-answer-page {
-  position: relative !important;
-}
-
-.theme-love .love-answer-overlay {
-  position: absolute !important;
-  inset: 0 !important;
-  z-index: 3 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  text-align: center !important;
-  pointer-events: none !important;
-}
-
-.theme-love .love-answer-heart {
-  font-size: 28px !important;
-  margin-bottom: 8px !important;
-}
-
-.theme-love .love-answer-text {
-  max-width: 145px !important;
-  font-size: 17px !important;
-  line-height: 1.15 !important;
-  font-weight: 800 !important;
-  text-align: center !important;
-  text-transform: uppercase !important;
-}
-
-.theme-love .love-answer-decoration {
-  font-size: 13px !important;
-  margin-top: 8px !important;
-}
-
-/* Phone */
-@media (max-width: 600px) {
-
-  .theme-love .love-crystal-page {
-    width: 220px !important;
-    max-width: 58vw !important;
-    margin-top: 10px !important;
-    margin-bottom: 10px !important;
-  }
-
-}
-
-/* Smaller phones */
-@media (max-width: 390px) {
-
-  .theme-love .love-crystal-page {
-    width: 205px !important;
-    max-width: 56vw !important;
-  }
-
-  .theme-love .love-answer-text {
-    font-size: 15px !important;
-    max-width: 135px !important;
-  }
-
-}
-
-/* =========================================================
-   LOVE ORACLE — FINAL PAGE 2 / PAGE 3 OVERRIDES
-   Keep the existing crystal artwork and animations.
-   ========================================================= */
-
-/* PAGE 2 — reveal ball */
-.theme-love .love-reveal-crystal {
-  position: relative;
-  width: min(58vw, 260px);
-  margin: 18px auto 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.theme-love .love-reveal-crystal-image {
-  position: relative;
-  z-index: 3;
-  display: block;
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-  animation: loveBallFloat 3s ease-in-out infinite;
-  filter: drop-shadow(0 0 22px rgba(255, 70, 170, .65));
-}
-
-.theme-love .love-energy-ring {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  border: 1px solid rgba(255, 150, 220, .65);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-}
-
-.theme-love .ring-one { width: 108%; height: 108%; animation: loveRingPulse 2s ease-in-out infinite; }
-.theme-love .ring-two { width: 122%; height: 122%; animation: loveRingPulse 2s ease-in-out infinite .45s; }
-.theme-love .ring-three { width: 138%; height: 138%; animation: loveRingPulse 2s ease-in-out infinite .9s; }
-
-.theme-love .love-floating-hearts {
-  position: absolute;
-  inset: -15%;
-  z-index: 5;
-  pointer-events: none;
-}
-
-.theme-love .love-floating-hearts span {
-  position: absolute;
-  font-size: 15px;
-  opacity: 0;
-  animation: loveFloatingHeart 2.8s ease-in-out infinite;
-}
-
-.theme-love .love-floating-hearts span:nth-child(1) { left: 10%; top: 55%; animation-delay: 0s; }
-.theme-love .love-floating-hearts span:nth-child(2) { left: 25%; top: 75%; animation-delay: .5s; }
-.theme-love .love-floating-hearts span:nth-child(3) { left: 75%; top: 65%; animation-delay: 1s; }
-.theme-love .love-floating-hearts span:nth-child(4) { left: 88%; top: 45%; animation-delay: 1.5s; }
-.theme-love .love-floating-hearts span:nth-child(5) { left: 65%; top: 20%; animation-delay: 2s; }
-.theme-love .love-floating-hearts span:nth-child(6) { left: 35%; top: 15%; animation-delay: 2.4s; }
-
-.theme-love .love-reveal-message {
-  text-align: center;
-  margin: 12px auto 0;
-}
-
-.theme-love .love-reveal-heart {
-  font-size: 28px;
-  animation: loveHeartBeat 1s ease-in-out infinite;
-}
-
-.theme-love .love-reveal-message h2 { font-size: 21px; margin: 5px 0; }
-.theme-love .love-reveal-message p { font-size: 15px; margin: 0; }
-
-.theme-love .love-loading-dots {
-  display: flex;
-  justify-content: center;
-  gap: 7px;
-  margin-top: 14px;
-}
-
-.theme-love .love-loading-dots span {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: currentColor;
-  animation: loveDotPulse 1s ease-in-out infinite;
-}
-.theme-love .love-loading-dots span:nth-child(2) { animation-delay: .2s; }
-.theme-love .love-loading-dots span:nth-child(3) { animation-delay: .4s; }
-
-/* PAGE 3 — answer ball */
-.theme-love .love-answer-crystal {
-  position: relative;
-  width: min(58vw, 260px);
-  margin: 12px auto 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.theme-love .love-answer-crystal-image {
-  position: relative;
-  z-index: 1;
-  display: block;
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-  filter: drop-shadow(0 0 24px rgba(255, 70, 170, .75));
-}
-
-/* The text is deliberately placed inside the glass, below the large heart. */
-.theme-love .love-answer-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 4;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  pointer-events: none;
-  padding: 58px 22px 0;
-}
-
-.theme-love .love-answer-overlay .love-answer-heart {
-  font-size: 24px;
-  line-height: 1;
-  margin: 0 0 8px;
-  color: #fff;
-  text-shadow:
-    0 0 8px rgba(255,255,255,.95),
-    0 0 18px rgba(255,80,180,.95),
-    0 0 35px rgba(255,40,160,.8);
-  animation: loveHeartBeat 1.4s ease-in-out infinite;
-}
-
-.theme-love .love-crystal-answer-page .love-answer-text,
-.theme-love .love-answer-overlay .love-answer-text {
-  width: min(82%, 180px);
-  max-width: 180px;
-  margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: clamp(15px, 4.5vw, 20px);
-  line-height: 1.08;
-  font-weight: 900;
-  letter-spacing: 1px;
-  text-align: center;
-  color: #fff;
-  text-transform: uppercase;
-  text-shadow:
-    0 1px 3px rgba(0,0,0,.9),
-    0 0 7px rgba(255,255,255,.95),
-    0 0 16px rgba(255,90,180,.95),
-    0 0 28px rgba(255,30,150,.75);
-  animation: love-answer-reveal 1.5s ease-out both;
-}
-
-.theme-love .love-answer-overlay .love-answer-decoration {
-  margin-top: 9px;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 13px;
-  line-height: 1;
-  letter-spacing: 3px;
-  color: #fff;
-  text-shadow: 0 0 8px rgba(255,255,255,.95), 0 0 18px rgba(255,70,170,.85);
-}
-
-/* Answer card below the ball */
-.theme-love .love-answer-card {
-  width: min(88vw, 360px);
-  margin: 12px auto;
-  padding: 18px 16px;
-  box-sizing: border-box;
-  text-align: center;
-  border-radius: 22px;
-  background: rgba(75, 5, 45, .78);
-  border: 1px solid rgba(255, 160, 220, .55);
-  box-shadow: 0 0 25px rgba(255, 50, 170, .25);
-}
-
-.theme-love .love-answer-card span {
-  display: block;
-  font-size: 11px;
-  letter-spacing: 4px;
-  margin-bottom: 8px;
-}
-
-.theme-love .love-answer-card strong {
-  display: block;
-  font-size: clamp(23px, 6vw, 34px);
-  line-height: 1.1;
-  text-transform: uppercase;
-}
-
-.theme-love .love-again-button {
-  width: min(88vw, 360px) !important;
-  margin: 10px auto !important;
-}
-
-/* Page 2/3 animations */
-@keyframes loveBallFloat {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-7px) scale(1.015); }
-}
-
-@keyframes loveRingPulse {
-  0%, 100% { opacity: .15; transform: translate(-50%, -50%) scale(.92); }
-  50% { opacity: .75; transform: translate(-50%, -50%) scale(1.04); }
-}
-
-@keyframes loveFloatingHeart {
-  0% { opacity: 0; transform: translateY(18px) scale(.7); }
-  25% { opacity: .8; }
-  75% { opacity: .6; }
-  100% { opacity: 0; transform: translateY(-45px) scale(1.15); }
-}
-
-@keyframes loveHeartBeat {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-}
-
-@keyframes loveDotPulse {
-  0%, 100% { opacity: .25; transform: scale(.75); }
-  50% { opacity: 1; transform: scale(1.2); }
-}
-
-@keyframes love-answer-reveal {
-  0% { opacity: 0; transform: scale(.75); filter: blur(8px); }
-  60% { opacity: 1; transform: scale(1.08); filter: blur(0); }
-  100% { opacity: 1; transform: scale(1); filter: blur(0); }
-}
-
-/* Responsive: keep the two balls the same size, as requested. */
-@media (max-width: 600px) {
-  .theme-love .love-reveal-crystal,
-  .theme-love .love-answer-crystal {
-    width: 56vw;
-    max-width: 235px;
-  }
-
-  .theme-love .love-answer-overlay {
-    padding: 56px 18px 0;
-  }
-
-  .theme-love .love-answer-overlay .love-answer-text {
-    width: min(84%, 175px);
-    max-width: 175px;
-    font-size: 18px;
-    line-height: 1.08;
-  }
-
-  .theme-love .love-answer-overlay .love-answer-heart {
-    font-size: 22px;
-    margin-bottom: 7px;
-  }
-}
-
-@media (max-width: 390px) {
-  .theme-love .love-reveal-crystal,
-  .theme-love .love-answer-crystal {
-    width: 53vw;
-    max-width: 210px;
-  }
-
-  .theme-love .love-answer-overlay {
-    padding: 52px 14px 0;
-  }
-
-  .theme-love .love-answer-overlay .love-answer-text {
-    width: min(86%, 160px);
-    max-width: 160px;
-    font-size: 16px;
-  }
-}
-
-/* =========================================================
-   QoRacle LOVE — FINAL PAGE 3 ANSWER FIX
-   ========================================================= */
-
-.theme-love .love-answer-crystal {
-  position: relative !important;
-  width: min(82vw, 430px) !important;
-  margin: 12px auto 10px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  overflow: visible !important;
-}
-
-.theme-love .love-answer-crystal-image {
-  position: relative !important;
-  z-index: 1 !important;
-  display: block !important;
-  width: 100% !important;
-  height: auto !important;
-  object-fit: contain !important;
-  margin: 0 auto !important;
-  filter: drop-shadow(0 0 24px rgba(255, 70, 170, .75));
-}
-
-/* Answer belongs INSIDE the crystal ball */
-.theme-love .love-answer-crystal .love-answer-overlay {
-  position: absolute !important;
-  left: 50% !important;
-  top: 50% !important;
-  width: 72% !important;
-  height: 48% !important;
-
-  transform: translate(-50%, -50%) !important;
-
-  z-index: 10 !important;
-
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-
-  text-align: center !important;
-  pointer-events: none !important;
-}
-
-/* Small glowing heart */
-.theme-love .love-answer-crystal .love-answer-heart {
-  font-size: 28px !important;
-  line-height: 1 !important;
-  margin: 0 0 8px !important;
-  color: #fff !important;
-
-  text-shadow:
-    0 0 6px #fff,
-    0 0 14px #ffb6dc,
-    0 0 28px #ff4fa3 !important;
-
-  animation: loveAnswerHeart 1.6s ease-in-out infinite !important;
-}
-
-/* THE ACTUAL ANSWER */
-.theme-love .love-answer-crystal .love-answer-text {
-  width: 100% !important;
-  max-width: 100% !important;
-
-  margin: 0 !important;
-
-  font-family: Arial, Helvetica, sans-serif !important;
-
-  font-size: clamp(15px, 4vw, 21px) !important;
-  line-height: 1.12 !important;
-
-  font-weight: 900 !important;
-  letter-spacing: 1px !important;
-
-  text-align: center !important;
-  text-transform: uppercase !important;
-
-  color: #ffffff !important;
-
-  transform: none !important;
-
-  text-shadow:
-    0 0 4px rgba(255,255,255,.95),
-    0 0 10px rgba(255,130,200,.95),
-    0 0 22px rgba(255,40,150,.9),
-    0 2px 5px rgba(60,0,30,.95) !important;
-
-  animation: loveAnswerRevealFinal 1.2s ease-out both !important;
-}
-
-/* Decorative hearts underneath answer */
-.theme-love .love-answer-crystal .love-answer-decoration {
-  margin: 8px 0 0 !important;
-
-  font-size: 13px !important;
-  line-height: 1 !important;
-  letter-spacing: 3px !important;
-
-  color: #fff !important;
-
-  transform: none !important;
-
-  text-shadow:
-    0 0 7px #fff,
-    0 0 16px #ff4fa3 !important;
-}
-
-/* Answer reveal */
-@keyframes loveAnswerRevealFinal {
-  0% {
-    opacity: 0;
-    transform: scale(.65);
-    filter: blur(7px);
-  }
-
-  60% {
-    opacity: 1;
-    transform: scale(1.06);
-    filter: blur(0);
-  }
-
-  100% {
-    opacity: 1;
-    transform: scale(1);
-    filter: blur(0);
-  }
-}
-
-/* Heart pulse */
 @keyframes loveAnswerHeart {
+
   0%, 100% {
     transform: scale(1);
   }
@@ -2184,39 +1856,165 @@ h1 span { color: var(--accent); }
   }
 }
 
+
+@keyframes loveAnswerRevealFinal {
+
+  0% {
+    opacity: 0;
+
+    transform:
+      scale(.65);
+
+    filter: blur(7px);
+  }
+
+  60% {
+    opacity: 1;
+
+    transform:
+      scale(1.06);
+
+    filter: blur(0);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform:
+      scale(1);
+
+    filter: blur(0);
+  }
+}
+
+
 /* =========================================================
-   PHONE
+   PHONE — PAGE 2
    ========================================================= */
 
 @media (max-width: 600px) {
 
-  .theme-love .love-answer-crystal {
-    width: 82vw !important;
-    max-width: 430px !important;
-    margin-top: 8px !important;
+  .theme-love .love-reveal-crystal {
+
+    width: 56vw;
+
+    max-width: 235px;
+
+    margin:
+      18px auto
+      10px;
   }
+
+
+  /* =======================================================
+     PHONE — PAGE 3
+     ======================================================= */
+
+  .theme-love .love-answer-crystal {
+
+    /*
+       IMPORTANT:
+       Same basic sizing as your current version.
+       We are NOT shrinking the artwork.
+    */
+    width: 82vw;
+
+    max-width: 430px;
+
+    margin:
+      8px auto
+      10px;
+  }
+
+
+  /*
+     CENTER OF CRYSTAL
+  */
 
   .theme-love .love-answer-crystal .love-answer-overlay {
-    width: 70% !important;
-    height: 45% !important;
+
+    left: 50%;
+
+    top: 52%;
+
+    width: 52%;
+
+    transform:
+      translate(-50%, -50%);
   }
+
+
+  /*
+     MOBILE ANSWER LETTERING
+  */
 
   .theme-love .love-answer-crystal .love-answer-text {
-    font-size: 18px !important;
-    line-height: 1.1 !important;
-    letter-spacing: .8px !important;
+
+    font-size: 18px;
+
+    line-height: 1.08;
+
+    letter-spacing: .5px;
   }
 
+
+  .theme-love .love-answer-crystal .love-answer-heart {
+
+    font-size: 22px;
+
+    margin-bottom: 5px;
+  }
+
+
+  .theme-love .love-answer-crystal .love-answer-decoration {
+
+    font-size: 11px;
+
+    margin-top: 5px;
+  }
 }
+
+
+/* =========================================================
+   VERY SMALL PHONES
+   ========================================================= */
 
 @media (max-width: 390px) {
 
-  .theme-love .love-answer-crystal {
-    width: 88vw !important;
+  .theme-love .love-reveal-crystal {
+
+    width: 53vw;
+
+    max-width: 210px;
   }
+
+
+  .theme-love .love-answer-crystal {
+
+    width: 88vw;
+
+    max-width: 430px;
+  }
+
+
+  .theme-love .love-answer-crystal .love-answer-overlay {
+
+    width: 50%;
+
+    top: 52%;
+  }
+
 
   .theme-love .love-answer-crystal .love-answer-text {
-    font-size: 16px !important;
+
+    font-size: 16px;
+
+    line-height: 1.08;
   }
 
+
+  .theme-love .love-answer-crystal .love-answer-heart {
+
+    font-size: 20px;
+  }
 }
