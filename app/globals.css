@@ -1662,3 +1662,345 @@ h1 span { color: var(--accent); }
     width: 90vw;
   }
 }
+/* =========================================================
+   LOVE ORACLE — PAGE 2 & 3 CRYSTAL BALL SIZING
+   ========================================================= */
+
+.theme-love .love-crystal-page {
+  width: 220px !important;
+  max-width: 58vw !important;
+  height: auto !important;
+  margin: 12px auto 12px !important;
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: visible !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.theme-love .love-crystal-page .love-crystal-ball-image {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  display: block !important;
+  object-fit: contain !important;
+}
+
+/* Keep Page 2 effects around the smaller ball */
+.theme-love .love-magic-glow {
+  position: absolute !important;
+  inset: 8% !important;
+  border-radius: 50% !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+}
+
+.theme-love .love-crystal-page .love-crystal-ball-image {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* Page 3 answer sits over the crystal */
+.theme-love .love-crystal-answer-page {
+  position: relative !important;
+}
+
+.theme-love .love-answer-overlay {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 3 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  pointer-events: none !important;
+}
+
+.theme-love .love-answer-heart {
+  font-size: 28px !important;
+  margin-bottom: 8px !important;
+}
+
+.theme-love .love-answer-text {
+  max-width: 145px !important;
+  font-size: 17px !important;
+  line-height: 1.15 !important;
+  font-weight: 800 !important;
+  text-align: center !important;
+  text-transform: uppercase !important;
+}
+
+.theme-love .love-answer-decoration {
+  font-size: 13px !important;
+  margin-top: 8px !important;
+}
+
+/* Phone */
+@media (max-width: 600px) {
+
+  .theme-love .love-crystal-page {
+    width: 220px !important;
+    max-width: 58vw !important;
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+  }
+
+}
+
+/* Smaller phones */
+@media (max-width: 390px) {
+
+  .theme-love .love-crystal-page {
+    width: 205px !important;
+    max-width: 56vw !important;
+  }
+
+  .theme-love .love-answer-text {
+    font-size: 15px !important;
+    max-width: 135px !important;
+  }
+
+}
+/* =========================================================
+   LOVE ORACLE — FINAL CRYSTAL BALL SIZE FIX
+   ========================================================= */
+
+.love-crystal-page {
+  width: 220px !important;
+  max-width: 220px !important;
+  height: auto !important;
+  max-height: none !important;
+  margin: 10px auto !important;
+  padding: 0 !important;
+  position: relative !important;
+  display: block !important;
+  overflow: visible !important;
+  transform: none !important;
+}
+
+.love-crystal-page .love-crystal-ball-image {
+  width: 220px !important;
+  max-width: 220px !important;
+  height: auto !important;
+  max-height: none !important;
+  display: block !important;
+  margin: 0 auto !important;
+  object-fit: contain !important;
+  transform: none !important;
+}
+
+/* Page 2 magic effects stay behind the ball */
+.love-crystal-page .love-magic-glow {
+  position: absolute !important;
+  inset: 10% !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+}
+
+.love-crystal-page .love-magic-hearts {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 3 !important;
+  pointer-events: none !important;
+}
+
+/* Keep Page 3 answer centered inside the smaller ball */
+.love-crystal-answer-page {
+  position: relative !important;
+}
+
+.love-crystal-answer-page .love-answer-overlay {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 5 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  pointer-events: none !important;
+}
+
+.love-crystal-answer-page .love-answer-text {
+  width: 150px !important;
+  max-width: 150px !important;
+  font-size: 16px !important;
+  line-height: 1.15 !important;
+  font-weight: 800 !important;
+  text-align: center !important;
+}
+
+/* Phone sizing */
+@media (max-width: 600px) {
+  .love-crystal-page {
+    width: 220px !important;
+    max-width: 220px !important;
+  }
+
+  .love-crystal-page .love-crystal-ball-image {
+    width: 220px !important;
+    max-width: 220px !important;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 390px) {
+  .love-crystal-page {
+    width: 200px !important;
+    max-width: 200px !important;
+  }
+
+  .love-crystal-page .love-crystal-ball-image {
+    width: 200px !important;
+    max-width: 200px !important;
+  }
+
+  .love-crystal-answer-page .love-answer-text {
+    width: 135px !important;
+    max-width: 135px !important;
+    font-size: 14px !important;
+  }
+}
+/* =========================================================
+   LOVE ORACLE — PAGE 3 ANSWER MAGIC
+   ========================================================= */
+
+.love-crystal-answer-page .love-answer-overlay {
+  justify-content: center !important;
+  padding-top: 35px !important;
+}
+
+.love-crystal-answer-page .love-answer-heart {
+  font-size: 30px !important;
+  line-height: 1 !important;
+  margin-bottom: 18px !important;
+  color: white !important;
+  text-shadow:
+    0 0 8px rgba(255,255,255,.95),
+    0 0 18px rgba(255,80,180,.95),
+    0 0 35px rgba(255,40,160,.8) !important;
+  animation: love-heart-pulse 1.8s ease-in-out infinite !important;
+}
+
+.love-crystal-answer-page .love-answer-text {
+  width: 170px !important;
+  max-width: 170px !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-size: 20px !important;
+  line-height: 1.15 !important;
+  font-weight: 700 !important;
+  letter-spacing: 1.5px !important;
+  text-align: center !important;
+  color: #fff !important;
+  text-transform: uppercase !important;
+  text-shadow:
+    0 0 5px rgba(255,255,255,.95),
+    0 0 12px rgba(255,110,190,.95),
+    0 0 24px rgba(255,30,150,.8) !important;
+  animation: love-answer-reveal 1.5s ease-out both !important;
+}
+
+.love-crystal-answer-page .love-answer-decoration {
+  margin-top: 14px !important;
+  font-size: 15px !important;
+  letter-spacing: 3px !important;
+  color: white !important;
+  text-shadow:
+    0 0 8px rgba(255,255,255,.9),
+    0 0 18px rgba(255,70,170,.8) !important;
+}
+
+@keyframes love-answer-reveal {
+  0% {
+    opacity: 0;
+    transform: scale(.75);
+    filter: blur(8px);
+  }
+
+  60% {
+    opacity: 1;
+    transform: scale(1.08);
+    filter: blur(0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes love-heart-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+/* Short answers look elegant and centered */
+@media (max-width: 600px) {
+  .love-crystal-answer-page .love-answer-text {
+    width: 165px !important;
+    max-width: 165px !important;
+    font-size: 19px !important;
+  }
+}
+
+/* =========================================================
+   LOVE ORACLE — PAGE 3 FINAL ANSWER PLACEMENT
+   ========================================================= */
+
+.love-crystal-answer-page .love-answer-text {
+  width: 190px !important;
+  max-width: 190px !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-size: 21px !important;
+  line-height: 1.18 !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+  text-align: center !important;
+  color: #ffffff !important;
+  text-transform: uppercase !important;
+
+  /* Move the answer below the big heart */
+  transform: translateY(52px) !important;
+
+  text-shadow:
+    0 0 5px rgba(255,255,255,.95),
+    0 0 12px rgba(255,110,190,.95),
+    0 0 25px rgba(255,30,150,.85) !important;
+}
+
+.love-crystal-answer-page .love-answer-decoration {
+  transform: translateY(52px) !important;
+  margin-top: 14px !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-size: 15px !important;
+  letter-spacing: 4px !important;
+  color: #ffffff !important;
+
+  text-shadow:
+    0 0 8px rgba(255,255,255,.95),
+    0 0 18px rgba(255,80,180,.9) !important;
+}
+
+/* Keep the answer readable on smaller phones */
+@media (max-width: 600px) {
+  .love-crystal-answer-page .love-answer-text {
+    width: 185px !important;
+    max-width: 185px !important;
+    font-size: 20px !important;
+    transform: translateY(50px) !important;
+  }
+
+  .love-crystal-answer-page .love-answer-decoration {
+    transform: translateY(50px) !important;
+  }
+}
