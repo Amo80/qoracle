@@ -37,14 +37,24 @@ const byTheme: Record<string, string[]> = {
     "THE ORACLE REFUSES TO ANSWER. 👻",
   ],
 
-  dnd: [
-    "ROLL FOR INITIATIVE. 🎲",
-    "NAT 20. YES.",
-    "CRITICAL FAIL.",
-    "THE DUNGEON AWAITS.",
-    "ASK YOUR DUNGEON MASTER.",
-  ],
-};
+dnd: [
+  "NAT 20. YES. 🎲",
+  "CRITICAL FAIL.",
+  "ROLL FOR INITIATIVE. ⚔️",
+  "THE DUNGEON AWAITS.",
+  "YOUR QUEST BEGINS.",
+  "THE DRAGON SAYS YES. 🐉",
+  "YOU HAVE CHOSEN... POORLY.",
+  "THE DICE HAVE SPOKEN. 🎲",
+  "ADVANTAGE.",
+  "DISADVANTAGE.",
+  "ROLL AGAIN.",
+  "THE FATES ARE UNCERTAIN.",
+  "A GREAT ADVENTURE AWAITS.",
+  "THE DM HAS SPOKEN.",
+  "NOT EVEN A NAT 20 CAN SAVE YOU.",
+],
+  };
 
 export default function OracleQR({
   theme,
@@ -347,6 +357,468 @@ export default function OracleQR({
 )}
 
   </main>
+    );
+  }
+
+  /* =========================================================
+     D&D ORACLE — THREE PAGE EXPERIENCE
+     ========================================================= */
+
+  if (theme === "dnd") {
+    return (
+      <main className="oracle-page theme-dnd">
+
+        {/* Floating dice */}
+        <div className="dnd-floating-dice" aria-hidden="true">
+          <span>20</span>
+          <span>⚔</span>
+          <span>20</span>
+          <span>✦</span>
+          <span>20</span>
+          <span>⚔</span>
+        </div>
+
+        {/* =================================================
+            PAGE 1 — INVITATION
+           ================================================= */}
+
+        {lovePage === 1 && (
+          <section className="dnd-stage dnd-stage-one">
+
+            <p className="eyebrow dnd-eyebrow">
+              QoRacle • D&D
+            </p>
+
+            <h1 className="dnd-title">
+              THE DUNGEON <span>ORACLE</span>
+            </h1>
+
+            <p className="dnd-subtitle">
+              Roll the dice.
+              <br />
+              Ask your fate.
+            </p>
+
+            <div
+              className="dnd-crystal"
+              onClick={ask}
+              role="button"
+              tabIndex={0}
+              aria-label="Ask the D&D Oracle"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  ask();
+                }
+              }}
+            >
+              <img
+                src="/themes/dnd-crystal.png"
+                alt="Magical D&D crystal ball with dragon and twenty-sided die"
+                className="dnd-crystal-image"
+              />
+            </div>
+
+            <p className="dnd-instruction">
+              Tap the crystal ball
+              <br />
+              and ask the Oracle your question...
+            </p>
+
+            <div className="dnd-question-box">
+
+              <input
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                placeholder="Ask the Dungeon Oracle..."
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    ask();
+                  }
+                }}
+              />
+
+              <button
+                className="primary dnd-button"
+                onClick={ask}
+                disabled={!question.trim() || busy}
+              >
+                ⚔ REVEAL MY FATE ⚔
+              </button>
+
+            </div>
+
+            <p className="small">
+              QR: {code} • For entertainment only.
+            </p>
+
+          </section>
+        )}
+
+        {/* =================================================
+            PAGE 2 — ROLLING
+           ================================================= */}
+
+        {lovePage === 2 && (
+          <section className="dnd-stage dnd-stage-two">
+
+            <p className="eyebrow dnd-eyebrow">
+              QoRacle • D&D
+            </p>
+
+            <h1 className="dnd-title">
+              THE ORACLE <span>IS ROLLING</span>
+            </h1>
+
+            <p className="dnd-subtitle">
+              Your fate is being decided...
+            </p>
+
+            <div className="dnd-crystal dnd-crystal-rolling">
+
+              <div className="dnd-magic-glow" />
+
+              <div className="dnd-runes" aria-hidden="true">
+                <span>ᚠ</span>
+                <span>ᚱ</span>
+                <span>ᛟ</span>
+                <span>ᚷ</span>
+                <span>ᛏ</span>
+                <span>ᚨ</span>
+              </div>
+
+              <img
+                src="/themes/dnd-crystal.png"
+                alt="D&D Oracle crystal ball"
+                className="dnd-crystal-image"
+              />
+
+            </div>
+
+            <div className="dnd-reveal-message">
+
+              <div className="dnd-reveal-d20">
+                20
+              </div>
+
+              <h2>
+                Rolling the dice...
+              </h2>
+
+              <p>
+                The fates are deciding.
+              </p>
+
+            </div>
+
+            <div className="dnd-loading-dots">
+              <span />
+              <span />
+              <span />
+            </div>
+
+          </section>
+        )}
+
+        {/* =================================================
+            PAGE 3 — FATE REVEALED
+           ================================================= */}
+
+        {lovePage === 3 && (
+          <section className="dnd-stage dnd-stage-three">
+
+            <p className="eyebrow dnd-eyebrow">
+              QoRacle • D&D
+            </p>
+
+            <h1 className="dnd-title">
+              YOUR FATE <span>IS REVEALED</span>
+            </h1>
+
+            <div className="dnd-crystal dnd-crystal-answer">
+
+              <img
+                src="/themes/dnd-crystal.png"
+                alt="D&D Oracle crystal ball revealing your fate"
+                className="dnd-crystal-image"
+              />
+
+              <div className="dnd-answer-overlay">
+
+                <div className="dnd-answer-d20">
+                  20
+                </div>
+
+                <div className="dnd-answer-text">
+                  {answer}
+                </div>
+
+                <div className="dnd-answer-decoration">
+                  ⚔ ── ✦ ── ⚔
+                </div>
+
+              </div>
+
+            </div>
+
+            <div className="dnd-answer-card">
+
+              <span>
+                THE DUNGEON ORACLE SAYS
+              </span>
+
+              <strong>
+                {answer}
+              </strong>
+
+            </div>
+
+            <button
+              className="primary dnd-button dnd-again-button"
+              onClick={askAgain}
+            >
+              ⚔ ASK ANOTHER QUESTION ⚔
+            </button>
+
+            <p className="dnd-closing">
+              Roll with courage.
+              <br />
+              Trust the dice.
+            </p>
+
+            <p className="small">
+              QR: {code} • For entertainment only.
+            </p>
+
+          </section>
+        )}
+
+      </main>
+    );
+  }
+
+  /* =========================================================
+     D&D ORACLE — THREE PAGE EXPERIENCE
+     ========================================================= */
+
+  if (theme === "dnd") {
+    return (
+      <main className="oracle-page theme-dnd">
+
+        {/* =================================================
+            PAGE 1 — THE DUNGEON ORACLE
+           ================================================= */}
+
+        {lovePage === 1 && (
+          <section className="dnd-stage dnd-stage-one">
+
+            <p className="eyebrow dnd-eyebrow">
+              QoRacle • D&D
+            </p>
+
+            <h1 className="dnd-title">
+              THE DUNGEON <span>ORACLE</span>
+            </h1>
+
+            <p className="dnd-subtitle">
+              Ask your question.
+              <br />
+              Let fate decide.
+            </p>
+
+            <div
+              className="dnd-crystal"
+              onClick={ask}
+              role="button"
+              tabIndex={0}
+              aria-label="Ask the Dungeon Oracle"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  ask();
+                }
+              }}
+            >
+              <img
+                src="/themes/dnd-crystal.png"
+                alt="Fantasy Dungeons and Dragons crystal oracle"
+                className="dnd-crystal-image"
+              />
+            </div>
+
+            <p className="dnd-instruction">
+              Ask your question...
+              <br />
+              and roll the fate of the realm.
+            </p>
+
+            <div className="question dnd-question">
+
+              <input
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                placeholder="Ask your fate a question..."
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    ask();
+                  }
+                }}
+              />
+
+              <button
+                className="primary dnd-button"
+                onClick={ask}
+                disabled={!question.trim() || busy}
+              >
+                ⚔ REVEAL MY FATE ⚔
+              </button>
+
+            </div>
+
+            <p className="small">
+              QR: {code} • For entertainment only.
+            </p>
+
+          </section>
+        )}
+
+        {/* =================================================
+            PAGE 2 — THE FATE AWAKENS
+           ================================================= */}
+
+        {lovePage === 2 && (
+          <section className="dnd-stage dnd-stage-two">
+
+            <p className="eyebrow dnd-eyebrow">
+              QoRacle • D&D
+            </p>
+
+            <h1 className="dnd-title">
+              THE ORACLE <span>AWAKENS</span>
+            </h1>
+
+            <p className="dnd-subtitle">
+              The ancient magic stirs...
+            </p>
+
+            <div className="dnd-crystal dnd-crystal-reveal">
+
+              <div className="dnd-magic-glow" />
+
+              <div className="dnd-magic-runes" aria-hidden="true">
+                <span>ᚱ</span>
+                <span>ᛟ</span>
+                <span>ᚦ</span>
+                <span>ᚨ</span>
+                <span>ᛞ</span>
+                <span>ᛏ</span>
+              </div>
+
+              <img
+                src="/themes/dnd-crystal.png"
+                alt="Fantasy crystal revealing destiny"
+                className="dnd-crystal-image"
+              />
+
+            </div>
+
+            <div className="dnd-reveal-message">
+
+              <div className="dnd-reveal-icon">
+                ⚔
+              </div>
+
+              <h2>
+                The dice are rolling...
+              </h2>
+
+              <p>
+                Fate is being decided.
+              </p>
+
+            </div>
+
+            <div className="dnd-loading-dots">
+              <span />
+              <span />
+              <span />
+            </div>
+
+          </section>
+        )}
+
+        {/* =================================================
+            PAGE 3 — FATE REVEALED
+           ================================================= */}
+
+        {lovePage === 3 && (
+          <section className="dnd-stage dnd-stage-three">
+
+            <p className="eyebrow dnd-eyebrow">
+              QoRacle • D&D
+            </p>
+
+            <h1 className="dnd-title">
+              YOUR FATE <span>IS REVEALED</span>
+            </h1>
+
+            <div className="dnd-crystal dnd-crystal-answer">
+
+              <img
+                src="/themes/dnd-crystal.png"
+                alt="Fantasy crystal revealing your fate"
+                className="dnd-crystal-image"
+              />
+
+              <div className="dnd-answer-overlay">
+
+                <div className="dnd-answer-icon">
+                  ⚔
+                </div>
+
+                <div className="dnd-answer-text">
+                  {answer}
+                </div>
+
+                <div className="dnd-answer-decoration">
+                  ── ◆ ──
+                </div>
+
+              </div>
+
+            </div>
+
+            <div className="dnd-answer-card">
+
+              <span>
+                THE DUNGEON ORACLE SAYS
+              </span>
+
+              <strong>
+                {answer}
+              </strong>
+
+            </div>
+
+            <button
+              className="primary dnd-button dnd-again-button"
+              onClick={askAgain}
+            >
+              ⚔ ASK ANOTHER QUESTION ⚔
+            </button>
+
+            <p className="dnd-closing">
+              Roll with courage.
+              <br />
+              Trust your fate.
+            </p>
+
+            <p className="small">
+              QR: {code} • For entertainment only.
+            </p>
+
+          </section>
+        )}
+
+      </main>
     );
   }
 
