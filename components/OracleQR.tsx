@@ -366,16 +366,20 @@ export default function OracleQR({
 
   if (theme === "dnd") {
     return (
-      <main
-  className="oracle-page theme-dnd"
-  style={{
-    backgroundImage: "url('/themes/dnd-background.png')",
-    backgroundSize: "cover",
-    backgroundPosition: "center top",
-    backgroundRepeat: "no-repeat",
-    backgroundAttachment: "fixed",
-  }}
->
+      <main className="oracle-page theme-dnd">
+        <div
+          aria-hidden="true"
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 0,
+            pointerEvents: "none",
+            backgroundImage: "url('/themes/dnd-background.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center center",
+            backgroundRepeat: "no-repeat",
+          }}
+        />
 
         {/* Floating dice */}
         <div className="dnd-floating-dice" aria-hidden="true">
@@ -421,7 +425,7 @@ export default function OracleQR({
               }}
             >
               <img
-                src="/themes/dnd-crystal-new.png"
+                src="/themes/dnd-crystal.png"
                 alt="Magical D&D crystal ball with dragon and twenty-sided die"
                 className="dnd-crystal-image"
               />
@@ -496,7 +500,7 @@ export default function OracleQR({
               </div>
 
               <img
-                src="/themes/dnd-crystal-new.png"
+                src="/themes/dnd-crystal.png"
                 alt="D&D Oracle crystal ball"
                 className="dnd-crystal-image"
               />
@@ -546,7 +550,7 @@ export default function OracleQR({
             <div className="dnd-crystal dnd-crystal-answer">
 
               <img
-                src="/themes/dnd-crystal-new.png"
+                src="/themes/dnd-crystal.png"
                 alt="D&D Oracle crystal ball revealing your fate"
                 className="dnd-crystal-image"
               />
