@@ -2280,3 +2280,168 @@ h1 span { color: var(--accent); }
     font-size: 19px !important;
   }
 }
+
+/* =========================================================
+   QoRacle LOVE — PAGE 3
+   ACTUAL JSX CLASSES
+   ========================================================= */
+
+/* This is the actual Page 3 crystal container */
+.theme-love .love-crystal-answer-page {
+  position: relative !important;
+  display: block !important;
+
+  width: 94vw !important;
+  max-width: 430px !important;
+
+  margin: 0 auto !important;
+  padding: 0 !important;
+
+  box-sizing: border-box !important;
+
+  overflow: visible !important;
+}
+
+/* Actual crystal image */
+.theme-love .love-crystal-answer-page .love-crystal-ball-image {
+  position: relative !important;
+
+  display: block !important;
+
+  width: 100% !important;
+  height: auto !important;
+
+  margin: 0 auto !important;
+
+  z-index: 1 !important;
+}
+
+/* =========================================================
+   ANSWER INSIDE THE CRYSTAL
+   ========================================================= */
+
+.theme-love .love-crystal-answer-page .love-answer-overlay {
+  position: absolute !important;
+
+  top: 42% !important;
+  left: 50% !important;
+
+  width: 58% !important;
+  max-width: 58% !important;
+
+  transform: translate(-50%, -50%) !important;
+
+  z-index: 10 !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  text-align: center !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  box-sizing: border-box !important;
+
+  pointer-events: none !important;
+}
+
+/* Heart */
+.theme-love .love-crystal-answer-page .love-answer-heart {
+  margin: 0 0 5px !important;
+
+  font-size: 22px !important;
+  line-height: 1 !important;
+
+  color: #fff !important;
+
+  text-shadow:
+    0 0 5px #fff,
+    0 0 12px #ffb6dc,
+    0 0 24px #ff4fa3,
+    0 0 38px #ff238e !important;
+}
+
+/* Answer */
+.theme-love .love-crystal-answer-page .love-answer-text {
+  width: 100% !important;
+  max-width: 100% !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  font-family: Arial, Helvetica, sans-serif !important;
+
+  font-size: 16px !important;
+  font-weight: 900 !important;
+
+  line-height: 1.08 !important;
+
+  text-align: center !important;
+  text-transform: uppercase !important;
+
+  color: #fff !important;
+
+  overflow-wrap: normal !important;
+
+  text-shadow:
+    0 1px 3px rgba(40,0,20,.95),
+    0 0 6px #fff,
+    0 0 14px #ff64be,
+    0 0 25px #ff1e96 !important;
+}
+
+/* Decoration */
+.theme-love .love-crystal-answer-page .love-answer-decoration {
+  margin-top: 5px !important;
+
+  font-size: 10px !important;
+  line-height: 1 !important;
+
+  color: #fff !important;
+
+  text-shadow:
+    0 0 6px #fff,
+    0 0 14px #ff4fa3 !important;
+}
+
+
+/* =========================================================
+   PHONE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+  .theme-love .love-crystal-answer-page {
+    width: 94vw !important;
+    max-width: 430px !important;
+  }
+
+  .theme-love .love-crystal-answer-page .love-answer-overlay {
+    top: 42% !important;
+    left: 50% !important;
+
+    width: 58% !important;
+    max-width: 58% !important;
+
+    transform: translate(-50%, -50%) !important;
+  }
+
+  .theme-love .love-crystal-answer-page .love-answer-heart {
+    font-size: 21px !important;
+    margin-bottom: 4px !important;
+  }
+
+  .theme-love .love-crystal-answer-page .love-answer-text {
+    font-size: 15px !important;
+    line-height: 1.06 !important;
+  }
+
+  .theme-love .love-crystal-answer-page .love-answer-decoration {
+    font-size: 10px !important;
+    margin-top: 4px !important;
+  }
+}
