@@ -366,7 +366,16 @@ export default function OracleQR({
 
   if (theme === "dnd") {
     return (
-      <main className="oracle-page theme-dnd">
+      <main
+  className="oracle-page theme-dnd"
+  style={{
+    backgroundImage: "url('/themes/dnd-background.png')",
+    backgroundSize: "cover",
+    backgroundPosition: "center top",
+    backgroundRepeat: "no-repeat",
+    backgroundAttachment: "fixed",
+  }}
+>
 
         {/* Floating dice */}
         <div className="dnd-floating-dice" aria-hidden="true">
