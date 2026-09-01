@@ -5964,3 +5964,230 @@ h1 span { color: var(--accent); }
     opacity: 0;
   }
 }
+
+/* =========================================================
+   CHAOS ORACLE — VORTEX CRYSTAL
+   ========================================================= */
+
+.theme-chaos .chaos-crystal {
+  position: relative;
+  width: min(520px, 78vw);
+  margin: 20px auto;
+  cursor: pointer;
+  z-index: 2;
+  transition: transform 0.25s ease;
+}
+
+.theme-chaos .chaos-crystal-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+
+  filter:
+    drop-shadow(0 0 15px rgba(170, 40, 255, 0.75))
+    drop-shadow(0 0 35px rgba(255, 40, 220, 0.45));
+
+  transition:
+    filter 0.3s ease,
+    transform 0.3s ease;
+}
+
+.theme-chaos .chaos-crystal:hover .chaos-crystal-image {
+  transform: scale(1.025);
+
+  filter:
+    drop-shadow(0 0 20px rgba(190, 60, 255, 0.95))
+    drop-shadow(0 0 50px rgba(255, 40, 220, 0.7));
+}
+
+/* Stronger energy while rolling */
+
+.theme-chaos .chaos-crystal.shaking .chaos-crystal-image {
+  animation: chaosCrystalPulse 0.45s ease-in-out infinite alternate;
+}
+
+@keyframes chaosCrystalPulse {
+  from {
+    transform: scale(1);
+    filter:
+      drop-shadow(0 0 15px rgba(170, 40, 255, 0.75))
+      drop-shadow(0 0 30px rgba(255, 40, 220, 0.45));
+  }
+
+  to {
+    transform: scale(1.045);
+    filter:
+      drop-shadow(0 0 30px rgba(220, 70, 255, 1))
+      drop-shadow(0 0 70px rgba(255, 40, 220, 0.8));
+  }
+}
+
+/* =========================================================
+   CHAOS ORACLE — MAGICAL LIGHT PULSE
+   ========================================================= */
+
+.theme-chaos .chaos-pulse {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  width: 45%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 3;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  mix-blend-mode: screen;
+}
+
+.theme-chaos .chaos-pulse-core {
+  width: 18%;
+  height: 18%;
+  border-radius: 50%;
+
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(235, 150, 255, 0.98) 18%,
+    rgba(190, 50, 255, 0.8) 45%,
+    rgba(130, 30, 255, 0.35) 68%,
+    transparent 100%
+  );
+
+  box-shadow:
+    0 0 12px rgba(255, 255, 255, 1),
+    0 0 25px rgba(235, 100, 255, 0.95),
+    0 0 50px rgba(170, 40, 255, 0.8),
+    0 0 90px rgba(120, 20, 255, 0.55);
+
+  animation: chaosLightPulse 2.4s ease-in-out infinite;
+}
+
+.theme-chaos .chaos-pulse-ring {
+  position: absolute;
+  width: 65%;
+  height: 65%;
+  border-radius: 50%;
+
+  border: 2px solid rgba(225, 100, 255, 0.5);
+
+  box-shadow:
+    0 0 15px rgba(210, 70, 255, 0.7),
+    inset 0 0 15px rgba(190, 50, 255, 0.35);
+
+  animation: chaosLightRing 2.4s ease-in-out infinite;
+}
+
+@keyframes chaosLightPulse {
+  0%,
+  100% {
+    transform: scale(0.72);
+    opacity: 0.55;
+  }
+
+  50% {
+    transform: scale(1.35);
+    opacity: 1;
+  }
+}
+
+@keyframes chaosLightRing {
+  0%,
+  100% {
+    transform: scale(0.7);
+    opacity: 0.25;
+  }
+
+  50% {
+    transform: scale(1.35);
+    opacity: 0.9;
+  }
+}
+
+/* Stronger pulse while consulting */
+
+.theme-chaos .chaos-crystal.shaking .chaos-pulse-core {
+  animation:
+    chaosLightPulse 0.8s ease-in-out infinite,
+    chaosLightFlash 0.8s ease-in-out infinite;
+}
+
+.theme-chaos .chaos-crystal.shaking .chaos-pulse-ring {
+  animation: chaosLightRing 0.8s ease-in-out infinite;
+}
+
+@keyframes chaosLightFlash {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+
+  50% {
+    filter: brightness(1.8);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-chaos .chaos-pulse-core,
+  .theme-chaos .chaos-pulse-ring {
+    animation: none;
+  }
+}
+
+
+/* =========================================================
+   CHAOS ORACLE — SMOKE + STATIC
+   ========================================================= */
+
+.theme-chaos .chaos-smoke-static {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+
+  background-image: url("/themes/chaos-smoke-static.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  opacity: 0.38;
+
+  animation:
+    chaosSmokeDrift 14s ease-in-out infinite alternate,
+    chaosSmokePulse 5s ease-in-out infinite;
+}
+
+@keyframes chaosSmokeDrift {
+  0% {
+    transform: scale(1) translate3d(-1%, 0, 0);
+  }
+
+  50% {
+    transform: scale(1.04) translate3d(1%, -0.5%, 0);
+  }
+
+  100% {
+    transform: scale(1.08) translate3d(-0.5%, 1%, 0);
+  }
+}
+
+@keyframes chaosSmokePulse {
+  0%,
+  100% {
+    opacity: 0.28;
+  }
+
+  50% {
+    opacity: 0.48;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-chaos .chaos-smoke-static {
+    animation: none;
+    opacity: 0.35;
+  }
+}

@@ -790,6 +790,12 @@ return (
   />
 )}
 
+{theme === "chaos" && (
+  <div
+    className="chaos-smoke-static"
+    aria-hidden="true"
+  />
+)}
 
   
       <p className="eyebrow">
@@ -812,11 +818,17 @@ return (
     }
   }}
 >
-  <img
+   <img
     src="/themes/chaos-crystal-ball.png"
     alt="Chaotic magical crystal ball containing a swirling vortex"
     className="chaos-crystal-image"
   />
+
+  <div className="chaos-pulse" aria-hidden="true">
+    <div className="chaos-pulse-core" />
+    <div className="chaos-pulse-ring" />
+  </div>
+
 </div>
 
       <div className="question">
