@@ -800,20 +800,24 @@ return (
         ASK THE <span>ORACLE</span>
       </h1>
 
-      <div
-        className={`orb ${busy ? "shaking" : ""}`}
-        onClick={ask}
-      >
-        <div className="orb-shine" />
-
-        <div className="window">
-          <div className="triangle">
-            <span>
-              {answer || "?"}
-            </span>
-          </div>
-        </div>
-      </div>
+    <div
+  className={`chaos-crystal ${busy ? "shaking" : ""}`}
+  onClick={ask}
+  role="button"
+  tabIndex={0}
+  aria-label="Ask the Chaos Oracle"
+  onKeyDown={(e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      ask();
+    }
+  }}
+>
+  <img
+    src="/themes/chaos-crystal-ball.png"
+    alt="Chaotic magical crystal ball containing a swirling vortex"
+    className="chaos-crystal-image"
+  />
+</div>
 
       <div className="question">
 
