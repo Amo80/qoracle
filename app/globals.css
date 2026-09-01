@@ -6191,3 +6191,110 @@ h1 span { color: var(--accent); }
     opacity: 0.35;
   }
 }
+
+/* =========================================================
+   CHAOS ORACLE — ANSWER INSIDE CRYSTAL
+   ========================================================= */
+
+.theme-chaos .chaos-crystal-answer {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+
+  width: 55%;
+  transform: translate(-50%, -50%) scale(0.7);
+
+  z-index: 5;
+  pointer-events: none;
+
+  text-align: center;
+
+  color: #ffffff;
+  font-size: clamp(18px, 3.5vw, 34px);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+
+  text-shadow:
+    0 0 5px #ffffff,
+    0 0 12px rgba(235, 130, 255, 1),
+    0 0 25px rgba(190, 50, 255, 0.95),
+    0 0 45px rgba(130, 30, 255, 0.8);
+
+  opacity: 0;
+
+  animation: chaosAnswerReveal 0.9s cubic-bezier(.2,.8,.2,1) forwards;
+}
+
+@keyframes chaosAnswerReveal {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.55);
+    filter: blur(12px);
+  }
+
+  45% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.08);
+    filter: blur(0);
+  }
+
+  70% {
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Magical shimmer after reveal */
+
+.theme-chaos .chaos-crystal-answer::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+
+  width: 120%;
+  height: 120%;
+
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.16) 0%,
+    rgba(210, 80, 255, 0.12) 35%,
+    transparent 70%
+  );
+
+  z-index: -1;
+
+  animation: chaosAnswerGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes chaosAnswerGlow {
+  from {
+    opacity: 0.25;
+    transform: translate(-50%, -50%) scale(0.85);
+  }
+
+  to {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.15);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-chaos .chaos-crystal-answer,
+  .theme-chaos .chaos-crystal-answer::after {
+    animation: none;
+    opacity: 1;
+    filter: none;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}

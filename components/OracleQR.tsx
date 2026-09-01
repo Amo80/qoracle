@@ -824,10 +824,16 @@ return (
     className="chaos-crystal-image"
   />
 
-  <div className="chaos-pulse" aria-hidden="true">
-    <div className="chaos-pulse-core" />
-    <div className="chaos-pulse-ring" />
+ <div className="chaos-pulse" aria-hidden="true">
+  <div className="chaos-pulse-core" />
+  <div className="chaos-pulse-ring" />
+</div>
+
+{answer && !busy && (
+  <div className="chaos-crystal-answer">
+    {answer}
   </div>
+)}
 
 </div>
 
