@@ -40,6 +40,11 @@ export default function Home() {
           <span>Love</span>
         </Link>
 
+        <Link href="/oracle?theme=eclipse">
+          <b>🌗</b>
+          <span>Eclipse</span>
+        </Link>
+
         <Link href="/oracle?theme=dnd">
           <b>🎲</b>
           <span>D&amp;D</span>

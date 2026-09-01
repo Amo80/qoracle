@@ -6373,3 +6373,135 @@ h1 span { color: var(--accent); }
     animation: none;
   }
 }
+
+/* =========================================================
+   QRYSTAL BALL — ECLIPSE THEME
+   LIGHT + DARK
+   ========================================================= */
+
+.theme-eclipse {
+  --bg: #08060d;
+  --panel: rgba(8, 6, 14, 0.82);
+  --text: #fff8e8;
+  --muted: #c8bdd8;
+  --accent: #d8a24a;
+  --accent2: #7c3cff;
+
+  position: relative;
+  isolation: isolate;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255, 183, 65, 0.08) 0%,
+      rgba(255, 183, 65, 0.02) 35%,
+      rgba(90, 35, 150, 0.04) 50%,
+      rgba(80, 30, 150, 0.08) 65%,
+      rgba(40, 10, 80, 0.14) 100%
+    ),
+  url("/themes/eclipse-background.png") center top / 100% auto no-repeat fixed;  
+
+  overflow-x: hidden;
+}
+
+/* Dark atmospheric overlay */
+.theme-eclipse::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+
+  background:
+    radial-gradient(
+      circle at 50% 18%,
+      rgba(255, 190, 70, 0.10),
+      transparent 28%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 190, 80, 0.04),
+      transparent 45%,
+      rgba(100, 40, 180, 0.10)
+    );
+
+  mix-blend-mode: screen;
+}
+
+/* Eclipse typography */
+.theme-eclipse h1 {
+  text-shadow:
+    0 0 12px rgba(255, 205, 100, 0.25),
+    0 0 30px rgba(120, 60, 220, 0.20);
+}
+
+.theme-eclipse h1 span {
+  background:
+    linear-gradient(
+      90deg,
+      #ffe8a3 0%,
+      #ffffff 38%,
+      #c99aff 62%,
+      #8b52ff 100%
+    );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.theme-eclipse .eyebrow {
+  color: #e8c978;
+}
+
+/* Eclipse input */
+.theme-eclipse .question input {
+  background: rgba(5, 4, 10, 0.82);
+  border-color: rgba(218, 170, 70, 0.42);
+  box-shadow:
+    inset 0 0 20px rgba(0, 0, 0, 0.45),
+    0 0 20px rgba(110, 50, 180, 0.12);
+}
+
+.theme-eclipse .question input:focus {
+  border-color: #d8a24a;
+  box-shadow:
+    0 0 0 3px rgba(216, 162, 74, 0.15),
+    0 0 25px rgba(124, 60, 255, 0.22);
+}
+
+/* Eclipse primary button */
+.theme-eclipse .primary {
+  background:
+    linear-gradient(
+      100deg,
+      #a96b19,
+      #e7bd58 35%,
+      #7d42d9 70%,
+      #5121a5
+    );
+
+  box-shadow:
+    0 12px 35px rgba(90, 35, 160, 0.45),
+    0 0 25px rgba(230, 180, 70, 0.18);
+}
+
+/* Eclipse answer panel */
+.theme-eclipse .result {
+  background: rgba(7, 5, 13, 0.88);
+  border-color: rgba(216, 162, 74, 0.45);
+
+  box-shadow:
+    0 15px 50px rgba(0, 0, 0, 0.55),
+    0 0 35px rgba(105, 45, 190, 0.20);
+}
+
+.theme-eclipse .result span {
+  color: #d8b965;
+}
+
+.theme-eclipse .result strong {
+  text-shadow:
+    0 0 12px rgba(255, 220, 130, 0.45),
+    0 0 28px rgba(145, 70, 255, 0.25);
+}

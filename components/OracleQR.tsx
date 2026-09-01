@@ -799,6 +799,218 @@ if (theme === "dnd") {
     </main>
   );
 }
+
+  /* =========================================================
+     ECLIPSE ORACLE — LIGHT + DARK
+     ========================================================= */
+
+  if (theme === "eclipse") {
+    return (
+      <main className="oracle-page theme-eclipse">
+
+        {/* =================================================
+            PAGE 1 — INVITATION
+           ================================================= */}
+
+        {lovePage === 1 && (
+          <section className="eclipse-stage eclipse-stage-one">
+
+            <p className="eyebrow eclipse-eyebrow">
+              QRystal Ball • ECLIPSE
+            </p>
+
+            <h1 className="eclipse-title">
+              ECLIPSE <span>ORACLE</span>
+            </h1>
+
+            <p className="eclipse-subtitle">
+              Light and dark.
+              <br />
+              Two forces. One truth.
+            </p>
+
+            {/* ECLIPSE CRYSTAL */}
+
+            <button
+              className="eclipse-crystal"
+              onClick={ask}
+              aria-label="Ask the Eclipse Oracle"
+              disabled={busy}
+            >
+              <div className="eclipse-light-side" />
+              <div className="eclipse-dark-side" />
+              <div className="eclipse-core">
+                <span>◐</span>
+              </div>
+
+              <div className="eclipse-crystal-glow" />
+            </button>
+
+            <p className="eclipse-instruction">
+              Ask the Eclipse Oracle...
+              <br />
+              and discover which force answers.
+            </p>
+
+            {/* QUESTION */}
+
+            <div className="eclipse-question-box">
+
+              <input
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    ask();
+                  }
+                }}
+                placeholder="Ask the Eclipse Oracle..."
+                maxLength={180}
+              />
+
+              <button
+                className="primary eclipse-button"
+                onClick={ask}
+                disabled={!question.trim() || busy}
+              >
+                {busy ? "THE ORACLE IS LISTENING..." : "REVEAL MY FATE"}
+              </button>
+
+            </div>
+
+            <p className="eclipse-closing">
+              ☀ LIGHT &nbsp; • &nbsp; DARK ☾
+            </p>
+
+            <p className="small">
+              QR: {code} • For entertainment only.
+            </p>
+
+          </section>
+        )}
+
+        {/* =================================================
+            PAGE 2 — AWAKENING
+           ================================================= */}
+
+        {lovePage === 2 && (
+          <section className="eclipse-stage eclipse-stage-two">
+
+            <p className="eyebrow eclipse-eyebrow">
+              QRystal Ball • ECLIPSE
+            </p>
+
+            <h1 className="eclipse-title">
+              THE ORACLE
+              <span>IS AWAKENING</span>
+            </h1>
+
+            <p className="eclipse-subtitle">
+              Light and darkness are deciding your fate...
+            </p>
+
+            <div className="eclipse-crystal eclipse-crystal-awakening">
+
+              <div className="eclipse-light-side" />
+              <div className="eclipse-dark-side" />
+
+              <div className="eclipse-core">
+                <span>◐</span>
+              </div>
+
+              <div className="eclipse-crystal-glow" />
+
+              <div className="eclipse-energy-ring eclipse-energy-ring-one" />
+              <div className="eclipse-energy-ring eclipse-energy-ring-two" />
+
+            </div>
+
+            <div className="eclipse-reveal-message">
+              <h2>
+                Revealing your fate...
+              </h2>
+
+              <p>
+                Which force will speak?
+              </p>
+            </div>
+
+            <div className="eclipse-loading-dots">
+              <span />
+              <span />
+              <span />
+            </div>
+
+          </section>
+        )}
+
+        {/* =================================================
+            PAGE 3 — FATE REVEALED
+           ================================================= */}
+
+        {lovePage === 3 && (
+          <section className="eclipse-stage eclipse-stage-three">
+
+            <p className="eyebrow eclipse-eyebrow">
+              QRystal Ball • ECLIPSE
+            </p>
+
+            <h1 className="eclipse-title">
+              YOUR FATE
+              <span>IS REVEALED</span>
+            </h1>
+
+            <div className="eclipse-crystal eclipse-crystal-answer">
+
+              <div className="eclipse-light-side" />
+              <div className="eclipse-dark-side" />
+
+              <div className="eclipse-core">
+                <span>◐</span>
+              </div>
+
+              <div className="eclipse-crystal-glow" />
+
+              <div className="eclipse-answer-overlay">
+                {answer}
+              </div>
+
+            </div>
+
+            <div className="eclipse-answer-card">
+
+              <span>
+                THE ECLIPSE ORACLE SAYS
+              </span>
+
+              <strong>
+                {answer}
+              </strong>
+
+            </div>
+
+            <button
+              className="primary eclipse-button eclipse-again-button"
+              onClick={askAgain}
+            >
+              ASK ANOTHER QUESTION
+            </button>
+
+            <p className="eclipse-closing">
+              ☀ Light and Dark • One Truth ☾
+            </p>
+
+            <p className="small">
+              QR: {code} • For entertainment only.
+            </p>
+
+          </section>
+        )}
+
+      </main>
+    );
+  }
+
   /* =========================================================
      EXISTING ORACLE EXPERIENCE — OTHER THEMES
      ========================================================= */
