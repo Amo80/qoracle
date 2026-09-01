@@ -783,6 +783,13 @@ return (
         }}
       />
     )}
+{theme === "chaos" && (
+  <div
+    className="chaos-lightning"
+    aria-hidden="true"
+  />
+)}
+
 
   
       <p className="eyebrow">
