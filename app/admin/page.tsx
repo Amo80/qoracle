@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/browser";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-const themes = ["classic", "chaos", "love", "dark", "dnd"];
+const themes = ["classic", "chaos", "love", "eclipse", "dnd"];
 
 type QRCodeRow = {
   code: string;

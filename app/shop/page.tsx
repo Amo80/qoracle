@@ -20,7 +20,7 @@ const products = [
   },
 ];
 
-const themes = ["classic", "chaos", "love", "dark", "dnd"];
+const themes = ["classic", "chaos", "love", "eclipse", "dnd"];
 
 export default function ShopPage() {
   const [selectedTheme, setSelectedTheme] = useState("classic");
