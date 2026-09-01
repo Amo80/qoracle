@@ -66,9 +66,10 @@ export default function OracleQR({
   const [answer, setAnswer] = useState("");
   const [busy, setBusy] = useState(false);
   const [question, setQuestion] = useState("");
-  const [lovePage, setLovePage] = useState<1 | 2 | 3>(1);
-  const loveMusicRef = useRef<HTMLAudioElement | null>(null);
-  const dndMusicRef = useRef<HTMLAudioElement | null>(null);
+ const [lovePage, setLovePage] = useState<1 | 2 | 3>(1);
+const [dndRoll, setDndRoll] = useState(20);
+const loveMusicRef = useRef<HTMLAudioElement | null>(null);
+const dndMusicRef = useRef<HTMLAudioElement | null>(null);
 
 async function ask() {
   if (!question.trim() || busy) return;
@@ -109,12 +110,54 @@ async function ask() {
   await new Promise((resolve) => setTimeout(resolve, 1800));
 
   // Choose the answer
-  const list = byTheme[theme] || byTheme.classic;
-  const newAnswer =
-    list[Math.floor(Math.random() * list.length)];
+ const list = byTheme[theme] || byTheme.classic;
+const newAnswer =
+  list[Math.floor(Math.random() * list.length)];
 
-  setAnswer(newAnswer);
-  setBusy(false);
+if (theme === "dnd") {
+  const upper = newAnswer.toUpperCase();
+
+  let roll: number;
+
+  if (
+    upper.includes("YES") ||
+    upper.includes("ABSOLUTELY") ||
+    upper.includes("VERY LIKELY") ||
+    upper.includes("ADVANTAGE") ||
+    upper.includes("GREAT ADVENTURE")
+  ) {
+    roll = 20;
+  } else if (
+    upper.includes("NO") ||
+    upper.includes("DON'T") ||
+    upper.includes("DONT") ||
+    upper.includes("CRITICAL FAIL") ||
+    upper.includes("POORLY") ||
+    upper.includes("DISADVANTAGE")
+  ) {
+    roll = 1;
+  } else if (
+    upper.includes("UNCERTAIN") ||
+    upper.includes("ROLL AGAIN") ||
+    upper.includes("ASK AGAIN")
+  ) {
+    roll = Math.floor(Math.random() * 7) + 8;
+  } else if (
+    upper.includes("PROBABLY") ||
+    upper.includes("FATES") ||
+    upper.includes("DM HAS SPOKEN")
+  ) {
+    roll = Math.floor(Math.random() * 5) + 15;
+  } else {
+    roll = Math.floor(Math.random() * 6) + 2;
+  }
+
+  setDndRoll(roll);
+}
+
+setAnswer(newAnswer);
+setBusy(false);
+
 
   // Reveal the fate
   if (theme === "love" || theme === "dnd") {
@@ -545,8 +588,8 @@ if (theme === "dnd") {
           <div className="dnd-reveal-message">
 
             <div className="dnd-reveal-icon">
-              20
-            </div>
+              ?
+           </div>
 
             <h2>
               Rolling the dice...
@@ -593,8 +636,8 @@ if (theme === "dnd") {
 
             <div className="dnd-answer-overlay">
 
-              <div className="dnd-answer-icon">
-                20
+            <div className="dnd-answer-icon">
+              {dndRoll}
               </div>
 
               <div className="dnd-answer-text">
