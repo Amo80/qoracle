@@ -765,10 +765,26 @@ if (theme === "dnd") {
   /* =========================================================
      EXISTING ORACLE EXPERIENCE — OTHER THEMES
      ========================================================= */
+return (
+  <main className={`oracle-page theme-${theme}`}>
+    
+    {theme === "chaos" && (
+      <div
+        aria-hidden="true"
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 0,
+          pointerEvents: "none",
+          backgroundImage: "url('/themes/chaos-background.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center center",
+          backgroundRepeat: "no-repeat",
+        }}
+      />
+    )}
 
-  return (
-    <main className={`oracle-page theme-${theme}`}>
-
+  
       <p className="eyebrow">
         QoRacle • {theme.toUpperCase()}
       </p>
