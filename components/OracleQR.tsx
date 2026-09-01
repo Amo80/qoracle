@@ -149,6 +149,7 @@ const [dndRoll, setDndRoll] = useState(20);
 
 const loveMusicRef = useRef<HTMLAudioElement | null>(null);
 const dndMusicRef = useRef<HTMLAudioElement | null>(null);
+const chaosMusicRef = useRef<HTMLAudioElement | null>(null);
 
 async function ask() {
   if (!question.trim() || busy) return;
@@ -172,6 +173,18 @@ async function ask() {
       console.log("D&D Oracle music could not autoplay:", error);
     }
   }
+
+// Start Chaos music after the user's button click
+if (theme === "chaos" && chaosMusicRef.current) {
+  chaosMusicRef.current.currentTime = 0;
+  chaosMusicRef.current.volume = 0.45;
+
+  try {
+    await chaosMusicRef.current.play();
+  } catch (error) {
+    console.log("Chaos Oracle music could not autoplay:", error);
+  }
+}
 
   // Start Love music after the user's button click
   if (theme === "love" && loveMusicRef.current) {
@@ -767,6 +780,13 @@ if (theme === "dnd") {
      ========================================================= */
 return (
   <main className={`oracle-page theme-${theme}`}>
+<audio
+  ref={chaosMusicRef}
+  src="/themes/qoracle-chaos-theme.wav"
+  preload="auto"
+  loop
+/>
+
     
     {theme === "chaos" && (
       <div
