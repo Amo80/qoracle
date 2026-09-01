@@ -848,9 +848,14 @@ return (
   <div className="chaos-pulse-core" />
   <div className="chaos-pulse-ring" />
 </div>
+  {answer && !busy && (
+    <div className="chaos-crystal-answer">
+      {answer}
+    </div>
+  )}
 
 {answer && !busy && (
-  <div className="chaos-crystal-answer">
+  <div className="result chaos-answer-reveal">
     {answer}
   </div>
 )}
