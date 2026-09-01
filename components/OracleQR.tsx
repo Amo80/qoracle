@@ -170,6 +170,7 @@ export default function OracleQR({
   const [question, setQuestion] = useState("");
  const [lovePage, setLovePage] = useState<1 | 2 | 3>(1);
 const [dndRoll, setDndRoll] = useState(20);
+const [eclipseSide, setEclipseSide] = useState<"light" | "dark">("light");
 
 const loveMusicRef = useRef<HTMLAudioElement | null>(null);
 const dndMusicRef = useRef<HTMLAudioElement | null>(null);
@@ -181,10 +182,16 @@ async function ask() {
   setBusy(true);
   setAnswer("");
 
-  // Move to the rolling screen
-  if (theme === "love" || theme === "dnd") {
-    setLovePage(2);
-  }
+ // Move to the rolling screen
+if (theme === "love" || theme === "dnd" || theme === "eclipse") {
+  setLovePage(2);
+}
+
+// Eclipse chooses Light or Dark independently of the answer text
+if (theme === "eclipse") {
+  const side = Math.random() < 0.5 ? "light" : "dark";
+  setEclipseSide(side);
+}
 
   // Start D&D music after the user's button click
   if (theme === "dnd" && dndMusicRef.current) {
@@ -274,11 +281,11 @@ if (theme === "dnd") {
 setAnswer(newAnswer);
 setBusy(false);
 
+// Reveal the fate
+if (theme === "love" || theme === "dnd" || theme === "eclipse") {
+  setLovePage(3);
+}
 
-  // Reveal the fate
-  if (theme === "love" || theme === "dnd") {
-    setLovePage(3);
-  }
 }
 
 function askAgain() {
@@ -286,9 +293,14 @@ function askAgain() {
   setQuestion("");
   setBusy(false);
 
-  if (theme === "love" || theme === "dnd") {
-    setLovePage(1);
-  }
+if (theme === "love" || theme === "dnd" || theme === "eclipse") {
+  setLovePage(1);
+}
+
+if (theme === "eclipse") {
+  setEclipseSide("light");
+}
+
 }
 
   
@@ -831,20 +843,18 @@ if (theme === "dnd") {
 
             {/* ECLIPSE CRYSTAL */}
 
-            <button
-              className="eclipse-crystal"
-              onClick={ask}
-              aria-label="Ask the Eclipse Oracle"
-              disabled={busy}
-            >
-              <div className="eclipse-light-side" />
-              <div className="eclipse-dark-side" />
-              <div className="eclipse-core">
-                <span>◐</span>
-              </div>
-
-              <div className="eclipse-crystal-glow" />
-            </button>
+           <button
+  className="eclipse-crystal"
+  onClick={ask}
+  aria-label="Ask the Eclipse Oracle"
+  disabled={busy}
+>
+  <img
+    src="/themes/eclipse-crystal.png"
+    alt="Eclipse Oracle crystal ball"
+    className="eclipse-crystal-image"
+  />
+</button>
 
             <p className="eclipse-instruction">
               Ask the Eclipse Oracle...
@@ -893,7 +903,7 @@ if (theme === "dnd") {
             PAGE 2 — AWAKENING
            ================================================= */}
 
-        {lovePage === 2 && (
+               {lovePage === 2 && (
           <section className="eclipse-stage eclipse-stage-two">
 
             <p className="eyebrow eclipse-eyebrow">
@@ -909,16 +919,15 @@ if (theme === "dnd") {
               Light and darkness are deciding your fate...
             </p>
 
-            <div className="eclipse-crystal eclipse-crystal-awakening">
+            <div
+  className={`eclipse-crystal eclipse-crystal-awakening eclipse-${eclipseSide}`}
+>
 
-              <div className="eclipse-light-side" />
-              <div className="eclipse-dark-side" />
-
-              <div className="eclipse-core">
-                <span>◐</span>
-              </div>
-
-              <div className="eclipse-crystal-glow" />
+              <img
+                src="/themes/eclipse-crystal.png"
+                alt="Eclipse Oracle crystal awakening"
+                className="eclipse-crystal-image"
+              />
 
               <div className="eclipse-energy-ring eclipse-energy-ring-one" />
               <div className="eclipse-energy-ring eclipse-energy-ring-two" />
@@ -926,6 +935,7 @@ if (theme === "dnd") {
             </div>
 
             <div className="eclipse-reveal-message">
+
               <h2>
                 Revealing your fate...
               </h2>
@@ -933,6 +943,7 @@ if (theme === "dnd") {
               <p>
                 Which force will speak?
               </p>
+
             </div>
 
             <div className="eclipse-loading-dots">
@@ -943,11 +954,10 @@ if (theme === "dnd") {
 
           </section>
         )}
-
+       
         {/* =================================================
             PAGE 3 — FATE REVEALED
            ================================================= */}
-
         {lovePage === 3 && (
           <section className="eclipse-stage eclipse-stage-three">
 
@@ -960,20 +970,19 @@ if (theme === "dnd") {
               <span>IS REVEALED</span>
             </h1>
 
-            <div className="eclipse-crystal eclipse-crystal-answer">
+            <div
+  className={`eclipse-crystal eclipse-crystal-answer eclipse-${eclipseSide}`}
+>
 
-              <div className="eclipse-light-side" />
-              <div className="eclipse-dark-side" />
+              <img
+                src="/themes/eclipse-crystal.png"
+                alt="Eclipse Oracle revealing your fate"
+                className="eclipse-crystal-image"
+              />
 
-              <div className="eclipse-core">
-                <span>◐</span>
-              </div>
-
-              <div className="eclipse-crystal-glow" />
-
-              <div className="eclipse-answer-overlay">
-                {answer}
-              </div>
+            <div className={`eclipse-answer-overlay eclipse-answer-${eclipseSide}`}>
+  {answer}
+</div>
 
             </div>
 
@@ -1006,6 +1015,7 @@ if (theme === "dnd") {
 
           </section>
         )}
+
 
       </main>
     );
