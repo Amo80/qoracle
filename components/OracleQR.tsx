@@ -68,16 +68,58 @@ export default function OracleQR({
   const [question, setQuestion] = useState("");
   const [lovePage, setLovePage] = useState<1 | 2 | 3>(1);
   const loveMusicRef = useRef<HTMLAudioElement | null>(null);
+  const dndMusicRef = useRef<HTMLAudioElement | null>(null);
 
- async function ask() {
+async function ask() {
   if (!question.trim() || busy) return;
 
   setBusy(true);
   setAnswer("");
-if (theme === "love" || theme === "dnd") {
-  setLovePage(3);
-}
 
+  // Move to the rolling screen
+  if (theme === "love" || theme === "dnd") {
+    setLovePage(2);
+  }
+
+  // Start D&D music after the user's button click
+  if (theme === "dnd" && dndMusicRef.current) {
+    dndMusicRef.current.currentTime = 0;
+    dndMusicRef.current.volume = 0.45;
+
+    try {
+      await dndMusicRef.current.play();
+    } catch (error) {
+      console.log("D&D Oracle music could not autoplay:", error);
+    }
+  }
+
+  // Start Love music after the user's button click
+  if (theme === "love" && loveMusicRef.current) {
+    loveMusicRef.current.currentTime = 0;
+    loveMusicRef.current.volume = 0.45;
+
+    try {
+      await loveMusicRef.current.play();
+    } catch (error) {
+      console.log("Love Oracle music could not autoplay:", error);
+    }
+  }
+
+  // Let the rolling animation play
+  await new Promise((resolve) => setTimeout(resolve, 1800));
+
+  // Choose the answer
+  const list = byTheme[theme] || byTheme.classic;
+  const newAnswer =
+    list[Math.floor(Math.random() * list.length)];
+
+  setAnswer(newAnswer);
+  setBusy(false);
+
+  // Reveal the fate
+  if (theme === "love" || theme === "dnd") {
+    setLovePage(3);
+  }
 }
 
 function askAgain() {
@@ -89,6 +131,7 @@ function askAgain() {
     setLovePage(1);
   }
 }
+
   
   /* =========================================================
      LOVE ORACLE — THREE PAGE EXPERIENCE
@@ -342,6 +385,13 @@ function askAgain() {
 if (theme === "dnd") {
   return (
     <main className="oracle-page theme-dnd">
+
+<audio
+  ref={dndMusicRef}
+  src="/themes/qoracle-dnd-theme.wav"
+  preload="auto"
+  loop
+/>
 
       {/* DUNGEON BACKGROUND */}
       <div
