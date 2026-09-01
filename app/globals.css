@@ -5718,3 +5718,55 @@ h1 span { color: var(--accent); }
     margin-top: 7px !important;
   }
 }
+/* =========================================================
+   D&D ORACLE — MAGICAL ANSWER TEXT
+   ========================================================= */
+
+.theme-dnd .dnd-answer-text {
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-weight: 700 !important;
+  font-size: clamp(24px, 4vw, 42px) !important;
+  letter-spacing: 2px !important;
+  line-height: 1.15 !important;
+  text-align: center !important;
+  text-transform: uppercase !important;
+
+  color: #fff7ff !important;
+
+  text-shadow:
+    0 0 5px rgba(255, 255, 255, 0.95),
+    0 0 12px rgba(210, 160, 255, 0.95),
+    0 0 24px rgba(160, 80, 255, 0.85),
+    0 0 45px rgba(110, 40, 220, 0.65) !important;
+
+  animation: dndMagicalAnswer 2.8s ease-in-out infinite alternate !important;
+}
+
+@keyframes dndMagicalAnswer {
+  from {
+    filter: brightness(1);
+    transform: scale(1);
+  }
+
+  to {
+    filter: brightness(1.25);
+    transform: scale(1.025);
+  }
+}
+
+/* Magical answer card underneath the crystal */
+
+.theme-dnd .dnd-answer-card strong {
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 2px !important;
+  text-transform: uppercase !important;
+
+  color: #fff7ff !important;
+
+  text-shadow:
+    0 0 5px rgba(255, 255, 255, 0.9),
+    0 0 12px rgba(200, 145, 255, 0.85),
+    0 0 25px rgba(130, 55, 230, 0.7) !important;
+}
+
