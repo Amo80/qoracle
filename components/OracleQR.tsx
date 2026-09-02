@@ -260,6 +260,22 @@ const list = byTheme[activeTheme] || byTheme.jester;
 
 const newAnswer =
   list[Math.floor(Math.random() * list.length)];
+if (activeTheme === "jester") {
+  const laugh = document.getElementById(
+    "jesterLaugh"
+  ) as HTMLAudioElement | null;
+
+  if (laugh) {
+    laugh.currentTime = 0;
+    laugh.volume = 0.75;
+
+    try {
+      await laugh.play();
+    } catch (error) {
+      console.log("Jester laugh could not play:", error);
+    }
+  }
+}
 
 if (activeTheme === "dnd") {
   const upper = newAnswer.toUpperCase();
@@ -1050,6 +1066,11 @@ if (activeTheme === "dnd") {
   if (activeTheme === "jester") {
     return (
       <main className="oracle-page theme-jester">
+<audio
+  id="jesterLaugh"
+  src="/themes/jester-laugh.mp3"
+  preload="auto"
+/>
         <p className="eyebrow">
           QoRacle • JESTER
         </p>
