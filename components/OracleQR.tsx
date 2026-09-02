@@ -4,15 +4,35 @@ import { useRef, useState } from "react";
 
 
 const byTheme: Record<string, string[]> = {
-  classic: [
-    "YES.",
-    "NO.",
-    "ASK AGAIN.",
-    "WITHOUT A DOUBT.",
-    "VERY LIKELY.",
-    "NOT TODAY.",
-  ],
 
+ jester: [
+  "YES. What could possibly go wrong?",
+  "NOPE. The Jester has spoken.",
+  "ABSOLUTELY. Go for it.",
+  "NOT A CHANCE. Nice try.",
+  "PROBABLY. But don't blame me later.",
+  "MAYBE. Even I don't know.",
+  "YES. I like where this is going.",
+  "NO. Let's pretend you never asked.",
+  "ASK AGAIN. I wasn't paying attention.",
+  "THE FATES SAY YES. Don't make me regret it.",
+  "THE FATES SAY NO. You're welcome.",
+  "YES... BUT THIS COULD GET INTERESTING.",
+  "NO... AND I'M LAUGHING A LITTLE.",
+  "I COULD TELL YOU, BUT WHERE'S THE FUN IN THAT?",
+  "YOU ALREADY KNOW THE ANSWER.",
+  "THAT'S A BOLD QUESTION. YES.",
+  "THAT'S A TERRIBLE IDEA. ABSOLUTELY.",
+  "THE JESTER SHRUGS.",
+  "THE ORACLE LAUGHS. TRY AGAIN.",
+  "NOT TODAY, CHAMP.",
+  "DO IT. BLAME THE JESTER.",
+  "MAYBE. CONSULT YOUR COMMON SENSE.",
+  "YES. EVEN I DIDN'T SEE THAT COMING.",
+  "NOPE. HARD PASS.",
+  "THE ANSWER IS YES. THE CONSEQUENCES ARE YOURS.",
+  "I HAVE AN ANSWER... BUT YOU'RE NOT GOING TO LIKE IT.",
+],
  chaos: [
   "FUCK AROUND AND FIND OUT.",
   "ABSOLUTELY NOT. ARE YOU INSANE?",
@@ -165,6 +185,9 @@ export default function OracleQR({
   theme: string;
   code: string;
 }) {
+  // Normalize theme names so URLs like ?theme=Jester and legacy Classic links work.
+  const activeTheme = theme.toLowerCase() === "classic" ? "jester" : theme.toLowerCase();
+
   const [answer, setAnswer] = useState("");
   const [busy, setBusy] = useState(false);
   const [question, setQuestion] = useState("");
@@ -183,18 +206,18 @@ async function ask() {
   setAnswer("");
 
  // Move to the rolling screen
-if (theme === "love" || theme === "dnd" || theme === "eclipse") {
+if (activeTheme === "love" || activeTheme === "dnd" || activeTheme === "eclipse") {
   setLovePage(2);
 }
 
 // Eclipse chooses Light or Dark independently of the answer text
-if (theme === "eclipse") {
+if (activeTheme === "eclipse") {
   const side = Math.random() < 0.5 ? "light" : "dark";
   setEclipseSide(side);
 }
 
   // Start D&D music after the user's button click
-  if (theme === "dnd" && dndMusicRef.current) {
+  if (activeTheme === "dnd" && dndMusicRef.current) {
     dndMusicRef.current.currentTime = 0;
     dndMusicRef.current.volume = 0.45;
 
@@ -206,7 +229,7 @@ if (theme === "eclipse") {
   }
 
 // Start Chaos music after the user's button click
-if (theme === "chaos" && chaosMusicRef.current) {
+if (activeTheme === "chaos" && chaosMusicRef.current) {
   chaosMusicRef.current.currentTime = 0;
   chaosMusicRef.current.volume = 0.45;
 
@@ -218,7 +241,7 @@ if (theme === "chaos" && chaosMusicRef.current) {
 }
 
   // Start Love music after the user's button click
-  if (theme === "love" && loveMusicRef.current) {
+  if (activeTheme === "love" && loveMusicRef.current) {
     loveMusicRef.current.currentTime = 0;
     loveMusicRef.current.volume = 0.45;
 
@@ -233,11 +256,12 @@ if (theme === "chaos" && chaosMusicRef.current) {
   await new Promise((resolve) => setTimeout(resolve, 1800));
 
   // Choose the answer
- const list = byTheme[theme] || byTheme.classic;
+const list = byTheme[activeTheme] || byTheme.jester;
+
 const newAnswer =
   list[Math.floor(Math.random() * list.length)];
 
-if (theme === "dnd") {
+if (activeTheme === "dnd") {
   const upper = newAnswer.toUpperCase();
 
   let roll: number;
@@ -282,7 +306,7 @@ setAnswer(newAnswer);
 setBusy(false);
 
 // Reveal the fate
-if (theme === "love" || theme === "dnd" || theme === "eclipse") {
+if (activeTheme === "love" || activeTheme === "dnd" || activeTheme === "eclipse") {
   setLovePage(3);
 }
 
@@ -293,11 +317,11 @@ function askAgain() {
   setQuestion("");
   setBusy(false);
 
-if (theme === "love" || theme === "dnd" || theme === "eclipse") {
+if (activeTheme === "love" || activeTheme === "dnd" || activeTheme === "eclipse") {
   setLovePage(1);
 }
 
-if (theme === "eclipse") {
+if (activeTheme === "eclipse") {
   setEclipseSide("light");
 }
 
@@ -308,7 +332,7 @@ if (theme === "eclipse") {
      LOVE ORACLE — THREE PAGE EXPERIENCE
      ========================================================= */
 
-  if (theme === "love") {
+  if (activeTheme === "love") {
     return (
       <main className="oracle-page theme-love">
 <audio
@@ -553,7 +577,7 @@ if (theme === "eclipse") {
    D&D ORACLE — NEW CRYSTAL EXPERIENCE
    ========================================================= */
 
-if (theme === "dnd") {
+if (activeTheme === "dnd") {
   return (
     <main className="oracle-page theme-dnd">
 
@@ -816,7 +840,7 @@ if (theme === "dnd") {
      ECLIPSE ORACLE — LIGHT + DARK
      ========================================================= */
 
-  if (theme === "eclipse") {
+  if (activeTheme === "eclipse") {
     return (
       <main className="oracle-page theme-eclipse">
 
@@ -1020,100 +1044,173 @@ if (theme === "dnd") {
       </main>
     );
   }
+  /* =========================================================
+     JESTER ORACLE
+     ========================================================= */
+  if (activeTheme === "jester") {
+    return (
+      <main className="oracle-page theme-jester">
+        <p className="eyebrow">
+          QoRacle • JESTER
+        </p>
+
+        <h1>
+          ASK THE <span>JESTER</span>
+        </h1>
+
+        <div
+          className={`jester-crystal ${busy ? "shaking" : ""}`}
+          onClick={ask}
+          role="button"
+          tabIndex={0}
+          aria-label="Ask the Jester Oracle"
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              ask();
+            }
+          }}
+        >
+          <div className="jester-crystal-placeholder" aria-hidden="true">
+            🃏
+          </div>
+
+          {answer && !busy && (
+            <div className="jester-crystal-answer">
+              {answer}
+            </div>
+          )}
+        </div>
+
+        <div className="question">
+          <input
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                ask();
+              }
+            }}
+            placeholder="Ask the Jester..."
+            maxLength={180}
+          />
+
+          <button
+            className="primary"
+            onClick={ask}
+            disabled={!question.trim() || busy}
+          >
+            {busy ? "THE JESTER IS THINKING..." : "ASK THE JESTER"}
+          </button>
+        </div>
+
+        {answer && !busy && (
+          <div className="result">
+            <span>THE JESTER SAYS</span>
+            <strong>{answer}</strong>
+            <button className="secondary" onClick={askAgain}>
+              ASK AGAIN
+            </button>
+          </div>
+        )}
+
+        <p className="small">
+          QR: {code} • For entertainment only.
+        </p>
+      </main>
+    );
+  }
 
   /* =========================================================
-     EXISTING ORACLE EXPERIENCE — OTHER THEMES
+     CHAOS ORACLE — DEFAULT LEGACY EXPERIENCE
      ========================================================= */
-return (
-  <main className={`oracle-page theme-${theme}`}>
-<audio
-  ref={chaosMusicRef}
-  src="/themes/qoracle-chaos-theme.wav"
-  preload="auto"
-  loop
-/>
-
-    
-    {theme === "chaos" && (
-      <div
-        aria-hidden="true"
-        style={{
-          position: "fixed",
-          inset: 0,
-          zIndex: 0,
-          pointerEvents: "none",
-          backgroundImage: "url('/themes/chaos-background.png')",
-          backgroundSize: "cover",
-          backgroundPosition: "center center",
-          backgroundRepeat: "no-repeat",
-        }}
+  return (
+    <main className={`oracle-page theme-${activeTheme}`}>
+      <audio
+        ref={chaosMusicRef}
+        src="/themes/qoracle-chaos-theme.wav"
+        preload="auto"
+        loop
       />
-    )}
-{theme === "chaos" && (
-  <div
-    className="chaos-lightning"
-    aria-hidden="true"
-  />
-)}
 
-{theme === "chaos" && (
-  <div
-    className="chaos-smoke-static"
-    aria-hidden="true"
-  />
-)}
+      {activeTheme === "chaos" && (
+        <div
+          aria-hidden="true"
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 0,
+            pointerEvents: "none",
+            backgroundImage: "url('/themes/chaos-background.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center center",
+            backgroundRepeat: "no-repeat",
+          }}
+        />
+      )}
 
-  
+      {activeTheme === "chaos" && (
+        <div className="chaos-lightning" aria-hidden="true" />
+      )}
+
+      {activeTheme === "chaos" && (
+        <div className="chaos-smoke-static" aria-hidden="true" />
+      )}
+
       <p className="eyebrow">
-        QoRacle • {theme.toUpperCase()}
+        QoRacle • {activeTheme.toUpperCase()}
       </p>
 
       <h1>
         ASK THE <span>ORACLE</span>
       </h1>
 
-    <div
-  className={`chaos-crystal ${busy ? "shaking" : ""}`}
-  onClick={ask}
-  role="button"
-  tabIndex={0}
-  aria-label="Ask the Chaos Oracle"
-  onKeyDown={(e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      ask();
-    }
-  }}
->
-   <img
-    src="/themes/chaos-crystal-ball.png"
-    alt="Chaotic magical crystal ball containing a swirling vortex"
-    className="chaos-crystal-image"
-  />
+      <div
+        className={`chaos-crystal ${busy ? "shaking" : ""}`}
+        onClick={ask}
+        role="button"
+        tabIndex={0}
+        aria-label="Ask the Chaos Oracle"
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            ask();
+          }
+        }}
+      >
+        <img
+          src="/themes/chaos-crystal-ball.png"
+          alt="Chaotic magical crystal ball containing a swirling vortex"
+          className="chaos-crystal-image"
+        />
 
- <div className="chaos-pulse" aria-hidden="true">
-  <div className="chaos-pulse-core" />
-  <div className="chaos-pulse-ring" />
-</div>
-  {answer && !busy && (
-    <div className="chaos-crystal-answer">
-      {answer}
-    </div>
-  )}
+        <div className="chaos-pulse" aria-hidden="true">
+          <div className="chaos-pulse-core" />
+          <div className="chaos-pulse-ring" />
+        </div>
 
-{answer && !busy && (
-  <div className="result chaos-answer-reveal">
-    {answer}
-  </div>
-)}
+        {answer && !busy && (
+          <div className="chaos-crystal-answer">
+            {answer}
+          </div>
+        )}
 
-</div>
+        {answer && !busy && (
+          <div className="result chaos-answer-reveal">
+            {answer}
+          </div>
+        )}
+      </div>
 
       <div className="question">
-
         <input
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              ask();
+            }
+          }}
           placeholder="Ask a yes/no question..."
+          maxLength={180}
         />
 
         <button
@@ -1123,20 +1220,12 @@ return (
         >
           {busy ? "CONSULTING..." : "SHAKE THE ORACLE"}
         </button>
-
       </div>
 
       {answer && !busy && (
         <div className="result">
-
-          <span>
-            THE ORACLE SAYS
-          </span>
-
-          <strong>
-            {answer}
-          </strong>
-
+          <span>THE ORACLE SAYS</span>
+          <strong>{answer}</strong>
           <button
             className="secondary"
             onClick={() => {
@@ -1146,14 +1235,12 @@ return (
           >
             ASK AGAIN
           </button>
-
         </div>
       )}
 
       <p className="small">
         QR: {code} • For entertainment only.
       </p>
-
     </main>
   );
 }
