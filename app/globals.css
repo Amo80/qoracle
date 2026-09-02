@@ -7878,7 +7878,7 @@ h1 span { color: var(--accent); }
 
  background-color: #12091d !important;
 background-image: url("/themes/jester-background.png") !important;
-background-size: 95% auto !important;
+background-size: 100% auto !important;
 background-position: center center !important;
 background-repeat: no-repeat !important;
 background-attachment: fixed !important; 
