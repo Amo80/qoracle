@@ -7876,13 +7876,12 @@ h1 span { color: var(--accent); }
   overflow-x: hidden;
   overflow-y: auto;
 
-  background-color: #12091d !important;
-  background-image: url("/themes/jester-background.png") !important;
-  background-size: cover !important;
-  background-position: center center !important;
-  background-repeat: no-repeat !important;
-  background-attachment: fixed !important;
-
+ background-color: #12091d !important;
+background-image: url("/themes/jester-background.png") !important;
+background-size: 95% auto !important;
+background-position: center center !important;
+background-repeat: no-repeat !important;
+background-attachment: fixed !important; 
   color: #fff8ed;
 }
 
