@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/browser";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-const themes = ["classic", "chaos", "love", "eclipse", "dnd"];
+const themes = ["jester", "chaos", "love", "eclipse", "dnd"];
 
 type QRCodeRow = {
   code: string;
@@ -29,7 +29,7 @@ type DashboardQR = QRCodeRow & {
 export default function AdminPage() {
   const router = useRouter();
   const supabase = createClient();
-  const [theme, setTheme] = useState("classic");
+  const [theme, setTheme] = useState("jester");
   const [productName, setProductName] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [notes, setNotes] = useState("");
@@ -128,7 +128,7 @@ async function saveEdit() {
   setProductName("");
   setCustomerName("");
   setNotes("");
-  setTheme("classic");
+  setTheme("jester");
 
   await loadDashboard();
 }
@@ -473,7 +473,7 @@ const filteredCodes = codes.filter((item) => {
       setProductName("");
       setCustomerName("");
       setNotes("");
-      setTheme("classic");
+      setTheme("jester");
       setStatus("");
     }}
     style={{
