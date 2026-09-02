@@ -1070,10 +1070,11 @@ if (activeTheme === "dnd") {
             }
           }}
         >
-          <div className="jester-crystal-placeholder" aria-hidden="true">
-            🃏
-          </div>
-
+          <img
+  src="/themes/jester-oracle.png"
+  alt="The QoRacle Jester"
+  className="jester-character"
+/>
           {answer && !busy && (
             <div className="jester-crystal-answer">
               {answer}
