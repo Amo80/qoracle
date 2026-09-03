@@ -378,7 +378,7 @@ if (activeTheme === "eclipse") {
           <section className="love-stage love-stage-one">
 
             <p className="eyebrow love-eyebrow">
-              QoRacle • LOVE
+              The QRystal Balls • LOVE
             </p>
 
             <h1 className="love-title">
@@ -453,7 +453,7 @@ if (activeTheme === "eclipse") {
   <section className="love-stage love-stage-two">
 
     <p className="eyebrow love-eyebrow">
-      QoRacle • LOVE
+      The QRystal Balls • LOVE
     </p>
 
     <h1 className="love-title">
@@ -518,7 +518,7 @@ if (activeTheme === "eclipse") {
   <section className="love-stage love-stage-three">
 
     <p className="eyebrow love-eyebrow">
-      QoRacle • LOVE
+      The QRystal Balls • LOVE
     </p>
 
     <h1 className="love-title">
@@ -636,7 +636,7 @@ if (activeTheme === "dnd") {
             </button>
 
             <div className="dnd-brand">
-              QoRacle • D&D
+              The QRystal Balls • D&D
             </div>
 
             <div className="dnd-theme-badge">
@@ -720,7 +720,7 @@ if (activeTheme === "dnd") {
         <section className="dnd-stage dnd-stage-two">
 
           <p className="dnd-eyebrow">
-            QoRacle • D&D
+            The QRystal Balls • D&D
           </p>
 
           <h1 className="dnd-title">
@@ -786,7 +786,7 @@ if (activeTheme === "dnd") {
         <section className="dnd-stage dnd-stage-three">
 
           <p className="dnd-eyebrow">
-            QoRacle • D&D
+            The QRystal Balls • D&D
           </p>
 
           <h1 className="dnd-title">
@@ -1072,7 +1072,7 @@ if (activeTheme === "dnd") {
   preload="auto"
 />
         <p className="eyebrow">
-          QoRacle • JESTER
+          The QRystal Balls • JESTER
         </p>
 
         <h1>
@@ -1093,7 +1093,7 @@ if (activeTheme === "dnd") {
         >
           <img
   src="/themes/jester-oracle.png"
-  alt="The QoRacle Jester"
+  alt="The QRystal Balls Jester"
   className="jester-character"
 />
           {answer && !busy && (
@@ -1179,7 +1179,7 @@ if (activeTheme === "dnd") {
       )}
 
       <p className="eyebrow">
-        QoRacle • {activeTheme.toUpperCase()}
+        The QRystal Balls • {activeTheme.toUpperCase()}
       </p>
 
       <h1>
