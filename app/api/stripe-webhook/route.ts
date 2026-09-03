@@ -47,9 +47,9 @@ export async function POST(request: Request) {
           : session.payment_intent?.id || null;
 
       const productName =
-        session.metadata?.product_name || "QoRacle Product";
+        session.metadata?.product_name || "QRystal Balls Product";
 
-      const theme = session.metadata?.theme || "classic";
+      const theme = session.metadata?.theme || "jester";
 
       const customerName =
         session.customer_details?.name || null;

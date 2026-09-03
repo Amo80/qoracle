@@ -35,9 +35,9 @@ export async function POST(request: Request) {
    const productName =
   session.metadata?.product_name ||
   session.line_items?.data?.[0]?.description ||
-  "QoRacle Product";
+  "QRystal Balls Product";
 
-const theme = session.metadata?.theme || "classic";
+const theme = session.metadata?.theme || "jester";
 
     const { data: existingOrder } = await supabase
       .from("orders")

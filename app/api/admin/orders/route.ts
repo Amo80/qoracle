@@ -113,25 +113,25 @@ if (orderStatus === "Shipped") {
     const trackingUrl = trackingLinks[carrier];
 
     const { error: emailError } = await resend.emails.send({
-      from: "QoRacle <onboarding@resend.dev>",
+      from: "The QRystal Balls <onboarding@resend.dev>",
       to: existingOrder.customer_email,
-      subject: `Your QoRacle Order #${id} Has Shipped`,
+      subject: `Your QRystal Balls Order #${id} Has Shipped`,
       html: `
         <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;color:#111;">
-          <h1>QoRacle</h1>
+          <h1>The QRystal Balls</h1>
           <h2>Your order has shipped! 📦</h2>
 
           <p>Hello ${customerName},</p>
 
           <p>
-            Your QoRacle order <strong>#${id}</strong> is on its way.
+           Your QRystal Balls order <strong>#{id}</strong> is on its way.
           </p>
 
           <div style="margin:25px 0;padding:20px;background:#f5f5f5;border-radius:10px;">
             <p><strong>Carrier:</strong> ${carrier}</p>
             <p><strong>Tracking Number:</strong> ${trackingNumber}</p>
             <p><strong>Product:</strong> ${
-              existingOrder.product_name || "QoRacle Card"
+              existingOrder.product_name || "QRystal Balls Card"
             }</p>
           </div>
 
@@ -147,7 +147,7 @@ if (orderStatus === "Shipped") {
           }
 
           <p>Thank you for your order!</p>
-          <p>— The QoRacle Team</p>
+          <p>— The QRystal Balls Team</p>
         </div>
       `,
     });

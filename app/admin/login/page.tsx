@@ -66,7 +66,7 @@ export default function AdminLoginPage() {
             marginBottom: "8px",
           }}
         >
-          QORACLE
+         THE QRYSTAL BALLS
         </p>
 
         <h1
@@ -86,7 +86,7 @@ export default function AdminLoginPage() {
             marginBottom: "28px",
           }}
         >
-          Sign in to access the QoRacle dashboard.
+         Sign in to access The QRystal Balls dashboard.
         </p>
 
         <form onSubmit={handleLogin}>

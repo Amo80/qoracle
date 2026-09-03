@@ -87,7 +87,7 @@ export async function POST(request: Request) {
 
     const fromEmail =
       process.env.RESEND_FROM_EMAIL ||
-      "QoRacle <onboarding@resend.dev>";
+      "The QRystal Balls <onboarding@resend.dev>";
 
     const customerName =
       order.customer_name || "Customer";
@@ -116,17 +116,17 @@ export async function POST(request: Request) {
     const { error: emailError } = await resend.emails.send({
       from: fromEmail,
       to: order.customer_email,
-      subject: `Your QoRacle Order #${order.id} Has Shipped`,
+      subject: `Your QRystal Balls Order #${order.id} Has Shipped`,
       html: `
         <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;color:#111;">
-          <h1>QoRacle</h1>
+          <h1>The QRystal Balls</h1>
 
           <h2>Your order has shipped! 📦</h2>
 
           <p>Hello ${customerName},</p>
 
           <p>
-            Great news! Your QoRacle order
+            Great news! Your QRystal Balls order
             <strong>#${order.id}</strong>
             is on its way.
           </p>
@@ -150,7 +150,7 @@ export async function POST(request: Request) {
 
             <p>
               <strong>Product:</strong>
-              ${order.product_name || "QoRacle Card"}
+              ${order.product_name || "QRystal Balls Card"}
             </p>
           </div>
 
@@ -161,7 +161,7 @@ export async function POST(request: Request) {
           </p>
 
           <p>
-            — The QoRacle Team
+            — The QRystal Balls Team
           </p>
         </div>
       `,

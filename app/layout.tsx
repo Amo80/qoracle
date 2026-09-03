@@ -2,7 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "QoRacle",
+  title: "The QRystal Balls",
   description: "Scan. Ask. Shake. Discover.",
 };
 

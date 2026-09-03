@@ -80,7 +80,7 @@ useEffect(() => {
             marginBottom: "10px",
           }}
         >
-          QORACLE
+          THE QRYSTAL BALLS
         </p>
 
         <h1 style={{ marginTop: 0 }}>
@@ -99,9 +99,9 @@ useEffect(() => {
   }}
 >
   {verifying
-    ? "Please wait while we verify your payment and create your QoRacle order."
+    ? "Please wait while we verify your payment and create your QRystal Balls order."
     : verified
-    ? "Your payment was verified and your QoRacle order was created successfully."
+    ? "Your payment was verified and your QRystal Balls order was created successfully."
     : error}
 </p>
 

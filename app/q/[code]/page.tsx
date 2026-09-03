@@ -40,10 +40,10 @@ if (!data.active) {
             fontWeight: "bold",
           }}
         >
-          QORACLE
+          THE QRYSTAL BALLS
         </p>
 
-        <h1>This QoRacle is currently inactive</h1>
+        <h1>This QRystal Ball is currently inactive</h1>
 
         <p
           style={{

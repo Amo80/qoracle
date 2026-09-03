@@ -4,9 +4,9 @@ import { NextResponse } from "next/server";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 const priceMap: Record<string, number> = {
-  "QoRacle Sticker": 499,
-  "QoRacle Card": 799,
-  "QoRacle Keychain": 1299,
+  "QRystal Balls Sticker": 499,
+  "QRystal Balls Card": 799,
+  "QRystal Balls Keychain": 1299,
 };
 
 export async function POST(request: Request) {
@@ -46,7 +46,7 @@ customer_email: undefined,
 
             product_data: {
               name: product,
-              description: `QoRacle theme: ${theme}`,
+              description: `QRystal Balls theme: ${theme}`,
             },
 
             unit_amount: amount,

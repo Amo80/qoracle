@@ -121,7 +121,7 @@ export default async function PackingSlipPage({
                 fontSize: "32px",
               }}
             >
-              QoRacle
+              The QRystal Balls
             </h1>
 
             <p
@@ -224,7 +224,7 @@ export default async function PackingSlipPage({
             color: "#666",
           }}
         >
-          Thank you for your QoRacle order!
+          Thank you for your QRystal Balls order!
         </div>
       </div>
 

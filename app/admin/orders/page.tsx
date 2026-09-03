@@ -86,7 +86,7 @@ export default async function OrdersPage({
         padding: "30px",
       }}
     >
-      <h1>QoRacle Orders</h1>
+      <h1>QRystal Balls Orders</h1>
 
       <form
         method="GET"

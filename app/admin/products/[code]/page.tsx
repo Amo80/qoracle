@@ -186,7 +186,7 @@ if (!countError) {
               marginBottom: "8px",
             }}
           >
-            QORACLE PRODUCT
+            QRYSTAL BALL PRODUCT
           </p>
 
           <h1

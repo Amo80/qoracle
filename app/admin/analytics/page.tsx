@@ -177,7 +177,7 @@ export default function AnalyticsPage() {
               marginBottom: "8px",
             }}
           >
-            QORACLE
+            THE QRYSTAL BALLS
           </p>
 
           <h1

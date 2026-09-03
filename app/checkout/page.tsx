@@ -7,8 +7,8 @@ function CheckoutContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const product = searchParams.get("product") || "QoRacle Product";
-  const theme = searchParams.get("theme") || "classic";
+  const product = searchParams.get("product") || "QRystal Balls Product";
+  const theme = searchParams.get("theme") || "jester";
   const price = searchParams.get("price") || "$0.00";
 async function handlePayment() {
   const response = await fetch("/api/checkout", {
@@ -76,7 +76,7 @@ async function handlePayment() {
               marginBottom: "8px",
             }}
           >
-            QORACLE CHECKOUT
+            QRYSTAL BALLS CHECKOUT
           </p>
 
           <h1 style={{ marginTop: 0 }}>Review Your Order</h1>

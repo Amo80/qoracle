@@ -19,15 +19,15 @@ export default function Home() {
         We have an answer.
       </p>
 
-      <Link className="primary" href="/oracle?theme=classic">
+      <Link className="primary" href="/oracle?theme=jester">
         ASK THE ORACLE
       </Link>
 
       <div className="cards">
 
-        <Link href="/oracle?theme=classic">
+        <Link href="/oracle?theme=Jester">
           <b>🔮</b>
-          <span>Classic</span>
+         <span>Jester</span>
         </Link>
 
         <Link href="/oracle?theme=chaos">

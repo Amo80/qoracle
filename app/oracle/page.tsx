@@ -10,7 +10,7 @@ export default async function OraclePage({
 }) {
   const params = await searchParams;
 
-  const theme = params.theme || "classic";
+  const theme = params.theme || "jester";
   const code = params.code || "web";
 
   return <OracleQR theme={theme} code={code} />;

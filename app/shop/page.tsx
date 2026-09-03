@@ -4,23 +4,24 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 const products = [
   {
-    name: "QoRacle Sticker",
+    name: "QRystal Balls Sticker",
     price: "$4.99",
-    description: "A scannable QoRacle sticker you can place almost anywhere.",
+    description:
+      "A scannable QRystal Balls sticker you can place almost anywhere.",
   },
   {
-    name: "QoRacle Card",
+    name: "QRystal Balls Card",
     price: "$7.99",
-    description: "A pocket-sized QoRacle card with its own unique QR code.",
+    description:
+      "A pocket-sized QRystal Balls card with its own unique QR code.",
   },
   {
-    name: "QoRacle Keychain",
+    name: "QRystal Balls Keychain",
     price: "$12.99",
-    description: "Carry your QoRacle with you wherever you go.",
+    description:
+      "Carry your QRystal Balls with you wherever you go.",
   },
-];
-
-const themes = ["classic", "chaos", "love", "eclipse", "dnd"];
+];const themes = ["jester", "chaos", "love", "eclipse", "dnd"];
 
 export default function ShopPage() {
   const [selectedTheme, setSelectedTheme] = useState("classic");
@@ -54,7 +55,7 @@ const router = useRouter();
               fontWeight: "bold",
             }}
           >
-            QORACLE
+            THE QRYSTAL BALLS
           </p>
 
           <h1

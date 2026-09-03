@@ -159,7 +159,7 @@ async function toggleActive(item: DashboardQR) {
 }
 
 async function generateQR() {
-  setStatus("Creating QoRacle...");
+  setStatus("Creating QRystal Ball...");
 
   const randomCode =
     "QOR-" + Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -282,7 +282,7 @@ const filteredCodes = codes.filter((item) => {
                 marginBottom: "8px",
               }}
             >
-              QORACLE ADMIN
+              THE QRYSTAL BALLS ADMIN
             </p>
 
             <h1
@@ -326,7 +326,7 @@ const filteredCodes = codes.filter((item) => {
   VIEW ORDERS
 </Link>
             <p style={{ color: "#999" }}>
-              Create, track and manage your QoRacle QR codes.
+              Create, track and manage your QRystal Balls QR codes.
             </p>
           </div>
 
@@ -371,7 +371,7 @@ const filteredCodes = codes.filter((item) => {
             marginBottom: "30px",
           }}
         >
-          <h2 style={{ marginTop: 0 }}>Generate New QoRacle</h2>
+          <h2 style={{ marginTop: 0 }}>GENERATE QRYSTAL BALL</h2>
 <div
   style={{
     display: "grid",
@@ -465,7 +465,7 @@ const filteredCodes = codes.filter((item) => {
                 cursor: "pointer",
               }}
             >
-              {editingCode ? "SAVE CHANGES" : "GENERATE QORACLE"}
+              {editingCode ? "SAVE CHANGES" : "GENERATE QRYSTAL BALL"}
 {editingCode && (
   <button
     onClick={() => {
@@ -527,7 +527,7 @@ const filteredCodes = codes.filter((item) => {
             padding: "25px",
           }}
         >
-          <h2 style={{ marginTop: 0 }}>Your QoRacle Codes</h2>
+          <h2 style={{ marginTop: 0 }}>Your QRystal Balls Codes</h2>
 <input
   type="text"
   placeholder="Search code, product, customer, or notes..."
@@ -594,7 +594,7 @@ const filteredCodes = codes.filter((item) => {
             <p style={{ color: "#999" }}>Loading dashboard...</p>
           ) : codes.length === 0 ? (
             <p style={{ color: "#999" }}>
-              No QoRacle codes found yet.
+              No QRystal Balls codes found yet.
             </p>
           ) : (
             <div style={{ overflowX: "auto" }}>
