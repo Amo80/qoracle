@@ -2,189 +2,267 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+
 const products = [
   {
     name: "QRystal Balls Sticker",
     price: "$4.99",
     description:
       "A scannable QRystal Balls sticker you can place almost anywhere.",
+    icon: "✦",
   },
   {
     name: "QRystal Balls Card",
     price: "$7.99",
     description:
       "A pocket-sized QRystal Balls card with its own unique QR code.",
+    icon: "◇",
   },
   {
     name: "QRystal Balls Keychain",
     price: "$12.99",
     description:
       "Carry your QRystal Balls with you wherever you go.",
+    icon: "☽",
   },
-];const themes = ["jester", "chaos", "love", "eclipse", "dnd"];
+];
 
+const themes = [
+  {
+    id: "jester",
+    name: "JESTER",
+    image: "/themes/jester-oracle.png",
+    description: "Mischief & Mayhem",
+  },
+  {
+    id: "chaos",
+    name: "CHAOS",
+    image: "/themes/chaos-crystal-ball.png",
+    description: "Unpredictable Fate",
+  },
+  {
+    id: "love",
+    name: "LOVE",
+    image: "/themes/love-crystal-ball.png",
+    description: "Romance & Desire",
+  },
+  {
+    id: "eclipse",
+    name: "ECLIPSE",
+    image: "/themes/eclipse-crystal.png",
+    description: "Mystery & Secrets",
+  },
+  {
+    id: "dnd",
+    name: "D&D",
+    image: "/themes/DND.crystal.png",
+    description: "Adventure Awaits",
+  },
+];
 export default function ShopPage() {
-  const [selectedTheme, setSelectedTheme] = useState("classic");
-const router = useRouter();
-  return (
-    <main
-      style={{
-        minHeight: "100vh",
-        background: "#07070d",
-        color: "white",
-        padding: "40px 20px 60px",
-        fontFamily: "Arial, sans-serif",
-      }}
-    >
-      <div
-        style={{
-          maxWidth: "1100px",
-          margin: "0 auto",
-        }}
-      >
-        <div
-          style={{
-            textAlign: "center",
-            marginBottom: "40px",
-          }}
-        >
-          <p
-            style={{
-              color: "#a78bfa",
-              letterSpacing: "5px",
-              fontWeight: "bold",
-            }}
-          >
-            THE QRYSTAL BALLS
-          </p>
+  const router = useRouter();
+  const [selectedTheme, setSelectedTheme] = useState("jester");
 
-          <h1
-            style={{
-              fontSize: "48px",
-              marginBottom: "12px",
-            }}
-          >
-            Choose Your Oracle
+  const selectedThemeData = themes.find(
+    (theme) => theme.id === selectedTheme
+  );
+
+  function handleCheckout(product: (typeof products)[number]) {
+    router.push(
+      `/checkout?product=${encodeURIComponent(
+        product.name
+      )}&theme=${encodeURIComponent(
+        selectedTheme
+      )}&price=${encodeURIComponent(product.price)}`
+    );
+  }
+
+  return (
+    <main className="qrystal-shop">
+      {/* Background atmosphere */}
+      <div className="shop-stars" aria-hidden="true">
+        ✦　·　　　✧　　　　·　✦　　　·　　　✧
+      </div>
+
+      <div className="shop-container">
+        {/* BACK BUTTON */}
+        <button
+          type="button"
+          className="shop-back"
+          onClick={() => router.push("/")}
+        >
+          ← BACK TO ORACLE
+        </button>
+
+        {/* HERO */}
+        <header className="shop-hero">
+          <div className="shop-eyebrow">
+            ✦ THE QRYSTAL BALLS ✦
+          </div>
+
+          <h1>
+            THE <span>QRYSTAL</span> SHOP
           </h1>
 
-          <p
-            style={{
-              color: "#aaa",
-              fontSize: "18px",
-              maxWidth: "650px",
-              margin: "0 auto",
-              lineHeight: "1.6",
-            }}
-          >
-            Pick a product, choose your oracle theme, and make every scan a
-            little more mysterious.
+          <div className="shop-divider">
+            <span />
+            <b>✦</b>
+            <span />
+          </div>
+
+          <p className="shop-subtitle">
+            ARTIFACTS OF FATE
           </p>
-        </div>
 
-        <div
-          style={{
-            background: "#11111a",
-            border: "1px solid #29293a",
-            borderRadius: "18px",
-            padding: "24px",
-            marginBottom: "30px",
-          }}
-        >
-          <h2 style={{ marginTop: 0 }}>Choose Your Theme</h2>
+          <p className="shop-description">
+            Carry a piece of the Oracle with you.
+            <br />
+            Choose your artifact. Choose your fate.
+          </p>
+        </header>
 
-          <select
-            value={selectedTheme}
-            onChange={(e) => setSelectedTheme(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "14px",
-              borderRadius: "10px",
-              background: "#090910",
-              color: "white",
-              border: "1px solid #3b3b50",
-              fontSize: "16px",
-            }}
-          >
-            {themes.map((theme) => (
-              <option key={theme} value={theme}>
-                {theme.toUpperCase()}
-              </option>
-            ))}
-          </select>
-        </div>
+        {/* ORACLE SELECTOR */}
+        <section className="shop-theme-section">
+          <div className="shop-section-title">
+            <span>✦</span>
+            <h2>CHOOSE YOUR ORACLE</h2>
+            <span>✦</span>
+          </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-            gap: "20px",
-          }}
-        >
-          {products.map((product) => (
-            <div
-              key={product.name}
-              style={{
-                background: "#11111a",
-                border: "1px solid #29293a",
-                borderRadius: "18px",
-                padding: "26px",
-              }}
-            >
-              <h2 style={{ marginTop: 0 }}>{product.name}</h2>
+          <p className="shop-theme-subtitle">
+            Every Oracle carries a different energy.
+          </p>
 
-              <p
-                style={{
-                  color: "#aaa",
-                  lineHeight: "1.6",
-                  minHeight: "70px",
-                }}
-              >
-                {product.description}
-              </p>
+          <div className="shop-theme-grid">
+            {themes.map((theme) => {
+              const isSelected = selectedTheme === theme.id;
 
-              <div
-                style={{
-                  fontSize: "28px",
-                  fontWeight: "bold",
-                  color: "#c4b5fd",
-                  marginBottom: "18px",
-                }}
-              >
-                {product.price}
-              </div>
+              return (
+                <button
+                  key={theme.id}
+                  type="button"
+                  className={`shop-theme-card ${
+                    isSelected ? "selected" : ""
+                  } theme-card-${theme.id}`}
+                  onClick={() => setSelectedTheme(theme.id)}
+                  aria-pressed={isSelected}
+                >
+                  <div className="shop-theme-card-glow" />
 
-              <p
-                style={{
-                  color: "#888",
-                  fontSize: "14px",
-                }}
-              >
-                Theme: {selectedTheme.toUpperCase()}
-              </p>
+                 <div className="shop-theme-orb">
+  <img
+    src={theme.image}
+    alt={`${theme.name} Oracle`}
+  />
+</div>
 
-              <button
-onClick={() =>
-  router.push(
-    `/checkout?product=${encodeURIComponent(product.name)}&theme=${encodeURIComponent(selectedTheme)}&price=${encodeURIComponent(product.price)}`
-  )
-}
-                style={{
-                  width: "100%",
-                  padding: "14px",
-                  borderRadius: "10px",
-                  border: "none",
-                  background: "#7c3aed",
-                  color: "white",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  fontSize: "15px",
-                }}
-              >
-                CHOOSE THIS PRODUCT
-              </button>
+                  <strong>{theme.name}</strong>
+
+                  <span className="shop-theme-description">
+                    {theme.description}
+                  </span>
+
+                  {isSelected && (
+                    <span className="shop-selected">
+                      SELECTED
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* CURRENT SELECTION */}
+          <div className="shop-current-selection">
+            <span>YOUR ORACLE:</span>
+
+           <strong>
+  {selectedThemeData?.name}
+</strong>
+
+          </div>
+        </section>
+
+        {/* PRODUCTS */}
+        <section className="shop-products">
+          <div className="shop-products-heading">
+            <div>
+              <span className="shop-mini-label">
+                YOUR ARTIFACT AWAITS
+              </span>
+
+              <h2>
+                CHOOSE YOUR <span>ARTIFACT</span>
+              </h2>
             </div>
-          ))}
-        </div>
+
+            <p>
+              Your selected Oracle will be paired
+              <br />
+              with your artifact.
+            </p>
+          </div>
+
+          <div className="shop-product-grid">
+            {products.map((product) => (
+              <article
+                key={product.name}
+                className="shop-product-card"
+              >
+                <div className="shop-product-glow" />
+
+                <div className="shop-product-icon">
+                  {product.icon}
+                </div>
+
+                <div className="shop-product-content">
+                  <div className="shop-product-type">
+                    QRYSTAL ARTIFACT
+                  </div>
+
+                  <h3>{product.name}</h3>
+
+                  <p>{product.description}</p>
+
+                  <div className="shop-product-theme">
+                    <span>ORACLE</span>
+
+                   <strong>
+  {selectedThemeData?.name}
+</strong>
+
+                  </div>
+
+                  <div className="shop-product-bottom">
+                    <div className="shop-price">
+                      {product.price}
+                    </div>
+
+                    <button
+                      type="button"
+                      className="shop-buy-button"
+                      onClick={() => handleCheckout(product)}
+                    >
+                      CHOOSE THIS
+                      <span>→</span>
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        {/* FOOTER */}
+        <footer className="shop-footer">
+          <div>✦</div>
+          <p>
+            THE ORACLE HAS SPOKEN.
+            <br />
+            <span>NOW CHOOSE YOUR FATE.</span>
+          </p>
+          <div>✦</div>
+        </footer>
       </div>
     </main>
   );

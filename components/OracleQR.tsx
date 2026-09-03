@@ -1,6 +1,8 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
+
 
 
 const byTheme: Record<string, string[]> = {
@@ -185,12 +187,15 @@ export default function OracleQR({
   theme: string;
   code: string;
 }) {
+  const searchParams = useSearchParams();
   // Normalize theme names so URLs like ?theme=Jester and legacy Classic links work.
   const activeTheme = theme.toLowerCase() === "classic" ? "jester" : theme.toLowerCase();
 
   const [answer, setAnswer] = useState("");
   const [busy, setBusy] = useState(false);
-  const [question, setQuestion] = useState("");
+  const [question, setQuestion] = useState(
+  searchParams.get("question") || ""
+);
  const [lovePage, setLovePage] = useState<1 | 2 | 3>(1);
 const [dndRoll, setDndRoll] = useState(20);
 const [eclipseSide, setEclipseSide] = useState<"light" | "dark">("light");
