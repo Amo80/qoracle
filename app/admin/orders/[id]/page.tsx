@@ -3,6 +3,7 @@ import Link from "next/link";
 import TrackingForm from "./TrackingForm/page";
 import OrderStatus from "../OrderStatus/page";
 import ShippingEmail from "./ShippingEmail/page";
+import SendToPrintify from "./SendToPrintify";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -167,6 +168,13 @@ export default async function OrderDetailsPage({
   <strong>Printify Product ID:</strong>{" "}
   {order.printify_product_id || "—"}
 </p>
+
+{order.printify_product_id &&
+  order.printify_variant_id &&
+  order.payment_status === "paid" && (
+    <SendToPrintify orderId={order.id} />
+  )}
+
 
           <p>
             <strong>Amount:</strong>{" "}
