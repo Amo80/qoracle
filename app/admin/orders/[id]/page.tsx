@@ -171,10 +171,35 @@ export default async function OrderDetailsPage({
 
 {order.printify_product_id &&
   order.printify_variant_id &&
-  order.payment_status === "paid" && (
+  order.payment_status === "paid" &&
+  !order.printify_order_id && (
     <SendToPrintify orderId={order.id} />
   )}
 
+{order.printify_order_id && (
+  <div
+    style={{
+      marginTop: "24px",
+      padding: "20px",
+      border: "1px solid #2f4f3f",
+      borderRadius: "12px",
+      background: "#102018",
+    }}
+  >
+    <h3 style={{ marginTop: 0 }}>
+      Printify Order Created
+    </h3>
+
+    <p style={{ color: "#bbb", marginBottom: "6px" }}>
+      This order has already been sent to Printify for manual review.
+    </p>
+
+    <p style={{ marginBottom: 0 }}>
+      <strong>Printify Order ID:</strong>{" "}
+      {order.printify_order_id}
+    </p>
+  </div>
+)}
 
           <p>
             <strong>Amount:</strong>{" "}
