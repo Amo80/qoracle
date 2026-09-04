@@ -38,7 +38,7 @@ function CheckoutContent() {
         product,
 
         // QR artifact order
-        theme: isMerch ? null : theme,
+        theme,
 
         // Merch order
         printifyProductId,
@@ -136,7 +136,10 @@ function CheckoutContent() {
                 <p>
                   <strong>Type:</strong> QRYSTAL MERCH
                 </p>
-
+<p>
+  <strong>Theme:</strong>{" "}
+  {theme.toUpperCase()}
+</p>
                 <p>
                   <strong>Variant:</strong>{" "}
                   {variant || `#${variantId}`}
