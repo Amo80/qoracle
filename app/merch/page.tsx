@@ -170,13 +170,13 @@ export default function MerchPage() {
                             : "Price coming soon"}
                         </div>
 
-                        <button
-                          type="button"
-                          className="shop-buy-button"
-                          disabled
-                        >
-                          VIEW SOON
-                        </button>
+                       <button
+  type="button"
+  className="shop-buy-button"
+  onClick={() => router.push(`/merch/${product.id}`)}
+>
+  VIEW ITEM
+</button>
                       </div>
                     </div>
                   </article>
