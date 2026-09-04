@@ -1,15 +1,31 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createClient as createAdminClient } from "@supabase/supabase-js";
+import { createClient as createServerClient } from "@/lib/supabase/server";
 
 const PRINTIFY_SHOP_ID = "28814551";
 
-const supabase = createClient(
+const supabaseAdmin = createAdminClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
 export async function POST(request: Request) {
   try {
+    // Require a logged-in Supabase user.
+    const supabase = await createServerClient();
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const { orderId } = await request.json();
 
     if (!orderId) {
@@ -19,7 +35,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { data: order, error } = await supabase
+    const { data: order, error } = await supabaseAdmin
       .from("orders")
       .select("*")
       .eq("id", orderId)
@@ -113,7 +129,6 @@ export async function POST(request: Request) {
           ],
 
           shipping_method: 1,
-
           send_shipping_notification: false,
 
           address_to: {
@@ -146,7 +161,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("orders")
       .update({
         printify_order_id: printifyData.id,
