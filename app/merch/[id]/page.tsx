@@ -35,7 +35,16 @@ export default function MerchProductPage() {
   const [selectedVariantId, setSelectedVariantId] = useState<number | null>(
     null
   );
-const [selectedTheme, setSelectedTheme] = useState("jester");
+const selectedTheme = useMemo(() => {
+  const title = product?.title?.toLowerCase() || "";
+
+  if (title.includes("chaos")) return "chaos";
+  if (title.includes("love")) return "love";
+  if (title.includes("eclipse")) return "eclipse";
+  if (title.includes("d&d") || title.includes("dnd")) return "dnd";
+
+  return "jester";
+}, [product]);
 const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -161,20 +170,6 @@ const [quantity, setQuantity] = useState(1);
               <p>
                 Choose your size and color below.
               </p>
-<div className="shop-product-theme">
-  <span>THEME</span>
-
-  <select
-    value={selectedTheme}
-    onChange={(event) => setSelectedTheme(event.target.value)}
-  >
-    <option value="jester">JESTER</option>
-    <option value="chaos">CHAOS</option>
-    <option value="love">LOVE</option>
-    <option value="eclipse">ECLIPSE</option>
-    <option value="dnd">D&D</option>
-  </select>
-</div>
 
               <div className="shop-product-theme">
                 <span>VARIANT</span>
