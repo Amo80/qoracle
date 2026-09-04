@@ -153,6 +153,20 @@ export default async function OrderDetailsPage({
             <strong>Theme:</strong>{" "}
             {order.theme?.toUpperCase() || "—"}
           </p>
+<p>
+  <strong>Variant:</strong>{" "}
+  {order.printify_variant_title || "—"}
+</p>
+
+<p>
+  <strong>Printify Variant ID:</strong>{" "}
+  {order.printify_variant_id || "—"}
+</p>
+
+<p>
+  <strong>Printify Product ID:</strong>{" "}
+  {order.printify_product_id || "—"}
+</p>
 
           <p>
             <strong>Amount:</strong>{" "}
