@@ -26,6 +26,10 @@ export async function POST(request: Request) {
 
     const variantId =
       body.variantId as string | number | null;
+const quantity = Math.max(
+  1,
+  Math.min(10, Number(body.quantity) || 1)
+);
 
     const origin = new URL(request.url).origin;
 
@@ -148,6 +152,7 @@ export async function POST(request: Request) {
 
           printify_variant_title:
             variantTitle,
+quantity: String(quantity),
         },
 
         line_items: [
@@ -163,7 +168,7 @@ export async function POST(request: Request) {
               unit_amount: amount,
             },
 
-            quantity: 1,
+            quantity,
           },
         ],
 

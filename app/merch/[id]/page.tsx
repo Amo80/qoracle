@@ -36,6 +36,7 @@ export default function MerchProductPage() {
     null
   );
 const [selectedTheme, setSelectedTheme] = useState("jester");
+const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -194,6 +195,22 @@ const [selectedTheme, setSelectedTheme] = useState("jester");
                   ))}
                 </select>
               </div>
+<div className="shop-product-theme">
+  <span>QUANTITY</span>
+
+  <select
+    value={quantity}
+    onChange={(event) =>
+      setQuantity(Number(event.target.value))
+    }
+  >
+    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((qty) => (
+      <option key={qty} value={qty}>
+        {qty}
+      </option>
+    ))}
+  </select>
+</div>
 
               <div className="shop-product-bottom">
                 <div className="shop-price">
@@ -202,32 +219,35 @@ const [selectedTheme, setSelectedTheme] = useState("jester");
                     : "Unavailable"}
                 </div>
 
-              <button
+  <button
   type="button"
   className="shop-buy-button"
   disabled={!selectedVariant}
   onClick={() => {
     if (!selectedVariant) return;
 
-   router.push(
-  `/checkout?product=${encodeURIComponent(
-    product.title
-  )}&theme=${encodeURIComponent(
-    selectedTheme
-  )}&printifyProductId=${encodeURIComponent(
-    product.id
-  )}&variantId=${encodeURIComponent(
-    String(selectedVariant.id)
-  )}&variant=${encodeURIComponent(
-    selectedVariant.title
-  )}&price=${encodeURIComponent(
-    `$${(selectedVariant.price / 100).toFixed(2)}`
-  )}`
-);
+    router.push(
+      `/checkout?product=${encodeURIComponent(
+        product.title
+      )}&theme=${encodeURIComponent(
+        selectedTheme
+      )}&printifyProductId=${encodeURIComponent(
+        product.id
+      )}&variantId=${encodeURIComponent(
+        String(selectedVariant.id)
+      )}&variant=${encodeURIComponent(
+        selectedVariant.title
+      )}&quantity=${encodeURIComponent(
+        String(quantity)
+      )}&price=${encodeURIComponent(
+        `$${(selectedVariant.price / 100).toFixed(2)}`
+      )}`
+    );
   }}
 >
   BUY NOW
-</button>              </div>
+</button>
+    </div>
             </div>
           </div>
         </section>

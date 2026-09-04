@@ -159,6 +159,10 @@ export default async function OrderDetailsPage({
   <strong>Variant:</strong>{" "}
   {order.printify_variant_title || "—"}
 </p>
+<p>
+  <strong>Quantity:</strong>{" "}
+  {order.quantity || 1}
+</p>
 
 <p>
   <strong>Printify Variant ID:</strong>{" "}

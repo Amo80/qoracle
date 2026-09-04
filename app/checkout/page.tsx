@@ -24,6 +24,10 @@ function CheckoutContent() {
 
   const variant =
     searchParams.get("variant");
+const quantity = Math.max(
+  1,
+  Number(searchParams.get("quantity") || "1")
+);
 
   const isMerch =
     Boolean(printifyProductId && variantId);
@@ -44,6 +48,7 @@ function CheckoutContent() {
         printifyProductId,
         variantId,
         variant,
+quantity,
 
         // We'll validate pricing server-side before
         // allowing real merch payments.
@@ -144,6 +149,11 @@ function CheckoutContent() {
                   <strong>Variant:</strong>{" "}
                   {variant || `#${variantId}`}
                 </p>
+<p>
+  <strong>Quantity:</strong>{" "}
+  {quantity}
+</p>
+
               </>
             ) : (
               <p>

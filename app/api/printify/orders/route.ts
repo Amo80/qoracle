@@ -124,7 +124,7 @@ export async function POST(request: Request) {
             {
               product_id: order.printify_product_id,
               variant_id: Number(order.printify_variant_id),
-              quantity: 1,
+              quantity: order.quantity || 1,
             },
           ],
 

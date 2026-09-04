@@ -38,6 +38,10 @@ export async function POST(request: Request) {
   "QRystal Balls Product";
 
 const theme = session.metadata?.theme || "jester";
+const quantity = Math.max(
+  1,
+  Number(session.metadata?.quantity || "1")
+);
 
     const { data: existingOrder } = await supabase
       .from("orders")
@@ -50,6 +54,7 @@ const theme = session.metadata?.theme || "jester";
         stripe_session_id: session.id,
         product_name: productName,
         theme,
+quantity,
         amount_total: session.amount_total,
         currency: session.currency,
         customer_email: session.customer_details?.email || null,
