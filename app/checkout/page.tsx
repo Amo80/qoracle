@@ -7,27 +7,60 @@ function CheckoutContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const product = searchParams.get("product") || "QRystal Balls Product";
-  const theme = searchParams.get("theme") || "jester";
-  const price = searchParams.get("price") || "$0.00";
-async function handlePayment() {
-  const response = await fetch("/api/checkout", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      product,
-      theme,
-    }),
-  });
+  const product =
+    searchParams.get("product") || "QRystal Balls Product";
 
-  const data = await response.json();
+  const theme =
+    searchParams.get("theme") || "jester";
 
-  if (data.url) {
-    window.location.href = data.url;
+  const price =
+    searchParams.get("price") || "$0.00";
+
+  const printifyProductId =
+    searchParams.get("printifyProductId");
+
+  const variantId =
+    searchParams.get("variantId");
+
+  const variant =
+    searchParams.get("variant");
+
+  const isMerch =
+    Boolean(printifyProductId && variantId);
+
+  async function handlePayment() {
+    const response = await fetch("/api/checkout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        product,
+
+        // QR artifact order
+        theme: isMerch ? null : theme,
+
+        // Merch order
+        printifyProductId,
+        variantId,
+        variant,
+
+        // We'll validate pricing server-side before
+        // allowing real merch payments.
+        price,
+        orderType: isMerch ? "merch" : "artifact",
+      }),
+    });
+
+    const data = await response.json();
+
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      console.error("Checkout error:", data);
+    }
   }
-}
+
   return (
     <main
       style={{
@@ -45,7 +78,9 @@ async function handlePayment() {
         }}
       >
         <button
-          onClick={() => router.push("/shop")}
+          onClick={() =>
+            router.push(isMerch ? "/merch" : "/shop")
+          }
           style={{
             marginBottom: "24px",
             padding: "10px 16px",
@@ -57,7 +92,7 @@ async function handlePayment() {
             fontWeight: "bold",
           }}
         >
-          ← BACK TO SHOP
+          ← BACK TO {isMerch ? "MERCH" : "SHOP"}
         </button>
 
         <div
@@ -79,7 +114,9 @@ async function handlePayment() {
             QRYSTAL BALLS CHECKOUT
           </p>
 
-          <h1 style={{ marginTop: 0 }}>Review Your Order</h1>
+          <h1 style={{ marginTop: 0 }}>
+            Review Your Order
+          </h1>
 
           <div
             style={{
@@ -94,19 +131,32 @@ async function handlePayment() {
               <strong>Product:</strong> {product}
             </p>
 
-            <p>
-              <strong>Theme:</strong> {theme.toUpperCase()}
-            </p>
+            {isMerch ? (
+              <>
+                <p>
+                  <strong>Type:</strong> QRYSTAL MERCH
+                </p>
+
+                <p>
+                  <strong>Variant:</strong>{" "}
+                  {variant || `#${variantId}`}
+                </p>
+              </>
+            ) : (
+              <p>
+                <strong>Theme:</strong>{" "}
+                {theme.toUpperCase()}
+              </p>
+            )}
 
             <p>
               <strong>Price:</strong> {price}
             </p>
           </div>
 
-         
-           <button
-  onClick={handlePayment}
-  style={{            
+          <button
+            onClick={handlePayment}
+            style={{
               width: "100%",
               marginTop: "24px",
               padding: "15px",
@@ -115,7 +165,7 @@ async function handlePayment() {
               background: "#3b3b50",
               color: "#aaa",
               fontWeight: "bold",
-              cursor: "not-allowed",
+              cursor: "pointer",
               fontSize: "16px",
             }}
           >
@@ -126,6 +176,7 @@ async function handlePayment() {
     </main>
   );
 }
+
 export default function CheckoutPage() {
   return (
     <Suspense
