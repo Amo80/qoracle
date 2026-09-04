@@ -62,6 +62,9 @@ const themes = [
 export default function ShopPage() {
   const router = useRouter();
   const [selectedTheme, setSelectedTheme] = useState("jester");
+const [shopCategory, setShopCategory] = useState<"artifacts" | "merch">(
+  "artifacts"
+);
 
   const selectedThemeData = themes.find(
     (theme) => theme.id === selectedTheme
@@ -120,7 +123,31 @@ export default function ShopPage() {
             Choose your artifact. Choose your fate.
           </p>
         </header>
+{/* SHOP CATEGORY */}
+<section className="shop-category-switch">
+  <button
+    type="button"
+    className={`shop-category-button ${
+      shopCategory === "artifacts" ? "active" : ""
+    }`}
+    onClick={() => setShopCategory("artifacts")}
+  >
+    QR ARTIFACTS
+  </button>
 
+  <button
+    type="button"
+    className={`shop-category-button ${
+      shopCategory === "merch" ? "active" : ""
+    }`}
+    onClick={() => setShopCategory("merch")}
+  >
+    MERCH
+  </button>
+</section>
+
+{shopCategory === "artifacts" && (
+  <>
         {/* ORACLE SELECTOR */}
         <section className="shop-theme-section">
           <div className="shop-section-title">
@@ -253,6 +280,101 @@ export default function ShopPage() {
           </div>
         </section>
 
+  </>
+)}
+{shopCategory === "merch" && (
+  <section className="shop-merch">
+    <div className="shop-products-heading">
+      <div>
+        <span className="shop-mini-label">
+          WEAR THE ORACLE
+        </span>
+
+        <h2>
+          QRYSTAL <span>MERCH</span>
+        </h2>
+      </div>
+
+      <p>
+        Official apparel from
+        <br />
+        The Qrystal Balls.
+      </p>
+    </div>
+
+    <div className="shop-product-grid">
+      <article className="shop-product-card">
+        <div className="shop-product-glow" />
+
+        <div className="shop-product-icon">
+          👕
+        </div>
+
+        <div className="shop-product-content">
+          <div className="shop-product-type">
+            QRYSTAL APPAREL
+          </div>
+
+          <h3>Qrystal Balls T-Shirt</h3>
+
+          <p>
+            A soft everyday tee featuring official
+            Qrystal Balls artwork.
+          </p>
+
+          <div className="shop-product-bottom">
+            <div className="shop-price">
+              Coming Soon
+            </div>
+
+            <button
+              type="button"
+              className="shop-buy-button"
+              disabled
+            >
+              NOT YET LIVE
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article className="shop-product-card">
+        <div className="shop-product-glow" />
+
+        <div className="shop-product-icon">
+          ✦
+        </div>
+
+        <div className="shop-product-content">
+          <div className="shop-product-type">
+            QRYSTAL APPAREL
+          </div>
+
+          <h3>Qrystal Balls Hoodie</h3>
+
+          <p>
+            A heavier pullover hoodie featuring
+            official Qrystal Balls artwork.
+          </p>
+
+          <div className="shop-product-bottom">
+            <div className="shop-price">
+              Coming Soon
+            </div>
+
+            <button
+              type="button"
+              className="shop-buy-button"
+              disabled
+            >
+              NOT YET LIVE
+            </button>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+)}
         {/* FOOTER */}
         <footer className="shop-footer">
           <div>✦</div>
