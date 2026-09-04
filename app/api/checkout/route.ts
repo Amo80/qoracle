@@ -14,55 +14,176 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     const product = body.product as string;
-    const theme = body.theme as string;
+    const theme = body.theme as string | null;
 
-    const amount = priceMap[product];
+    const orderType = body.orderType as
+      | "artifact"
+      | "merch"
+      | undefined;
 
-    if (!amount) {
-      return NextResponse.json(
-        { error: "Invalid product" },
-        { status: 400 }
-      );
-    }
+    const printifyProductId =
+      body.printifyProductId as string | null;
+
+    const variantId =
+      body.variantId as string | number | null;
 
     const origin = new URL(request.url).origin;
 
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-shipping_address_collection: {
-  allowed_countries: ["US"],
-},
-customer_creation: "always",
+    let amount: number;
+    let description: string;
+    let variantTitle = "";
 
-metadata: {
-  product_name: product,
-  theme: theme,
-},
-customer_email: undefined,
-      line_items: [
+    // =========================
+    // MERCH ORDER
+    // =========================
+    if (orderType === "merch") {
+      const token = process.env.PRINTIFY_API_TOKEN;
+      const shopId = process.env.PRINTIFY_SHOP_ID;
+
+      if (
+        !token ||
+        !shopId ||
+        !printifyProductId ||
+        !variantId
+      ) {
+        return NextResponse.json(
+          { error: "Missing Printify information" },
+          { status: 400 }
+        );
+      }
+
+      const response = await fetch(
+        `https://api.printify.com/v1/shops/${shopId}/products/${printifyProductId}.json`,
         {
-          price_data: {
-            currency: "usd",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          cache: "no-store",
+        }
+      );
 
-            product_data: {
-              name: product,
-              description: `QRystal Balls theme: ${theme}`,
+      if (!response.ok) {
+        return NextResponse.json(
+          { error: "Unable to verify Printify product" },
+          { status: 400 }
+        );
+      }
+
+      const printifyProduct = await response.json();
+
+      const selectedVariant =
+        printifyProduct.variants?.find(
+          (variant: {
+            id: number;
+            title: string;
+            price: number;
+            is_enabled: boolean;
+            is_available: boolean;
+          }) =>
+            String(variant.id) === String(variantId) &&
+            variant.is_enabled &&
+            variant.is_available
+        );
+
+      if (!selectedVariant) {
+        return NextResponse.json(
+          { error: "Invalid Printify variant" },
+          { status: 400 }
+        );
+      }
+
+      amount = selectedVariant.price;
+      variantTitle = selectedVariant.title;
+
+      description = `Qrystal Merch — ${variantTitle}`;
+    }
+
+    // =========================
+    // QR ARTIFACT ORDER
+    // =========================
+    else {
+      const artifactAmount = priceMap[product];
+
+      if (!artifactAmount) {
+        return NextResponse.json(
+          { error: "Invalid product" },
+          { status: 400 }
+        );
+      }
+
+      amount = artifactAmount;
+
+      description = `QRystal Balls theme: ${
+        theme || "jester"
+      }`;
+    }
+
+    const session =
+      await stripe.checkout.sessions.create({
+        mode: "payment",
+
+        shipping_address_collection: {
+          allowed_countries: ["US"],
+        },
+
+        customer_creation: "always",
+
+        metadata: {
+          product_name: product,
+          order_type:
+            orderType === "merch"
+              ? "merch"
+              : "artifact",
+
+          theme:
+            orderType === "merch"
+              ? ""
+              : theme || "jester",
+
+          printify_product_id:
+            printifyProductId || "",
+
+          printify_variant_id:
+            variantId
+              ? String(variantId)
+              : "",
+
+          printify_variant_title:
+            variantTitle,
+        },
+
+        line_items: [
+          {
+            price_data: {
+              currency: "usd",
+
+              product_data: {
+                name: product,
+                description,
+              },
+
+              unit_amount: amount,
             },
 
-            unit_amount: amount,
+            quantity: 1,
           },
+        ],
 
-          quantity: 1,
-        },
-      ],
+        success_url:
+          `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
 
-      success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/checkout?product=${encodeURIComponent(
-        product
-      )}&theme=${encodeURIComponent(theme)}&price=$${(
-        amount / 100
-      ).toFixed(2)}`,
-    });
+        cancel_url:
+          orderType === "merch"
+            ? `${origin}/merch/${printifyProductId}`
+            : `${origin}/checkout?product=${encodeURIComponent(
+                product
+              )}&theme=${encodeURIComponent(
+                theme || "jester"
+              )}&price=$${(
+                amount / 100
+              ).toFixed(2)}`,
+      });
 
     return NextResponse.json({
       url: session.url,
@@ -71,7 +192,10 @@ customer_email: undefined,
     console.error(error);
 
     return NextResponse.json(
-      { error: "Unable to create checkout session" },
+      {
+        error:
+          "Unable to create checkout session",
+      },
       { status: 500 }
     );
   }
