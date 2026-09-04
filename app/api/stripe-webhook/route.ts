@@ -50,6 +50,15 @@ export async function POST(request: Request) {
         session.metadata?.product_name || "QRystal Balls Product";
 
       const theme = session.metadata?.theme || "jester";
+const printifyProductId =
+  session.metadata?.printify_product_id || null;
+
+const printifyVariantId =
+  session.metadata?.printify_variant_id || null;
+
+const printifyVariantTitle =
+  session.metadata?.printify_variant_title || null;
+
 
       const customerName =
         session.customer_details?.name || null;
@@ -89,6 +98,9 @@ const shippingAddress = shippingDetails?.address
             stripe_payment_id: paymentIntentId,
             amount_total: session.amount_total,
             currency: session.currency,
+printify_product_id: printifyProductId,
+printify_variant_id: printifyVariantId,
+printify_variant_title: printifyVariantTitle,
             customer_email: customerEmail,
             shipping_address: shippingAddress,
            payment_status: session.payment_status,
@@ -120,6 +132,9 @@ const shippingAddress = shippingDetails?.address
              customer_email: customerEmail,
 shipping_address: shippingAddress,
 payment_status: session.payment_status,
+printify_product_id: printifyProductId,
+printify_variant_id: printifyVariantId,
+printify_variant_title: printifyVariantTitle,
         });
 
         if (insertError) {
