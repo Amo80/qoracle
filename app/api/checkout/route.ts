@@ -96,7 +96,7 @@ export async function POST(request: Request) {
       amount = selectedVariant.price;
       variantTitle = selectedVariant.title;
 
-      description = `Qrystal Merch — ${variantTitle}`;
+      description = `Qrystal Merch — ${(theme || "jester").toUpperCase()} — ${variantTitle}`;
     }
 
     // =========================
@@ -136,10 +136,7 @@ export async function POST(request: Request) {
               ? "merch"
               : "artifact",
 
-          theme:
-            orderType === "merch"
-              ? ""
-              : theme || "jester",
+       theme: theme || "jester",
 
           printify_product_id:
             printifyProductId || "",
