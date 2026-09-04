@@ -187,14 +187,28 @@ export default function MerchProductPage() {
                     : "Unavailable"}
                 </div>
 
-                <button
-                  type="button"
-                  className="shop-buy-button"
-                  disabled
-                >
-                  CHECKOUT SOON
-                </button>
-              </div>
+              <button
+  type="button"
+  className="shop-buy-button"
+  disabled={!selectedVariant}
+  onClick={() => {
+    if (!selectedVariant) return;
+
+    router.push(
+      `/checkout?product=${encodeURIComponent(
+        product.title
+      )}&printifyProductId=${encodeURIComponent(
+        product.id
+      )}&variantId=${encodeURIComponent(
+        String(selectedVariant.id)
+      )}&price=${encodeURIComponent(
+        `$${(selectedVariant.price / 100).toFixed(2)}`
+      )}`
+    );
+  }}
+>
+  BUY NOW
+</button>              </div>
             </div>
           </div>
         </section>
