@@ -35,6 +35,7 @@ export default function MerchProductPage() {
   const [selectedVariantId, setSelectedVariantId] = useState<number | null>(
     null
   );
+const [selectedTheme, setSelectedTheme] = useState("jester");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -159,6 +160,20 @@ export default function MerchProductPage() {
               <p>
                 Choose your size and color below.
               </p>
+<div className="shop-product-theme">
+  <span>THEME</span>
+
+  <select
+    value={selectedTheme}
+    onChange={(event) => setSelectedTheme(event.target.value)}
+  >
+    <option value="jester">JESTER</option>
+    <option value="chaos">CHAOS</option>
+    <option value="love">LOVE</option>
+    <option value="eclipse">ECLIPSE</option>
+    <option value="dnd">D&D</option>
+  </select>
+</div>
 
               <div className="shop-product-theme">
                 <span>VARIANT</span>
@@ -194,17 +209,21 @@ export default function MerchProductPage() {
   onClick={() => {
     if (!selectedVariant) return;
 
-    router.push(
-      `/checkout?product=${encodeURIComponent(
-        product.title
-      )}&printifyProductId=${encodeURIComponent(
-        product.id
-      )}&variantId=${encodeURIComponent(
-        String(selectedVariant.id)
-      )}&price=${encodeURIComponent(
-        `$${(selectedVariant.price / 100).toFixed(2)}`
-      )}`
-    );
+   router.push(
+  `/checkout?product=${encodeURIComponent(
+    product.title
+  )}&theme=${encodeURIComponent(
+    selectedTheme
+  )}&printifyProductId=${encodeURIComponent(
+    product.id
+  )}&variantId=${encodeURIComponent(
+    String(selectedVariant.id)
+  )}&variant=${encodeURIComponent(
+    selectedVariant.title
+  )}&price=${encodeURIComponent(
+    `$${(selectedVariant.price / 100).toFixed(2)}`
+  )}`
+);
   }}
 >
   BUY NOW
