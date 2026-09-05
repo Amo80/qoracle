@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { createClient } from "@supabase/supabase-js";
 import OrderStatus from "./OrderStatus/page";
+import LogoutButton from "./LogoutButton";
 import { requireAdminPage } from "@/lib/auth/admin";
 
 export default async function OrdersPage({
@@ -88,7 +89,18 @@ export default async function OrdersPage({
         padding: "30px",
       }}
     >
-      <h1>QRystal Balls Orders</h1>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "16px",
+          flexWrap: "wrap",
+        }}
+      >
+        <h1 style={{ margin: 0 }}>QRystal Balls Orders</h1>
+        <LogoutButton />
+      </div>
 
       <form
         method="GET"
