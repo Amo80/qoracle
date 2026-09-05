@@ -47,7 +47,16 @@ export default function MerchPage() {
 
         const data = await response.json();
 
-        setProducts(data.data || []);
+        const allowedProductIds = [
+  "6a9b0ef60df98d21710a69d4", // JESTER
+  "6a9b4765baaf31d43701ed9b", // CHAOS
+];
+
+setProducts(
+  (data.data || []).filter((product: PrintifyProduct) =>
+    allowedProductIds.includes(product.id)
+  )
+);
       } catch (err) {
         console.error(err);
         setError("The Oracle could not summon the merch.");
