@@ -5,17 +5,19 @@ import OrderStatus from "../OrderStatus/page";
 import ShippingEmail from "./ShippingEmail/page";
 import SendToPrintify from "./SendToPrintify";
 import SyncPrintifyStatus from "./SyncPrintifyStatus";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { requireAdminPage } from "@/lib/auth/admin";
 
 export default async function OrderDetailsPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await requireAdminPage();
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
   const { id } = await params;
 
   const { data: order, error } = await supabase

@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
-import { createClient as createServerClient } from "@/lib/supabase/server";
+import { requireAdminApi } from "@/lib/auth/admin";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -9,18 +9,9 @@ const supabase = createClient(
 );
 
 export async function PATCH(request: Request) {
-  const authClient = await createServerClient();
+  const { response } = await requireAdminApi();
+  if (response) return response;
 
-  const {
-    data: { user },
-  } = await authClient.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json(
-      { error: "Unauthorized" },
-      { status: 401 }
-    );
-  }
   try {
     const body = await request.json();
 
