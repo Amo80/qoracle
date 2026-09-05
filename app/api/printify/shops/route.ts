@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
+import { requireAdminApi } from "@/lib/auth/admin";
 
 export async function GET() {
+  const { response } = await requireAdminApi();
+  if (response) return response;
+
   try {
     const token = process.env.PRINTIFY_API_TOKEN;
 

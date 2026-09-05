@@ -1,15 +1,18 @@
 import { createClient } from "@supabase/supabase-js";
 import PrintButton from "./PrintButton/page";
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { requireAdminPage } from "@/lib/auth/admin";
 
 export default async function PackingSlipPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await requireAdminPage();
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
   const { id } = await params;
 
   const { data: order, error } = await supabase

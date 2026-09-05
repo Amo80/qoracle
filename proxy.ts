@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { isAuthorizedAdministrator } from "@/lib/auth/admin";
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({
@@ -36,6 +37,7 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const isAdminLogin = request.nextUrl.pathname === "/admin/login";
+  const isAuthorizedAdmin = isAuthorizedAdministrator(user);
 
   if (!user && !isAdminLogin) {
     const url = request.nextUrl.clone();
@@ -43,7 +45,20 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (user && isAdminLogin) {
+  if (user && !isAuthorizedAdmin) {
+    await supabase.auth.signOut();
+
+    if (isAdminLogin) {
+      return response;
+    }
+
+    const url = request.nextUrl.clone();
+    url.pathname = "/admin/login";
+    url.searchParams.set("error", "unauthorized-account");
+    return NextResponse.redirect(url);
+  }
+
+  if (isAuthorizedAdmin && isAdminLogin) {
     const url = request.nextUrl.clone();
     url.pathname = "/admin";
     return NextResponse.redirect(url);

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
-import { createClient as createServerClient } from "@/lib/supabase/server";
+import { requireAdminApi } from "@/lib/auth/admin";
 
 const PRINTIFY_SHOP_ID = "28814551";
 
@@ -10,21 +10,10 @@ const supabaseAdmin = createAdminClient(
 );
 
 export async function POST(request: Request) {
+  const { response } = await requireAdminApi();
+  if (response) return response;
+
   try {
-    const supabase = await createServerClient();
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
     const { orderId } = await request.json();
 
     if (!orderId) {

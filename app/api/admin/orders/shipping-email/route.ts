@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
-import { createClient as createServerClient } from "@/lib/supabase/server";
 import { createClient } from "@supabase/supabase-js";
+import { requireAdminApi } from "@/lib/auth/admin";
 
 
 
@@ -11,18 +11,8 @@ const supabase = createClient(
 );
 
 export async function POST(request: Request) {
-  const authClient = await createServerClient();
-
-  const {
-    data: { user },
-  } = await authClient.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json(
-      { error: "Unauthorized" },
-      { status: 401 }
-    );
-  }
+  const { response } = await requireAdminApi();
+  if (response) return response;
 
   try {
     const resend = new Resend(process.env.RESEND_API_KEY);
