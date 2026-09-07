@@ -58,7 +58,7 @@ const paymentIntentId =
     ? session.payment_intent
     : session.payment_intent?.id || null;
 
-const shippingDetails = (session as any).shipping_details;
+const shippingDetails = session.collected_information?.shipping_details;
 const shippingAddress = shippingDetails?.address
   ? JSON.stringify(shippingDetails.address)
   : null;
