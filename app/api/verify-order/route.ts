@@ -63,38 +63,35 @@ const shippingAddress = shippingDetails?.address
   ? JSON.stringify(shippingDetails.address)
   : null;
 
-    const { data: existingOrder } = await supabase
+    const { error: upsertError } = await supabase
       .from("orders")
-      .select("id")
-      .eq("stripe_session_id", session.id)
-      .maybeSingle();
+      .upsert(
+        {
+          stripe_session_id: session.id,
+          product_name: productName,
+          theme,
+          printify_product_id: printifyProductId,
+          printify_variant_id: printifyVariantId,
+          printify_variant_title: printifyVariantTitle,
+          quantity,
+          customer_name: session.customer_details?.name || null,
+          stripe_payment_id: paymentIntentId,
+          amount_total: session.amount_total,
+          currency: session.currency,
+          customer_email: session.customer_details?.email || null,
+          shipping_address: shippingAddress,
+          payment_status: session.payment_status,
+        },
+        { onConflict: "stripe_session_id" }
+      );
 
-    if (!existingOrder) {
-      const { error: insertError } = await supabase.from("orders").insert({
-        stripe_session_id: session.id,
-        product_name: productName,
-        theme,
-        printify_product_id: printifyProductId,
-        printify_variant_id: printifyVariantId,
-        printify_variant_title: printifyVariantTitle,
-        quantity,
-        customer_name: session.customer_details?.name || null,
-        stripe_payment_id: paymentIntentId,
-        amount_total: session.amount_total,
-        currency: session.currency,
-        customer_email: session.customer_details?.email || null,
-        shipping_address: shippingAddress,
-        payment_status: session.payment_status,
-      });
+    if (upsertError) {
+      console.error(upsertError);
 
-      if (insertError) {
-        console.error(insertError);
-
-        return NextResponse.json(
-          { error: "Unable to save order" },
-          { status: 500 }
-        );
-      }
+      return NextResponse.json(
+        { error: "Unable to save order" },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({
