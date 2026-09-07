@@ -34,6 +34,13 @@ const quantity = Math.max(
 
   const isMerch =
     Boolean(printifyProductId && variantId);
+  const parsedUnitPrice =
+    Number(price.replace(/[^0-9.-]/g, ""));
+  const unitPriceCents = Number.isFinite(parsedUnitPrice)
+    ? Math.round(parsedUnitPrice * 100)
+    : 0;
+  const merchandiseSubtotal =
+    `$${((unitPriceCents * quantity) / 100).toFixed(2)}`;
 
   async function handlePayment() {
     if (checkoutInProgress.current) return;
@@ -171,6 +178,17 @@ quantity,
   <strong>Quantity:</strong>{" "}
   {quantity}
 </p>
+                <p>
+                  <strong>Unit Price:</strong> {price}
+                </p>
+                <p>
+                  <strong>Merchandise Subtotal:</strong>{" "}
+                  {merchandiseSubtotal}
+                </p>
+                <p style={{ color: "#aaa", fontSize: "14px" }}>
+                  Shipping and applicable taxes are calculated and shown
+                  during Stripe checkout.
+                </p>
 
               </>
             ) : (
@@ -180,9 +198,11 @@ quantity,
               </p>
             )}
 
-            <p>
-              <strong>Price:</strong> {price}
-            </p>
+            {!isMerch && (
+              <p>
+                <strong>Price:</strong> {price}
+              </p>
+            )}
           </div>
 
           <button
