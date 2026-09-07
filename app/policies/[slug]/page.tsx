@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { ReactNode } from "react";
 
 type Policy = {
   title: string;
   intro: string;
   sections: Array<{
     heading: string;
-    paragraphs: string[];
+    paragraphs: ReactNode[];
   }>;
 };
 
@@ -146,7 +147,12 @@ const policies: Record<string, Policy> = {
       {
         heading: "Support contact",
         paragraphs: [
-          "Customer support email: [STORE OWNER: ADD SUPPORT EMAIL BEFORE LAUNCH]",
+          <>
+            Customer support email:{" "}
+            <a href="mailto:support@theqrystalballs.com">
+              support@theqrystalballs.com
+            </a>
+          </>,
           "Please allow reasonable time for a response. Sending repeated messages may slow down our ability to review your request.",
         ],
       },
@@ -186,8 +192,8 @@ export default async function PolicyPage({
         {policy.sections.map((section) => (
           <section key={section.heading}>
             <h2>{section.heading}</h2>
-            {section.paragraphs.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
+            {section.paragraphs.map((paragraph, index) => (
+              <p key={index}>{paragraph}</p>
             ))}
           </section>
         ))}

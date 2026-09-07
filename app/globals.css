@@ -81,6 +81,10 @@
   line-height: 1.7;
 }
 
+.policy-card section a {
+  color: #d8c7ff;
+}
+
 .policy-back-link {
   display: inline-block;
   margin-top: 34px;
