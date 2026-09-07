@@ -95,6 +95,7 @@ export async function POST(request: Request) {
 
     const firstName = nameParts.shift() || "Customer";
     const lastName = nameParts.join(" ") || "Customer";
+    const externalId = `qrystal-order-${order.id}`;
 
     const printifyResponse = await fetch(
       `https://api.printify.com/v1/shops/${PRINTIFY_SHOP_ID}/orders.json`,
@@ -105,7 +106,7 @@ export async function POST(request: Request) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          external_id: `qrystal-order-${order.id}`,
+          external_id: externalId,
           label: `QRystal Balls Order #${order.id}`,
 
           line_items: [
@@ -136,8 +137,15 @@ export async function POST(request: Request) {
     );
 
     const printifyData = await printifyResponse.json();
+    const existingPrintifyOrder =
+      printifyResponse.status === 409 &&
+      printifyData?.code === 8503 &&
+      printifyData?.order?.external_id === externalId &&
+      typeof printifyData?.order?.id === "string"
+        ? printifyData.order
+        : null;
 
-    if (!printifyResponse.ok) {
+    if (!printifyResponse.ok && !existingPrintifyOrder) {
       console.error("Printify order error:", printifyData);
 
       return NextResponse.json(
@@ -152,7 +160,7 @@ export async function POST(request: Request) {
     const { error: updateError } = await supabaseAdmin
       .from("orders")
       .update({
-        printify_order_id: printifyData.id,
+        printify_order_id: existingPrintifyOrder?.id || printifyData.id,
         printify_fulfillment_status: "created",
       })
       .eq("id", order.id);
@@ -173,7 +181,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       message: "Order created in Printify for manual review.",
-      printifyOrder: printifyData,
+      printifyOrder: existingPrintifyOrder || printifyData,
     });
   } catch (error) {
     console.error("Printify fulfillment error:", error);
