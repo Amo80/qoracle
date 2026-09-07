@@ -1,11 +1,14 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
 function CheckoutContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const checkoutInProgress = useRef(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
 
   const product =
     searchParams.get("product") || "QRystal Balls Product";
@@ -33,36 +36,51 @@ const quantity = Math.max(
     Boolean(printifyProductId && variantId);
 
   async function handlePayment() {
-    const response = await fetch("/api/checkout", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        product,
+    if (checkoutInProgress.current) return;
 
-        // QR artifact order
-        theme,
+    checkoutInProgress.current = true;
+    setIsLoading(true);
+    setCheckoutError("");
 
-        // Merch order
-        printifyProductId,
-        variantId,
-        variant,
+    try {
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          product,
+
+          // QR artifact order
+          theme,
+
+          // Merch order
+          printifyProductId,
+          variantId,
+          variant,
 quantity,
 
-        // We'll validate pricing server-side before
-        // allowing real merch payments.
-        price,
-        orderType: isMerch ? "merch" : "artifact",
-      }),
-    });
+          // We'll validate pricing server-side before
+          // allowing real merch payments.
+          price,
+          orderType: isMerch ? "merch" : "artifact",
+        }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (data.url) {
+      if (!response.ok || !data.url) {
+        throw new Error(data.error || "Unable to create checkout session.");
+      }
+
       window.location.href = data.url;
-    } else {
-      console.error("Checkout error:", data);
+    } catch (error) {
+      console.error("Checkout error:", error);
+      setCheckoutError(
+        "Unable to start checkout. Please try again."
+      );
+      checkoutInProgress.current = false;
+      setIsLoading(false);
     }
   }
 
@@ -169,6 +187,7 @@ quantity,
 
           <button
             onClick={handlePayment}
+            disabled={isLoading}
             style={{
               width: "100%",
               marginTop: "24px",
@@ -178,12 +197,26 @@ quantity,
               background: "#3b3b50",
               color: "#aaa",
               fontWeight: "bold",
-              cursor: "pointer",
+              cursor: isLoading ? "not-allowed" : "pointer",
+              opacity: isLoading ? 0.7 : 1,
               fontSize: "16px",
             }}
           >
-            PAY WITH STRIPE
+            {isLoading ? "CREATING CHECKOUT..." : "PAY WITH STRIPE"}
           </button>
+          {checkoutError && (
+            <p
+              role="alert"
+              style={{
+                marginTop: "14px",
+                marginBottom: 0,
+                color: "#fca5a5",
+                textAlign: "center",
+              }}
+            >
+              {checkoutError}
+            </p>
+          )}
         </div>
       </div>
     </main>
