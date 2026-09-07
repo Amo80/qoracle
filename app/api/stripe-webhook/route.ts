@@ -80,26 +80,11 @@ const shippingAddress = shippingDetails?.address
   ? JSON.stringify(shippingDetails.address)
   : null;
 
-      const { data: existingOrder, error: lookupError } =
-        await supabase
-          .from("orders")
-          .select("id")
-          .eq("stripe_session_id", session.id)
-          .maybeSingle();
-
-      if (lookupError) {
-        console.error("Unable to check existing order:", lookupError);
-
-        return NextResponse.json(
-          { error: "Unable to check order" },
-          { status: 500 }
-        );
-      }
-
-      if (existingOrder) {
-        const { error: updateError } = await supabase
-          .from("orders")
-          .update({
+      const { error: upsertError } = await supabase
+        .from("orders")
+        .upsert(
+          {
+            stripe_session_id: session.id,
             product_name: productName,
             theme,
             customer_name: customerName,
@@ -112,52 +97,18 @@ printify_variant_title: printifyVariantTitle,
             quantity,
             customer_email: customerEmail,
             shipping_address: shippingAddress,
-           payment_status: session.payment_status,
-          })
-          .eq("stripe_session_id", session.id);
+            payment_status: session.payment_status,
+          },
+          { onConflict: "stripe_session_id" }
+        );
 
-        if (updateError) {
-          console.error(
-            "Unable to update existing order:",
-            updateError
-          );
+      if (upsertError) {
+        console.error("Unable to save webhook order:", upsertError);
 
-          return NextResponse.json(
-            { error: "Unable to update order" },
-            { status: 500 }
-          );
-        }
-      } else {
-        const { error: insertError } = await supabase
-          .from("orders")
-          .insert({
-            stripe_session_id: session.id,
-            product_name: productName,
-            theme,
-            customer_name: customerName,
-            stripe_payment_id: paymentIntentId,
-            amount_total: session.amount_total,
-            currency: session.currency,
-             customer_email: customerEmail,
-shipping_address: shippingAddress,
-payment_status: session.payment_status,
-printify_product_id: printifyProductId,
-printify_variant_id: printifyVariantId,
-printify_variant_title: printifyVariantTitle,
-quantity,
-        });
-
-        if (insertError) {
-          console.error(
-            "Unable to save webhook order:",
-            insertError
-          );
-
-          return NextResponse.json(
-            { error: "Unable to save order" },
-            { status: 500 }
-          );
-        }
+        return NextResponse.json(
+          { error: "Unable to save order" },
+          { status: 500 }
+        );
       }
     }
   }
