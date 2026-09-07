@@ -38,10 +38,30 @@ export async function POST(request: Request) {
   "QRystal Balls Product";
 
 const theme = session.metadata?.theme || "jester";
-const quantity = Math.max(
-  1,
-  Number(session.metadata?.quantity || "1")
-);
+const printifyProductId =
+  session.metadata?.printify_product_id || null;
+const printifyVariantId =
+  session.metadata?.printify_variant_id || null;
+const printifyVariantTitle =
+  session.metadata?.printify_variant_title || null;
+
+const metadataQuantity = Number(session.metadata?.quantity);
+const quantity =
+  Number.isInteger(metadataQuantity) &&
+  metadataQuantity >= 1 &&
+  metadataQuantity <= 10
+    ? metadataQuantity
+    : 1;
+
+const paymentIntentId =
+  typeof session.payment_intent === "string"
+    ? session.payment_intent
+    : session.payment_intent?.id || null;
+
+const shippingDetails = (session as any).shipping_details;
+const shippingAddress = shippingDetails?.address
+  ? JSON.stringify(shippingDetails.address)
+  : null;
 
     const { data: existingOrder } = await supabase
       .from("orders")
@@ -54,10 +74,16 @@ const quantity = Math.max(
         stripe_session_id: session.id,
         product_name: productName,
         theme,
-quantity,
+        printify_product_id: printifyProductId,
+        printify_variant_id: printifyVariantId,
+        printify_variant_title: printifyVariantTitle,
+        quantity,
+        customer_name: session.customer_details?.name || null,
+        stripe_payment_id: paymentIntentId,
         amount_total: session.amount_total,
         currency: session.currency,
         customer_email: session.customer_details?.email || null,
+        shipping_address: shippingAddress,
         payment_status: session.payment_status,
       });
 
