@@ -59,6 +59,14 @@ const printifyVariantId =
 const printifyVariantTitle =
   session.metadata?.printify_variant_title || null;
 
+const metadataQuantity = Number(session.metadata?.quantity);
+const quantity =
+  Number.isInteger(metadataQuantity) &&
+  metadataQuantity >= 1 &&
+  metadataQuantity <= 10
+    ? metadataQuantity
+    : 1;
+
 
       const customerName =
         session.customer_details?.name || null;
@@ -101,6 +109,7 @@ const shippingAddress = shippingDetails?.address
 printify_product_id: printifyProductId,
 printify_variant_id: printifyVariantId,
 printify_variant_title: printifyVariantTitle,
+            quantity,
             customer_email: customerEmail,
             shipping_address: shippingAddress,
            payment_status: session.payment_status,
@@ -135,6 +144,7 @@ payment_status: session.payment_status,
 printify_product_id: printifyProductId,
 printify_variant_id: printifyVariantId,
 printify_variant_title: printifyVariantTitle,
+quantity,
         });
 
         if (insertError) {
