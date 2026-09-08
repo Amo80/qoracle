@@ -9,6 +9,13 @@ function CheckoutContent() {
   const checkoutInProgress = useRef(false);
   const [isLoading, setIsLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
+  const [shippingFirstName, setShippingFirstName] = useState("");
+  const [shippingLastName, setShippingLastName] = useState("");
+  const [shippingAddress1, setShippingAddress1] = useState("");
+  const [shippingAddress2, setShippingAddress2] = useState("");
+  const [shippingCity, setShippingCity] = useState("");
+  const [shippingState, setShippingState] = useState("");
+  const [shippingZip, setShippingZip] = useState("");
 
   const product =
     searchParams.get("product") || "QRystal Balls Product";
@@ -42,8 +49,34 @@ const quantity = Math.max(
   const merchandiseSubtotal =
     `$${((unitPriceCents * quantity) / 100).toFixed(2)}`;
 
+  const shippingInputStyle = {
+    width: "100%",
+    boxSizing: "border-box" as const,
+    padding: "12px",
+    marginTop: "6px",
+    marginBottom: "12px",
+    borderRadius: "8px",
+    border: "1px solid #444",
+    background: "#111118",
+    color: "white",
+    fontSize: "16px",
+  };
+
   async function handlePayment() {
     if (checkoutInProgress.current) return;
+
+    if (
+      isMerch &&
+      (!shippingFirstName.trim() ||
+        !shippingLastName.trim() ||
+        !shippingAddress1.trim() ||
+        !shippingCity.trim() ||
+        !shippingState.trim() ||
+        !shippingZip.trim())
+    ) {
+      setCheckoutError("Please complete your shipping address.");
+      return;
+    }
 
     checkoutInProgress.current = true;
     setIsLoading(true);
@@ -71,6 +104,16 @@ quantity,
           // allowing real merch payments.
           price,
           orderType: isMerch ? "merch" : "artifact",
+          shippingAddress: isMerch ? {
+            first_name: shippingFirstName,
+            last_name: shippingLastName,
+            address1: shippingAddress1,
+            address2: shippingAddress2,
+            city: shippingCity,
+            region: shippingState,
+            zip: shippingZip,
+            country: "US",
+          } : undefined,
         }),
       });
 
@@ -185,10 +228,79 @@ quantity,
                   <strong>Merchandise Subtotal:</strong>{" "}
                   {merchandiseSubtotal}
                 </p>
-                <p style={{ color: "#aaa", fontSize: "14px" }}>
-                  Shipping and applicable taxes are calculated and shown
-                  during Stripe checkout.
-                </p>
+                <div style={{ marginTop: "18px" }}>
+                  <p style={{ marginBottom: "10px" }}>
+                    <strong>Shipping Address</strong>
+                  </p>
+
+                  <label>
+                    First Name
+                    <input
+                      value={shippingFirstName}
+                      onChange={(e) => setShippingFirstName(e.target.value)}
+                      style={shippingInputStyle}
+                    />
+                  </label>
+
+                  <label>
+                    Last Name
+                    <input
+                      value={shippingLastName}
+                      onChange={(e) => setShippingLastName(e.target.value)}
+                      style={shippingInputStyle}
+                    />
+                  </label>
+
+                  <label>
+                    Address
+                    <input
+                      value={shippingAddress1}
+                      onChange={(e) => setShippingAddress1(e.target.value)}
+                      style={shippingInputStyle}
+                    />
+                  </label>
+
+                  <label>
+                    Address 2 (optional)
+                    <input
+                      value={shippingAddress2}
+                      onChange={(e) => setShippingAddress2(e.target.value)}
+                      style={shippingInputStyle}
+                    />
+                  </label>
+
+                  <label>
+                    City
+                    <input
+                      value={shippingCity}
+                      onChange={(e) => setShippingCity(e.target.value)}
+                      style={shippingInputStyle}
+                    />
+                  </label>
+
+                  <label>
+                    State
+                    <input
+                      value={shippingState}
+                      onChange={(e) => setShippingState(e.target.value.toUpperCase())}
+                      maxLength={2}
+                      style={shippingInputStyle}
+                    />
+                  </label>
+
+                  <label>
+                    ZIP Code
+                    <input
+                      value={shippingZip}
+                      onChange={(e) => setShippingZip(e.target.value)}
+                      style={shippingInputStyle}
+                    />
+                  </label>
+
+                  <p style={{ color: "#aaa", fontSize: "14px" }}>
+                    Standard shipping is calculated from this address before Stripe checkout.
+                  </p>
+                </div>
 
               </>
             ) : (
