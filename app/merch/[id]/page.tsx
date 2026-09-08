@@ -41,6 +41,7 @@ const selectedTheme = useMemo(() => {
   if (title.includes("chaos")) return "chaos";
   if (title.includes("love")) return "love";
   if (title.includes("eclipse")) return "eclipse";
+  if (title.includes("dragon")) return "dragon";
   if (title.includes("d&d") || title.includes("dnd")) return "dnd";
 
   return "jester";
