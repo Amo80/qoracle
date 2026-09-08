@@ -86,9 +86,29 @@ const quantity =
 
 const shippingDetails = session.collected_information?.shipping_details;
 
-const shippingAddress = shippingDetails?.address
-  ? JSON.stringify(shippingDetails.address)
-  : null;
+const quotedShippingZip = session.metadata?.quoted_shipping_zip?.trim().toUpperCase() || "";
+const quotedShippingState = session.metadata?.quoted_shipping_state?.trim().toUpperCase() || "";
+const quotedShippingCountry = session.metadata?.quoted_shipping_country?.trim().toUpperCase() || "";
+
+const finalShippingZip = shippingDetails?.address?.postal_code?.trim().toUpperCase() || "";
+const finalShippingState = shippingDetails?.address?.state?.trim().toUpperCase() || "";
+const finalShippingCountry = shippingDetails?.address?.country?.trim().toUpperCase() || "";
+
+const shippingQuoteMismatch =
+  session.metadata?.order_type === "merch" &&
+  (!quotedShippingZip ||
+    !quotedShippingState ||
+    !quotedShippingCountry ||
+    quotedShippingZip !== finalShippingZip ||
+    quotedShippingState !== finalShippingState ||
+    quotedShippingCountry !== finalShippingCountry);
+
+const shippingAddress =
+  shippingQuoteMismatch
+    ? null
+    : shippingDetails?.address
+      ? JSON.stringify(shippingDetails.address)
+      : null;
 
       const { error: upsertError } = await supabase
         .from("orders")
@@ -153,7 +173,7 @@ printify_variant_title: printifyVariantTitle,
                     <p><strong>Product:</strong> ${escapeHtml(productName)}</p>
                     ${variantRow}
                     <p><strong>Quantity:</strong> ${quantity}</p>
-                    <p><strong>Merchandise amount paid:</strong> ${escapeHtml(amountPaid)}</p>
+                    <p><strong>Total paid:</strong> ${escapeHtml(amountPaid)}</p>
                     <p><strong>Customer email:</strong> ${escapeHtml(customerEmail)}</p>
                   </div>
                   <p>Shipping and tracking details will follow when your order ships.</p>

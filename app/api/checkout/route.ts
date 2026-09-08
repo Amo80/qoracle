@@ -24,6 +24,17 @@ export async function POST(request: Request) {
     const printifyProductId =
       body.printifyProductId as string | null;
 
+    const shippingAddress = body.shippingAddress as {
+      first_name?: string;
+      last_name?: string;
+      address1?: string;
+      address2?: string;
+      city?: string;
+      region?: string;
+      zip?: string;
+      country?: string;
+    } | undefined;
+
     const variantId =
       body.variantId as string | number | null;
 const quantity = Math.max(
@@ -36,11 +47,27 @@ const quantity = Math.max(
     let amount: number;
     let description: string;
     let variantTitle = "";
+    let shippingAmount = 0;
 
     // =========================
     // MERCH ORDER
     // =========================
     if (orderType === "merch") {
+      if (
+        !shippingAddress?.first_name?.trim() ||
+        !shippingAddress?.last_name?.trim() ||
+        !shippingAddress?.address1?.trim() ||
+        !shippingAddress?.city?.trim() ||
+        !shippingAddress?.region?.trim() ||
+        !shippingAddress?.zip?.trim() ||
+        shippingAddress?.country?.trim().toUpperCase() !== "US"
+      ) {
+        return NextResponse.json(
+          { error: "Complete shipping address required" },
+          { status: 400 }
+        );
+      }
+
       const token = process.env.PRINTIFY_API_TOKEN;
       const shopId = process.env.PRINTIFY_SHOP_ID;
 
@@ -100,6 +127,56 @@ const quantity = Math.max(
       amount = selectedVariant.price;
       variantTitle = selectedVariant.title;
 
+      const shippingResponse = await fetch(
+        `https://api.printify.com/v1/shops/${shopId}/orders/shipping.json`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            line_items: [{
+              product_id: printifyProductId,
+              variant_id: Number(variantId),
+              quantity,
+            }],
+            address_to: {
+              first_name: shippingAddress.first_name?.trim(),
+              last_name: shippingAddress.last_name?.trim(),
+              address1: shippingAddress.address1?.trim(),
+              address2: shippingAddress.address2?.trim() || "",
+              city: shippingAddress.city?.trim(),
+              region: shippingAddress.region?.trim().toUpperCase(),
+              zip: shippingAddress.zip?.trim(),
+              country: shippingAddress.country?.trim().toUpperCase(),
+            },
+          }),
+          cache: "no-store",
+        }
+      );
+
+      if (!shippingResponse.ok) {
+        return NextResponse.json(
+          { error: "Unable to calculate shipping" },
+          { status: 400 }
+        );
+      }
+
+      const shippingRates = await shippingResponse.json();
+
+      if (
+        !Number.isInteger(shippingRates.standard) ||
+        shippingRates.standard < 0
+      ) {
+        return NextResponse.json(
+          { error: "Standard shipping unavailable" },
+          { status: 400 }
+        );
+      }
+
+      shippingAmount = shippingRates.standard;
+
       description = `Qrystal Merch — ${(theme || "jester").toUpperCase()} — ${variantTitle}`;
     }
 
@@ -135,6 +212,20 @@ const quantity = Math.max(
           allowed_countries: ["US"],
         },
 
+        shipping_options:
+          orderType === "merch"
+            ? [{
+                shipping_rate_data: {
+                  type: "fixed_amount",
+                  fixed_amount: {
+                    amount: shippingAmount,
+                    currency: "usd",
+                  },
+                  display_name: "Standard shipping",
+                },
+              }]
+            : undefined,
+
         customer_creation: "always",
 
         metadata: {
@@ -157,6 +248,12 @@ const quantity = Math.max(
           printify_variant_title:
             variantTitle,
 quantity: String(quantity),
+          quoted_shipping_zip:
+            orderType === "merch" ? shippingAddress?.zip?.trim() || "" : "",
+          quoted_shipping_state:
+            orderType === "merch" ? shippingAddress?.region?.trim().toUpperCase() || "" : "",
+          quoted_shipping_country:
+            orderType === "merch" ? shippingAddress?.country?.trim().toUpperCase() || "" : "",
         },
 
         line_items: [
