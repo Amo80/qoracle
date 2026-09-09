@@ -159,7 +159,7 @@ const policies: Record<string, Policy> = {
       {
         heading: "Business contact details",
         paragraphs: [
-          "Business mailing address: [STORE OWNER: ADD BUSINESS MAILING ADDRESS IF REQUIRED]",
+          "Business mailing address: Available upon request through support@theqrystalballs.com",
         ],
       },
     ],
