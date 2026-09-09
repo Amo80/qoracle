@@ -146,14 +146,13 @@ setProducts(
                     <div className="shop-product-glow" />
 
                     {image && (
-                      <div className="shop-theme-orb">
-                        <img
-                          src={image}
-                          alt={product.title}
-                        />
-                      </div>
-                    )}
-
+  <div className="merch-card-image">
+    <img
+      src={image}
+      alt={product.title}
+    />
+  </div>
+)}
                     <div className="shop-product-content">
                       <div className="shop-product-type">
                         QRYSTAL MERCH

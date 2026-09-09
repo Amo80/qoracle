@@ -11425,3 +11425,36 @@ filter: blur(32px);
   border-color: rgba(220, 69, 243, 0.95);
   box-shadow: 0 0 16px rgba(220, 69, 243, 0.35);
 }
+/* =================================================
+   MERCH LISTING CARD IMAGE
+   ================================================= */
+
+.merch-card-image {
+  width: 100%;
+  margin-bottom: 18px;
+  padding: 18px;
+
+  border-radius: 20px;
+
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(190, 120, 255, 0.18);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.merch-card-image img {
+  width: 100%;
+  height: 260px;
+  object-fit: contain;
+  display: block;
+
+  border-radius: 14px;
+}
+
+@media (max-width: 700px) {
+  .merch-card-image img {
+    height: 220px;
+  }
+}
