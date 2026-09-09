@@ -47,6 +47,7 @@ const selectedTheme = useMemo(() => {
   return "jester";
 }, [product]);
 const [quantity, setQuantity] = useState(1);
+const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -158,7 +159,7 @@ const productImages = product?.images ?? [];
   <div className="product-gallery">
     <div className="product-gallery-main">
       <img
-        src={productImages[0].src}
+        src={selectedImage || productImages[0].src}
         alt={product.title}
       />
     </div>
@@ -169,6 +170,7 @@ const productImages = product?.images ?? [];
           key={img.src}
           src={img.src}
           alt={product.title}
+          onClick={() => setSelectedImage(img.src)}
         />
       ))}
     </div>
