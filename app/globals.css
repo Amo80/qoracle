@@ -11116,6 +11116,27 @@ filter: blur(32px);
 
   letter-spacing: 1px;
 }
+.shop-product-theme select {
+  min-width: 120px;
+  padding: 10px 14px;
+
+  color: #f4ecff;
+  background: rgba(54, 24, 78, 0.95);
+
+  border: 1px solid rgba(220, 69, 243, 0.45);
+  border-radius: 12px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  outline: none;
+  cursor: pointer;
+}
+
+.shop-product-theme select:focus {
+  border-color: rgba(220, 69, 243, 0.95);
+  box-shadow: 0 0 14px rgba(220, 69, 243, 0.28);
+}
 
 .shop-product-bottom {
   display: flex;
