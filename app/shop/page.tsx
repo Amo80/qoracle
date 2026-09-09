@@ -31,7 +31,7 @@ const themes = [
   },
   {
     id: "dnd",
-    name: "D&D",
+    name: "DRAGON",
     image: "/themes/DND.crystal.png",
     description: "Adventure Awaits",
   },

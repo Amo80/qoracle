@@ -82,7 +82,9 @@ export default function Home() {
   >
     🛍️ VISIT THE SHOP
   </Link>
-</div>      <p className="tagline">
+</div>
+
+      <p className="tagline">
         Five Oracles. Infinite questions.
       </p>
 
@@ -140,10 +142,10 @@ export default function Home() {
   <Link href="/oracle?theme=dnd" className="oracle-card">
     <img
       src="/themes/DND.crystal.png"
-      alt="D&D Oracle"
+     alt="Dragon Oracle"
     />
     <div className="oracle-card-info">
-      <strong>D&amp;D</strong>
+      <strong>DRAGON</strong>
       <span>Adventure Awaits</span>
     </div>
   </Link>
