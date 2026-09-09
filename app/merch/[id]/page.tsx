@@ -104,9 +104,8 @@ const [quantity, setQuantity] = useState(1);
     (variant) => variant.id === selectedVariantId
   );
 
-  const image =
-    product?.images?.find((img) => img.is_default)?.src ||
-    product?.images?.[0]?.src;
+ 
+const productImages = product?.images ?? [];
 
   if (loading) {
     return (
@@ -155,12 +154,26 @@ const [quantity, setQuantity] = useState(1);
           <div className="shop-product-card">
             <div className="shop-product-glow" />
 
-            {image && (
-              <div className="shop-theme-orb">
-                <img src={image} alt={product.title} />
-              </div>
-            )}
+          {productImages.length > 0 && (
+  <div className="product-gallery">
+    <div className="product-gallery-main">
+      <img
+        src={productImages[0].src}
+        alt={product.title}
+      />
+    </div>
 
+    <div className="product-gallery-thumbnails">
+      {productImages.map((img) => (
+        <img
+          key={img.src}
+          src={img.src}
+          alt={product.title}
+        />
+      ))}
+    </div>
+  </div>
+)}
             <div className="shop-product-content">
               <div className="shop-product-type">
                 QRYSTAL MERCH
