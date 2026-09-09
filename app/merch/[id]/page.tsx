@@ -175,8 +175,14 @@ const heroImage =
           key={img.src}
           src={img.src}
           alt={product.title}
+className={
+  (selectedImage || heroImage) === img.src
+    ? "product-gallery-thumbnail active"
+    : "product-gallery-thumbnail"
+}
           onClick={() => setSelectedImage(img.src)}
         />
+
       ))}
     </div>
   </div>

@@ -11378,3 +11378,19 @@ filter: blur(32px);
     padding: 14px;
   }
 }
+.product-gallery-thumbnail {
+  cursor: pointer;
+  opacity: 0.65;
+  transition: opacity 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.product-gallery-thumbnail:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+.product-gallery-thumbnail.active {
+  opacity: 1;
+  border-color: rgba(220, 69, 243, 0.95);
+  box-shadow: 0 0 16px rgba(220, 69, 243, 0.35);
+}
