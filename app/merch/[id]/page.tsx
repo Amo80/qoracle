@@ -193,7 +193,11 @@ className={
               </div>
 
               <h1>
-  {product.title.split("|")[0].trim()}
+  {product.title
+  .replace("The QRystal Balls™ — ", "")
+  .replace(/\s*\(.*?\)\s*$/, "")
+  .split("|")[0]
+  .trim()}
 </h1>
 
              <p>
