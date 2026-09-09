@@ -3,29 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const products = [
-  {
-    name: "QRystal Balls Sticker",
-    price: "$4.99",
-    description:
-      "A scannable QRystal Balls sticker you can place almost anywhere.",
-    icon: "✦",
-  },
-  {
-    name: "QRystal Balls Card",
-    price: "$7.99",
-    description:
-      "A pocket-sized QRystal Balls card with its own unique QR code.",
-    icon: "◇",
-  },
-  {
-    name: "QRystal Balls Keychain",
-    price: "$12.99",
-    description:
-      "Carry your QRystal Balls with you wherever you go.",
-    icon: "☽",
-  },
-];
 
 const themes = [
   {
@@ -70,17 +47,7 @@ const [shopCategory, setShopCategory] = useState<"artifacts" | "merch">(
     (theme) => theme.id === selectedTheme
   );
 
-  function handleCheckout(product: (typeof products)[number]) {
-    router.push(
-      `/checkout?product=${encodeURIComponent(
-        product.name
-      )}&theme=${encodeURIComponent(
-        selectedTheme
-      )}&price=${encodeURIComponent(product.price)}`
-    );
-  }
-
-  return (
+    return (
     <main className="qrystal-shop">
       {/* Background atmosphere */}
       <div className="shop-stars" aria-hidden="true">
@@ -140,7 +107,7 @@ const [shopCategory, setShopCategory] = useState<"artifacts" | "merch">(
     className={`shop-category-button ${
       shopCategory === "merch" ? "active" : ""
     }`}
-    onClick={() => setShopCategory("merch")}
+    onClick={() => router.push("/merch")}
   >
     MERCH
   </button>
@@ -210,171 +177,11 @@ const [shopCategory, setShopCategory] = useState<"artifacts" | "merch">(
           </div>
         </section>
 
-        {/* PRODUCTS */}
-        <section className="shop-products">
-          <div className="shop-products-heading">
-            <div>
-              <span className="shop-mini-label">
-                YOUR ARTIFACT AWAITS
-              </span>
-
-              <h2>
-                CHOOSE YOUR <span>ARTIFACT</span>
-              </h2>
-            </div>
-
-            <p>
-              Your selected Oracle will be paired
-              <br />
-              with your artifact.
-            </p>
-          </div>
-
-          <div className="shop-product-grid">
-            {products.map((product) => (
-              <article
-                key={product.name}
-                className="shop-product-card"
-              >
-                <div className="shop-product-glow" />
-
-                <div className="shop-product-icon">
-                  {product.icon}
-                </div>
-
-                <div className="shop-product-content">
-                  <div className="shop-product-type">
-                    QRYSTAL ARTIFACT
-                  </div>
-
-                  <h3>{product.name}</h3>
-
-                  <p>{product.description}</p>
-
-                  <div className="shop-product-theme">
-                    <span>ORACLE</span>
-
-                   <strong>
-  {selectedThemeData?.name}
-</strong>
-
-                  </div>
-
-                  <div className="shop-product-bottom">
-                    <div className="shop-price">
-                      {product.price}
-                    </div>
-
-                    <button
-                      type="button"
-                      className="shop-buy-button"
-                      onClick={() => handleCheckout(product)}
-                    >
-                      CHOOSE THIS
-                      <span>→</span>
-                    </button>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
+        
+       
   </>
 )}
-{shopCategory === "merch" && (
-  <section className="shop-merch">
-    <div className="shop-products-heading">
-      <div>
-        <span className="shop-mini-label">
-          WEAR THE ORACLE
-        </span>
 
-        <h2>
-          QRYSTAL <span>MERCH</span>
-        </h2>
-      </div>
-
-      <p>
-        Official apparel from
-        <br />
-        The Qrystal Balls.
-      </p>
-    </div>
-
-    <div className="shop-product-grid">
-      <article className="shop-product-card">
-        <div className="shop-product-glow" />
-
-        <div className="shop-product-icon">
-          👕
-        </div>
-
-        <div className="shop-product-content">
-          <div className="shop-product-type">
-            QRYSTAL APPAREL
-          </div>
-
-          <h3>Qrystal Balls T-Shirt</h3>
-
-          <p>
-            A soft everyday tee featuring official
-            Qrystal Balls artwork.
-          </p>
-
-          <div className="shop-product-bottom">
-            <div className="shop-price">
-              Coming Soon
-            </div>
-
-            <button
-              type="button"
-              className="shop-buy-button"
-              disabled
-            >
-              NOT YET LIVE
-            </button>
-          </div>
-        </div>
-      </article>
-
-      <article className="shop-product-card">
-        <div className="shop-product-glow" />
-
-        <div className="shop-product-icon">
-          ✦
-        </div>
-
-        <div className="shop-product-content">
-          <div className="shop-product-type">
-            QRYSTAL APPAREL
-          </div>
-
-          <h3>Qrystal Balls Hoodie</h3>
-
-          <p>
-            A heavier pullover hoodie featuring
-            official Qrystal Balls artwork.
-          </p>
-
-          <div className="shop-product-bottom">
-            <div className="shop-price">
-              Coming Soon
-            </div>
-
-            <button
-              type="button"
-              className="shop-buy-button"
-              disabled
-            >
-              NOT YET LIVE
-            </button>
-          </div>
-        </div>
-      </article>
-    </div>
-  </section>
-)}
         {/* FOOTER */}
         <footer className="shop-footer">
           <div>✦</div>
