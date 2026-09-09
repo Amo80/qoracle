@@ -176,7 +176,25 @@ const [shopCategory, setShopCategory] = useState<"artifacts" | "merch">(
 
           </div>
         </section>
+<section className="shop-products">
+  <div className="shop-products-heading">
+    <div>
+      <span className="shop-mini-label">
+        ARTIFACTS OF FATE
+      </span>
 
+      <h2>
+        QR ARTIFACTS <span>COMING SOON</span>
+      </h2>
+    </div>
+
+    <p>
+      Stickers, cards, keychains, and more
+      <br />
+      are being prepared by the Oracle.
+    </p>
+  </div>
+</section>
         
        
   </>
