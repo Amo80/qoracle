@@ -11065,6 +11065,16 @@ filter: blur(32px);
 
   font-size: 21px;
 }
+.shop-product-content h1 {
+  margin: 0 0 14px;
+  max-width: 900px;
+
+  color: #f1eaff;
+
+  font-size: clamp(38px, 5vw, 64px);
+  line-height: 1.05;
+  letter-spacing: -1.5px;
+}
 
 .shop-product-content > p {
   min-height: 60px;
