@@ -186,7 +186,9 @@ const heroImage =
                 QRYSTAL MERCH
               </div>
 
-              <h1>{product.title}</h1>
+              <h1>
+  {product.title.split("|")[0].trim()}
+</h1>
 
               <p>
                 Choose your size and color below.
