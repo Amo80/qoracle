@@ -190,10 +190,11 @@ const heroImage =
   {product.title.split("|")[0].trim()}
 </h1>
 
-              <p>
-                Choose your size and color below.
-              </p>
-
+             <p>
+  More than merch—it&apos;s your gateway to the Oracle.
+  Scan the QR code, ask your question, and let fate reveal the answer.
+  Choose your option below and discover what awaits.
+</p>
               <div className="shop-product-theme">
                 <span>VARIANT</span>
 
