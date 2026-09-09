@@ -108,6 +108,11 @@ const [selectedImage, setSelectedImage] = useState<string | null>(null);
  
 const productImages = product?.images ?? [];
 
+const heroImage =
+  productImages.find((img) => img.is_default)?.src ||
+  productImages[0]?.src ||
+  "";
+
   if (loading) {
     return (
       <main className="qrystal-shop">
@@ -159,7 +164,7 @@ const productImages = product?.images ?? [];
   <div className="product-gallery">
     <div className="product-gallery-main">
       <img
-        src={selectedImage || productImages[0].src}
+        src={selectedImage || heroImage}
         alt={product.title}
       />
     </div>
