@@ -184,18 +184,17 @@ const [shopCategory, setShopCategory] = useState<"artifacts" | "merch">(
       </span>
 
       <h2>
-        QR ARTIFACTS <span>COMING SOON</span>
+        {selectedThemeData?.name} ARTIFACTS
       </h2>
     </div>
 
     <p>
       Stickers, cards, keychains, and more
       <br />
-      are being prepared by the Oracle.
+      are coming soon for this Oracle.
     </p>
   </div>
-</section>
-        
+</section>        
        
   </>
 )}
