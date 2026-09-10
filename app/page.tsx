@@ -80,6 +80,13 @@ export default function Home() {
     className="shop-button"
     href="/shop"
   >
+<Link
+  className="tarot-button"
+  href="/tarot"
+>
+  🃏 PICK A TAROT CARD
+</Link>
+
     🛍️ VISIT THE SHOP
   </Link>
 </div>
