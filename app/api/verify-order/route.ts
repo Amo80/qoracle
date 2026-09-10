@@ -78,12 +78,9 @@ const shippingQuoteMismatch =
     quotedShippingCountry !== finalShippingCountry);
 
 const shippingAddress =
-  shippingQuoteMismatch
-    ? null
-    : shippingDetails?.address
-      ? JSON.stringify(shippingDetails.address)
-      : null;
-
+  shippingDetails?.address
+    ? JSON.stringify(shippingDetails.address)
+    : null;
     const { error: upsertError } = await supabase
       .from("orders")
       .upsert(
