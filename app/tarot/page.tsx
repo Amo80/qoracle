@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 
+
 type TarotCard = {
   name: string;
   uprightKeywords: string[];
@@ -10,6 +11,7 @@ type TarotCard = {
   uprightMeaning: string;
   reversedMeaning: string;
   symbol: string;
+  image?: string;
 };
 
 const tarotCards: TarotCard[] = [
@@ -31,7 +33,8 @@ const tarotCards: TarotCard[] = [
       "A new path is opening before you. You may not know where it leads yet, and that is part of the invitation. Trust yourself enough to take the first step.",
     reversedMeaning:
       "Something may be urging you forward before you are truly ready. Slow down, look at what you may be overlooking, and make sure courage is not turning into recklessness.",
-    symbol: "🌙",
+symbol: "🌙",
+image: "/tarot/the-fool.png",
   },
 
   {
@@ -53,6 +56,7 @@ const tarotCards: TarotCard[] = [
     reversedMeaning:
       "Your ability is still there, but something is interfering with it. Doubt, distraction, or another person's influence may be pulling you away from your real power.",
     symbol: "✨",
+image: "/tarot/the-magician.png",
   },
 
   {
@@ -74,6 +78,7 @@ const tarotCards: TarotCard[] = [
     reversedMeaning:
       "Something important is being ignored or hidden. You may be talking yourself out of what your instincts have already been trying to tell you.",
     symbol: "🌌",
+image: "/tarot/the-high-priestess.png",
   },
 
   {
@@ -95,6 +100,7 @@ const tarotCards: TarotCard[] = [
     reversedMeaning:
       "You may be giving too much while leaving yourself depleted. Something needs nourishment, but that includes you.",
     symbol: "🌹",
+image: "/tarot/the-empress.png",
   },
 
   {
@@ -115,8 +121,30 @@ const tarotCards: TarotCard[] = [
       "This situation benefits from structure and decisive action. Set boundaries, make the plan, and take responsibility for what happens next.",
     reversedMeaning:
       "Control may be becoming the problem rather than the solution. Ask whether firmness is helping the situation or simply preventing change.",
-    symbol: "👑",
+   symbol: "👑",
+image: "/tarot/the-emperor.png",
   },
+{
+  name: "THE HIEROPHANT",
+  uprightKeywords: [
+    "Tradition",
+    "Guidance",
+    "Wisdom",
+    "Commitment",
+  ],
+  reversedKeywords: [
+    "Rebellion",
+    "Restriction",
+    "Questioning Tradition",
+    "Personal Beliefs",
+  ],
+  uprightMeaning:
+    "Wisdom may already exist within a tradition, teacher, community, or system around you. The Hierophant asks you to learn from what has endured before deciding which path is truly yours.",
+  reversedMeaning:
+    "You may be questioning rules, expectations, or traditions that no longer fit. Respect what you have learned, but do not be afraid to choose a path based on your own values.",
+  symbol: "📖",
+  image: "/tarot/the-hierophant.png",
+},
 
   {
     name: "THE LOVERS",
@@ -136,7 +164,8 @@ const tarotCards: TarotCard[] = [
       "A meaningful connection or important choice sits at the center of your question. Choose what aligns with your values rather than what is merely easiest.",
     reversedMeaning:
       "Something may look right while feeling wrong underneath. Pay attention to imbalance, mixed intentions, or choices being made for the wrong reasons.",
-    symbol: "❤️",
+   symbol: "❤️",
+image: "/tarot/the-lovers.png",
   },
 
   {
@@ -158,6 +187,7 @@ const tarotCards: TarotCard[] = [
     reversedMeaning:
       "Force alone will not solve this. You may need to regain direction before pushing harder.",
     symbol: "⚡",
+image: "/tarot/the-chariot.png",
   },
 
   {
@@ -179,6 +209,7 @@ const tarotCards: TarotCard[] = [
     reversedMeaning:
       "Fear may be making you underestimate yourself. The strength you need has not disappeared; you may simply have stopped trusting it.",
     symbol: "🦁",
+image: "/tarot/strength.png",
   },
 
   {
@@ -200,6 +231,7 @@ const tarotCards: TarotCard[] = [
     reversedMeaning:
       "Time alone may have turned into avoidance. Reflection is useful, but eventually you must return to the world and act.",
     symbol: "🏮",
+image: "/tarot/the-hermit.png",
   },
 
   {
@@ -221,7 +253,51 @@ const tarotCards: TarotCard[] = [
     reversedMeaning:
       "The cycle is turning, but not quite the way you hoped. Fighting the change may make it harder than accepting what must shift.",
     symbol: "🎡",
+image: "/tarot/wheel-of-fortune.png",
   },
+{
+  name: "JUSTICE",
+  uprightKeywords: [
+    "Fairness",
+    "Truth",
+    "Balance",
+    "Accountability",
+  ],
+  reversedKeywords: [
+    "Dishonesty",
+    "Bias",
+    "Avoidance",
+    "Unfairness",
+  ],
+  uprightMeaning:
+    "Truth and balance matter here. Justice asks you to look clearly at the facts, take responsibility for your choices, and make the decision that can stand up to honest examination.",
+  reversedMeaning:
+    "Something may be out of balance or being judged unfairly. Hidden motives, avoidance, or refusal to accept responsibility could be influencing the situation.",
+  symbol: "⚖️",
+  image: "/tarot/justice.png",
+},
+
+{
+  name: "THE HANGED MAN",
+  uprightKeywords: [
+    "Surrender",
+    "New Perspective",
+    "Patience",
+    "Letting Go",
+  ],
+  reversedKeywords: [
+    "Stagnation",
+    "Resistance",
+    "Delay",
+    "Fear of Change",
+  ],
+  uprightMeaning:
+    "The answer may come from seeing this situation differently rather than forcing it forward. Pause, surrender what you cannot control, and allow a new perspective to reveal what you have been missing.",
+  reversedMeaning:
+    "You may be holding onto something because letting go feels uncomfortable. Resistance could be keeping you suspended in a situation that is ready to change.",
+  symbol: "🙃",
+  image: "/tarot/the-hanged-man.png",
+},
 
   {
     name: "DEATH",
@@ -242,7 +318,75 @@ const tarotCards: TarotCard[] = [
     reversedMeaning:
       "You may already know something needs to change but continue holding onto it. The longer the ending is resisted, the longer the next chapter waits.",
     symbol: "🥀",
+image: "/tarot/death.png",
   },
+
+{
+  name: "TEMPERANCE",
+  uprightKeywords: [
+    "Balance",
+    "Harmony",
+    "Moderation",
+    "Patience",
+  ],
+  reversedKeywords: [
+    "Imbalance",
+    "Excess",
+    "Impatience",
+    "Lack of Direction",
+  ],
+  uprightMeaning:
+    "Balance is the key to moving forward. Temperance asks you to combine patience, moderation, and thoughtful action rather than pushing toward extremes.",
+  reversedMeaning:
+    "Something has fallen out of balance. Too much, too little, or moving too quickly may be creating unnecessary difficulty. Find your center before continuing.",
+  symbol: "⚗️",
+  image: "/tarot/temperance.png",
+},
+
+{
+  name: "THE DEVIL",
+  uprightKeywords: [
+    "Attachment",
+    "Addiction",
+    "Materialism",
+    "Control",
+  ],
+  reversedKeywords: [
+    "Freedom",
+    "Awareness",
+    "Breaking Chains",
+    "Reclaiming Power",
+  ],
+  uprightMeaning:
+    "Something may have more control over you than you realize. The Devil asks you to recognize the attachments, habits, fears, or desires that are keeping you bound.",
+  reversedMeaning:
+    "The chains are beginning to loosen. Awareness gives you the power to break unhealthy patterns, reclaim your choices, and free yourself from what has been controlling you.",
+  symbol: "😈",
+  image: "/tarot/the-devil.png",
+},
+
+{
+  name: "THE TOWER",
+  uprightKeywords: [
+    "Sudden Change",
+    "Revelation",
+    "Breakthrough",
+    "Upheaval",
+  ],
+  reversedKeywords: [
+    "Avoiding Disaster",
+    "Fear of Change",
+    "Resistance",
+    "Delayed Upheaval",
+  ],
+  uprightMeaning:
+    "Something may change suddenly, but the disruption is revealing what was never as stable as it appeared. The Tower clears away what can no longer stand so something stronger can eventually take its place.",
+  reversedMeaning:
+    "You may sense that change is coming and be trying to prevent it. Resistance can delay the disruption, but it may also delay the breakthrough waiting on the other side.",
+  symbol: "⚡",
+  image: "/tarot/the-tower.png",
+},
+
 
   {
     name: "THE STAR",
@@ -263,6 +407,7 @@ const tarotCards: TarotCard[] = [
     reversedMeaning:
       "You may be focusing so heavily on what went wrong that you cannot yet see what is still possible.",
     symbol: "⭐",
+image: "/tarot/the-star.png",
   },
 
   {
@@ -284,6 +429,7 @@ const tarotCards: TarotCard[] = [
     reversedMeaning:
       "Confusion is beginning to clear. Something concealed may soon become easier to understand.",
     symbol: "🌕",
+image: "/tarot/the-moon.png",
   },
 
   {
@@ -305,6 +451,7 @@ const tarotCards: TarotCard[] = [
     reversedMeaning:
       "The positive outcome may still be available, but something is temporarily obscuring it. Do not mistake a delay for a defeat.",
     symbol: "☀️",
+image: "/tarot/the-sun.png",
   },
 
   {
@@ -326,6 +473,7 @@ const tarotCards: TarotCard[] = [
     reversedMeaning:
       "You may already know what decision needs to be made but fear the consequences of making it.",
     symbol: "📯",
+image: "/tarot/judgement.png",
   },
 
   {
@@ -347,6 +495,7 @@ const tarotCards: TarotCard[] = [
     reversedMeaning:
       "You are close, but something remains unfinished. Find the missing piece instead of abandoning the journey.",
     symbol: "🌍",
+image: "/tarot/the-world.png",
   },
 ];
 
@@ -529,9 +678,17 @@ export default function TarotPage() {
                 ✦
               </div>
 
-              <div className="tarot-result-symbol">
-                {selectedCard.symbol}
-              </div>
+              {selectedCard.image ? (
+  <img
+    src={selectedCard.image}
+    alt={selectedCard.name}
+    className="tarot-result-art"
+  />
+) : (
+  <div className="tarot-result-symbol">
+    {selectedCard.symbol}
+  </div>
+)}
 
               <div className="tarot-result-stars">
                 ✦ ✧ ✦

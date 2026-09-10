@@ -12182,3 +12182,29 @@ filter: blur(32px);
     width: 100%;
   }
 }
+/* =========================================
+   QRYSTAL TAROT — REAL CARD ARTWORK
+========================================= */
+
+.tarot-result-art {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: 11px;
+}
+
+.tarot-card-front:has(.tarot-result-art) {
+  padding: 0;
+  overflow: hidden;
+  background: #08030d;
+}
+
+.tarot-card-front:has(.tarot-result-art)
+.tarot-result-number,
+.tarot-card-front:has(.tarot-result-art)
+.tarot-result-stars,
+.tarot-card-front:has(.tarot-result-art)
+strong {
+  display: none;
+}
