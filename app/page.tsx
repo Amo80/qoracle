@@ -74,12 +74,8 @@ export default function Home() {
     href="/oracle?theme=jester"
   >
     🔮 ASK THE ORACLE
-  </Link>
+</Link>
 
-  <Link
-    className="shop-button"
-    href="/shop"
-  >
 <Link
   className="tarot-button"
   href="/tarot"
@@ -87,8 +83,12 @@ export default function Home() {
   🃏 PICK A TAROT CARD
 </Link>
 
-    🛍️ VISIT THE SHOP
-  </Link>
+<Link
+  className="shop-button"
+  href="/shop"
+>
+  🛍️ VISIT THE SHOP
+</Link>
 </div>
 
       <p className="tagline">

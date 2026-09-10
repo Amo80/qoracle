@@ -503,29 +503,38 @@ export default function TarotPage() {
   const [started, setStarted] = useState(false);
   const [selectedCard, setSelectedCard] =
     useState<TarotCard | null>(null);
+const [chosenCard, setChosenCard] = useState<number | null>(null);
 
   const [reversed, setReversed] = useState(false);
   const [revealed, setRevealed] = useState(false);
 
-  function drawCard() {
-    const randomCard =
-      tarotCards[
-        Math.floor(Math.random() * tarotCards.length)
-      ];
+ function drawCard(cardIndex: number) {
+  if (chosenCard !== null) return;
 
-    const isReversed = Math.random() < 0.3;
+  setChosenCard(cardIndex);
 
+  const randomCard =
+    tarotCards[
+      Math.floor(Math.random() * tarotCards.length)
+    ];
+
+  const isReversed = Math.random() < 0.3;
+
+  setRevealed(false);
+
+  // Give the chosen card time to glow
+  // while the other two fade away.
+  setTimeout(() => {
     setSelectedCard(randomCard);
     setReversed(isReversed);
-    setRevealed(false);
 
     setTimeout(() => {
       setRevealed(true);
     }, 450);
-  }
-
-  function resetReading() {
+  }, 900);
+}  function resetReading() {
     setSelectedCard(null);
+setChosenCard(null);
     setReversed(false);
     setRevealed(false);
   }
@@ -618,31 +627,21 @@ export default function TarotPage() {
               <button
                 type="button"
                 key={card}
-                className={`tarot-card-back tarot-card-${card + 1}`}
-                onClick={drawCard}
+                className={`tarot-card-back tarot-card-${card + 1} ${
+  chosenCard === null
+    ? ""
+    : chosenCard === card
+      ? "tarot-card-chosen"
+      : "tarot-card-dismissed"
+}`}
+                onClick={() => drawCard(card)}
                 aria-label={`Choose tarot card ${card + 1}`}
               >
-                <div className="tarot-card-border">
-                  <span className="tarot-card-star">
-                    ✦
-                  </span>
-
-                  <span className="tarot-card-moon">
-                    ☾
-                  </span>
-
-                  <span className="tarot-card-orb">
-                    🔮
-                  </span>
-
-                  <span className="tarot-card-moon tarot-card-moon-bottom">
-                    ☽
-                  </span>
-
-                  <span className="tarot-card-star tarot-card-star-bottom">
-                    ✦
-                  </span>
-                </div>
+               <img
+  src="/tarot/card-back.png"
+  alt="The QRystal Balls tarot card back"
+  className="tarot-card-back-art"
+/>
               </button>
             ))}
 
