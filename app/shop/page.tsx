@@ -176,6 +176,46 @@ const [shopCategory, setShopCategory] = useState<"artifacts" | "merch">(
 
           </div>
         </section>
+{/* =================================================
+    ORACLE ARTIFACTS — COMING SOON
+   ================================================= */}
+
+<section className="artifacts-coming-soon">
+  <div className="artifacts-coming-glow" />
+
+  <p className="artifacts-coming-eyebrow">
+    ORACLE ARTIFACTS
+  </p>
+
+  <h2>
+    ARE COMING
+  </h2>
+
+  <div className="artifacts-coming-divider">
+    ✦
+  </div>
+
+  <p className="artifacts-coming-copy">
+    We&apos;re crafting something special.
+    <br />
+    Unique Oracle Artifacts are on the way.
+    <br />
+    Stay tuned — your fate will be tangible soon.
+  </p>
+
+  <button
+    type="button"
+    className="artifacts-merch-button"
+    onClick={() => router.push("/merch")}
+  >
+    CHECK OUT MERCH →
+  </button>
+
+  <p className="artifacts-merch-note">
+    Explore shirts, hoodies, mugs, stickers, and more ways to carry the Oracle.
+  </p>
+</section>
+
 <section className="shop-products">
   <div className="shop-products-heading">
     <div>

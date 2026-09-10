@@ -11458,3 +11458,156 @@ filter: blur(32px);
     height: 220px;
   }
 }
+/* =================================================
+   ORACLE ARTIFACTS — COMING SOON
+   ================================================= */
+
+.artifacts-coming-soon {
+  position: relative;
+  overflow: hidden;
+
+  max-width: 900px;
+  margin: 38px auto 20px;
+  padding: 52px 28px;
+
+  text-align: center;
+
+  border: 1px solid rgba(220, 69, 243, 0.4);
+  border-radius: 26px;
+
+  background:
+    radial-gradient(
+      circle at 50% 20%,
+      rgba(220, 69, 243, 0.18),
+      transparent 42%
+    ),
+    rgba(16, 7, 30, 0.78);
+
+  box-shadow:
+    0 0 35px rgba(220, 69, 243, 0.12),
+    inset 0 0 35px rgba(125, 61, 255, 0.06);
+}
+
+.artifacts-coming-glow {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+
+  top: -190px;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  border-radius: 50%;
+
+  background: rgba(220, 69, 243, 0.24);
+  filter: blur(80px);
+
+  pointer-events: none;
+}
+
+.artifacts-coming-eyebrow {
+  position: relative;
+
+  margin: 0 0 8px;
+
+  color: #d79cff;
+
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 4px;
+}
+
+.artifacts-coming-soon h2 {
+  position: relative;
+
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: clamp(38px, 6vw, 64px);
+  line-height: 1;
+  letter-spacing: 2px;
+
+  text-shadow:
+    0 0 18px rgba(220, 69, 243, 0.55),
+    0 0 40px rgba(125, 61, 255, 0.25);
+}
+
+.artifacts-coming-divider {
+  position: relative;
+
+  margin: 20px 0;
+
+  color: #dc45f3;
+
+  font-size: 22px;
+}
+
+.artifacts-coming-copy {
+  position: relative;
+
+  margin: 0 auto 28px;
+  max-width: 620px;
+
+  color: rgba(242, 232, 255, 0.78);
+
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.artifacts-merch-button {
+  position: relative;
+
+  padding: 14px 28px;
+
+  color: #ffffff;
+  background: linear-gradient(
+    135deg,
+    rgba(126, 47, 205, 0.95),
+    rgba(220, 69, 243, 0.95)
+  );
+
+  border: 1px solid rgba(238, 169, 255, 0.65);
+  border-radius: 12px;
+
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 0 18px rgba(220, 69, 243, 0.3),
+    inset 0 0 12px rgba(255, 255, 255, 0.08);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.artifacts-merch-button:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 0 28px rgba(220, 69, 243, 0.5),
+    inset 0 0 12px rgba(255, 255, 255, 0.1);
+}
+
+.artifacts-merch-note {
+  position: relative;
+
+  margin: 16px 0 0;
+
+  color: rgba(225, 207, 242, 0.55);
+
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 700px) {
+  .artifacts-coming-soon {
+    margin-top: 28px;
+    padding: 40px 18px;
+  }
+}
