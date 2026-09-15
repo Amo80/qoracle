@@ -189,6 +189,11 @@ printify_variant_title: printifyVariantTitle,
 
 const merchFoxApiSecret =
   process.env.MERCHFOX_SANDBOX_APP_SECRET?.trim();
+console.log("MerchFox credential diagnostic", {
+  keyPrefix: merchFoxApiKey?.slice(0, 12),
+  keyLength: merchFoxApiKey?.length,
+  secretLength: merchFoxApiSecret?.length,
+});
 
         if (!merchFoxApiKey || !merchFoxApiSecret) {
           console.error("MerchFox credentials are missing");
