@@ -76,6 +76,17 @@ const quantity =
   metadataQuantity <= 10
     ? metadataQuantity
     : 1;
+const fulfillmentProvider =
+  session.metadata?.fulfillment_provider || null;
+
+const merchfoxSku =
+  session.metadata?.merchfox_sku || null;
+
+const isMerchFoxJesterKeychain =
+  fulfillmentProvider === "merchfox" &&
+  merchfoxSku === "51200" &&
+  productName === "Jester Oracle QR Keychain" &&
+  theme === "jester";
 
 
       const customerName =
@@ -95,7 +106,8 @@ const finalShippingState = shippingDetails?.address?.state?.trim().toUpperCase()
 const finalShippingCountry = shippingDetails?.address?.country?.trim().toUpperCase() || "";
 
 const shippingQuoteMismatch =
-  session.metadata?.order_type === "merch" &&
+  (session.metadata?.order_type === "merch" ||
+    isMerchFoxJesterKeychain) &&
   (!quotedShippingZip ||
     !quotedShippingState ||
     !quotedShippingCountry ||
@@ -138,7 +150,110 @@ printify_variant_title: printifyVariantTitle,
           { status: 500 }
         );
       }
+      if (isMerchFoxJesterKeychain) {
+        if (shippingQuoteMismatch) {
+          console.error(
+            `MerchFox fulfillment blocked: shipping address changed for Stripe session ${session.id}.`
+          );
 
+          return NextResponse.json(
+            { error: "Shipping address changed after quote" },
+            { status: 400 }
+          );
+        }
+
+        if (!shippingDetails?.address) {
+          console.error(
+            `MerchFox fulfillment blocked: Stripe session ${session.id} has no shipping address.`
+          );
+
+          return NextResponse.json(
+            { error: "Missing shipping address" },
+            { status: 400 }
+          );
+        }
+
+        const merchFoxApiKey = process.env.MERCHFOX_API_KEY;
+        const merchFoxApiSecret = process.env.MERCHFOX_APP_SECRET;
+
+        if (!merchFoxApiKey || !merchFoxApiSecret) {
+          console.error("MerchFox credentials are missing");
+
+          return NextResponse.json(
+            { error: "MerchFox credentials are missing" },
+            { status: 500 }
+          );
+        }
+        const merchFoxResponse = await fetch(
+          "https://api-sandbox.merchfox.com/api/v1/orders/quick/submit",
+          {
+            method: "POST",
+            headers: {
+              "X-Mfx-App-Key": merchFoxApiKey,
+              "X-Mfx-App-Secret": merchFoxApiSecret,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              orderid: session.id,
+              firstName:
+                shippingDetails.name?.trim().split(" ")[0] ||
+                customerName?.trim().split(" ")[0] ||
+                "Customer",
+              lastName:
+                shippingDetails.name?.trim().split(" ").slice(1).join(" ") ||
+                customerName?.trim().split(" ").slice(1).join(" ") ||
+                "Customer",
+              address1: shippingDetails.address.line1 || "",
+              address2: shippingDetails.address.line2 || "",
+              city: shippingDetails.address.city || "",
+              state: shippingDetails.address.state || "",
+              country: shippingDetails.address.country || "US",
+              zip: shippingDetails.address.postal_code || "",
+              email: customerEmail || "",
+              fulfillmentServiceKey: "FIRST_CLASS",
+              priorityTrackingAddOnEnabled: false,
+              printAreaCount: 1,
+              createProducts: false,
+              products: [
+                {
+                  sku: "51200",
+                  quantity,
+                  blueprintId:
+                    "504d6843-b927-4f0d-afdb-f54321e8aac2",
+                  designUrlsByArea: {
+                    FRONT:
+                      "https://theqrystalballs.com/products/jester-keychain-print.png",
+                  },
+                },
+              ],
+            }),
+            cache: "no-store",
+          }
+        );
+        const merchFoxResult = await merchFoxResponse
+          .json()
+          .catch(() => null);
+
+        if (
+          !merchFoxResponse.ok ||
+          merchFoxResult?.code !== 0
+        ) {
+          console.error(
+            "MerchFox fulfillment failed:",
+            merchFoxResult
+          );
+
+          return NextResponse.json(
+            { error: "Unable to submit MerchFox fulfillment" },
+            { status: 500 }
+          );
+        }
+
+        console.log(
+          `MerchFox sandbox fulfillment accepted for Stripe session ${session.id}:`,
+          merchFoxResult
+        );
+      }
       if (!customerEmail) {
         console.warn(
           `Order confirmation not sent: Stripe session ${session.id} has no customer email.`
