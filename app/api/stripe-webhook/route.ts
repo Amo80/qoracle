@@ -205,7 +205,7 @@ console.log("MerchFox credential diagnostic", {
           );
         }
 const merchFoxAuthTest = await fetch(
-  "https://api-sandbox.merchfox.com/api/v1/seller/202311/me/api-keys",
+  "https://api.merchfox.com/api/v1/seller/202311/me/api-keys",
   {
     method: "GET",
     headers: {
