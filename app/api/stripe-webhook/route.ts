@@ -101,6 +101,8 @@ const quotedShippingZip = session.metadata?.quoted_shipping_zip?.trim().toUpperC
 const quotedShippingState = session.metadata?.quoted_shipping_state?.trim().toUpperCase() || "";
 const quotedShippingCountry = session.metadata?.quoted_shipping_country?.trim().toUpperCase() || "";
 
+const normalizeUsZip = (zip: string) => zip.replace(/\D/g, "").slice(0, 5);
+
 const finalShippingZip = shippingDetails?.address?.postal_code?.trim().toUpperCase() || "";
 const finalShippingState = shippingDetails?.address?.state?.trim().toUpperCase() || "";
 const finalShippingCountry = shippingDetails?.address?.country?.trim().toUpperCase() || "";
@@ -111,7 +113,7 @@ const shippingQuoteMismatch =
   (!quotedShippingZip ||
     !quotedShippingState ||
     !quotedShippingCountry ||
-    quotedShippingZip !== finalShippingZip ||
+    normalizeUsZip(quotedShippingZip) !== normalizeUsZip(finalShippingZip) ||
     quotedShippingState !== finalShippingState ||
     quotedShippingCountry !== finalShippingCountry);
 
