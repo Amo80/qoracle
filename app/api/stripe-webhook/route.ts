@@ -193,8 +193,9 @@ console.log("MerchFox credential diagnostic", {
   keyPrefix: merchFoxApiKey?.slice(0, 12),
   keyLength: merchFoxApiKey?.length,
   secretLength: merchFoxApiSecret?.length,
+  secretStart: merchFoxApiSecret?.slice(0, 3),
+  secretEnd: merchFoxApiSecret?.slice(-3),
 });
-
         if (!merchFoxApiKey || !merchFoxApiSecret) {
           console.error("MerchFox credentials are missing");
 
