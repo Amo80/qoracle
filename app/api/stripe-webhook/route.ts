@@ -152,10 +152,19 @@ printify_variant_title: printifyVariantTitle,
       }
       if (isMerchFoxJesterKeychain) {
         if (shippingQuoteMismatch) {
-          console.error(
-            `MerchFox fulfillment blocked: shipping address changed for Stripe session ${session.id}.`
-          );
-
+         console.error("MerchFox fulfillment blocked: shipping address mismatch", {
+  sessionId: session.id,
+  quoted: {
+    zip: quotedShippingZip,
+    state: quotedShippingState,
+    country: quotedShippingCountry,
+  },
+  final: {
+    zip: finalShippingZip,
+    state: finalShippingState,
+    country: finalShippingCountry,
+  },
+});
           return NextResponse.json(
             { error: "Shipping address changed after quote" },
             { status: 400 }
