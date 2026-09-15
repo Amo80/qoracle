@@ -173,8 +173,11 @@ printify_variant_title: printifyVariantTitle,
           );
         }
 
-        const merchFoxApiKey = process.env.MERCHFOX_API_KEY;
-        const merchFoxApiSecret = process.env.MERCHFOX_APP_SECRET;
+      const merchFoxApiKey =
+  process.env.MERCHFOX_SANDBOX_API_KEY;
+
+const merchFoxApiSecret =
+  process.env.MERCHFOX_SANDBOX_APP_SECRET;
 
         if (!merchFoxApiKey || !merchFoxApiSecret) {
           console.error("MerchFox credentials are missing");
