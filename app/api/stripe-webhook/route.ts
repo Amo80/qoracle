@@ -189,13 +189,6 @@ printify_variant_title: printifyVariantTitle,
 
 const merchFoxApiSecret =
   process.env.MERCHFOX_SANDBOX_APP_SECRET?.trim();
-console.log("MerchFox credential diagnostic", {
-  keyPrefix: merchFoxApiKey?.slice(0, 12),
-  keyLength: merchFoxApiKey?.length,
-  secretLength: merchFoxApiSecret?.length,
-  secretStart: merchFoxApiSecret?.slice(0, 3),
-  secretEnd: merchFoxApiSecret?.slice(-3),
-});
         if (!merchFoxApiKey || !merchFoxApiSecret) {
           console.error("MerchFox credentials are missing");
 
@@ -218,11 +211,6 @@ const merchFoxAuthTest = await fetch(
 
 const merchFoxAuthTestBody = await merchFoxAuthTest.json();
 
-console.log("MerchFox Vercel auth test", {
-  httpStatus: merchFoxAuthTest.status,
-  code: merchFoxAuthTestBody?.code,
-  message: merchFoxAuthTestBody?.message,
-});
         const merchFoxResponse = await fetch(
           "https://api-sandbox.merchfox.com/api/v1/orders/quick/submit",
           {
