@@ -41,6 +41,8 @@ const quantity = Math.max(
 
   const isMerch =
     Boolean(printifyProductId && variantId);
+const needsShipping =
+  isMerch || product === "Jester Oracle QR Keychain";
   const parsedUnitPrice =
     Number(price.replace(/[^0-9.-]/g, ""));
   const unitPriceCents = Number.isFinite(parsedUnitPrice)
@@ -66,7 +68,7 @@ const quantity = Math.max(
     if (checkoutInProgress.current) return;
 
     if (
-      isMerch &&
+  needsShipping &&
       (!shippingFirstName.trim() ||
         !shippingLastName.trim() ||
         !shippingAddress1.trim() ||
@@ -104,7 +106,7 @@ quantity,
           // allowing real merch payments.
           price,
           orderType: isMerch ? "merch" : "artifact",
-          shippingAddress: isMerch ? {
+          shippingAddress: needsShipping ? {
             first_name: shippingFirstName,
             last_name: shippingLastName,
             address1: shippingAddress1,
@@ -204,7 +206,7 @@ quantity,
               <strong>Product:</strong> {product}
             </p>
 
-            {isMerch ? (
+            {needsShipping ? (
               <>
                 <p>
                   <strong>Type:</strong> QRYSTAL MERCH
