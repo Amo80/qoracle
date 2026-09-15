@@ -185,10 +185,10 @@ printify_variant_title: printifyVariantTitle,
         }
 
       const merchFoxApiKey =
-  process.env.MERCHFOX_SANDBOX_API_KEY;
+  process.env.MERCHFOX_SANDBOX_API_KEY?.trim();
 
 const merchFoxApiSecret =
-  process.env.MERCHFOX_SANDBOX_APP_SECRET;
+  process.env.MERCHFOX_SANDBOX_APP_SECRET?.trim();
 
         if (!merchFoxApiKey || !merchFoxApiSecret) {
           console.error("MerchFox credentials are missing");
