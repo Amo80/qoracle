@@ -212,7 +212,7 @@ const merchFoxAuthTest = await fetch(
 const merchFoxAuthTestBody = await merchFoxAuthTest.json();
 
         const merchFoxResponse = await fetch(
-          "https://api-sandbox.merchfox.com/api/v1/orders/quick/submit",
+          "https://api.merchfox.com/api/v1/orders/quick/submit",
           {
             method: "POST",
             headers: {
