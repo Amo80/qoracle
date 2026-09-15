@@ -177,44 +177,8 @@ const [shopCategory, setShopCategory] = useState<"artifacts" | "merch">(
           </div>
         </section>
 {/* =================================================
-    ORACLE ARTIFACTS — COMING SOON
-   ================================================= */}
-
-<section className="artifacts-coming-soon">
-  <div className="artifacts-coming-glow" />
-
-  <p className="artifacts-coming-eyebrow">
     ORACLE ARTIFACTS
-  </p>
-
-  <h2>
-    ARE COMING
-  </h2>
-
-  <div className="artifacts-coming-divider">
-    ✦
-  </div>
-
-  <p className="artifacts-coming-copy">
-    We&apos;re crafting something special.
-    <br />
-    Unique Oracle Artifacts are on the way.
-    <br />
-    Stay tuned — your fate will be tangible soon.
-  </p>
-
-  <button
-    type="button"
-    className="artifacts-merch-button"
-    onClick={() => router.push("/merch")}
-  >
-    CHECK OUT MERCH →
-  </button>
-
-  <p className="artifacts-merch-note">
-    Explore shirts, hoodies, mugs, stickers, and more ways to carry the Oracle.
-  </p>
-</section>
+   ================================================= */}
 
 <section className="shop-products">
   <div className="shop-products-heading">
@@ -229,13 +193,74 @@ const [shopCategory, setShopCategory] = useState<"artifacts" | "merch">(
     </div>
 
     <p>
-      Stickers, cards, keychains, and more
+      Carry a piece of the Oracle with you.
       <br />
-      are coming soon for this Oracle.
+      Physical artifacts connected to the QRystal Balls.
     </p>
   </div>
-</section>        
-       
+
+  {selectedTheme === "jester" ? (
+    <div className="shop-theme-grid">
+      <div className="shop-theme-card selected theme-card-jester">
+        <div className="shop-theme-card-glow" />
+
+        <div className="shop-theme-orb">
+          <img
+            src="/themes/jester-oracle.png"
+            alt="Jester Oracle QR Keychain"
+          />
+        </div>
+
+        <strong>JESTER QR KEYCHAIN</strong>
+
+        <span className="shop-theme-description">
+          3&quot; Acrylic Oracle Artifact
+        </span>
+
+        <span className="artifact-price">
+  $14.99
+</span>
+
+
+       <button
+  type="button"
+  className="artifacts-merch-button artifact-button"
+  onClick={() =>
+    router.push(
+      `/checkout?product=${encodeURIComponent(
+        "Jester Oracle QR Keychain"
+      )}&theme=jester&price=$14.99`
+    )
+  }
+>
+  BUY NOW
+</button>
+      </div>
+    </div>
+  ) : (
+    <section className="artifacts-coming-soon">
+      <div className="artifacts-coming-glow" />
+
+      <p className="artifacts-coming-eyebrow">
+        {selectedThemeData?.name} ORACLE ARTIFACTS
+      </p>
+
+      <h2>
+        ARE COMING
+      </h2>
+
+      <div className="artifacts-coming-divider">
+        ✦
+      </div>
+
+      <p className="artifacts-coming-copy">
+        We&apos;re crafting something special.
+        <br />
+        Unique {selectedThemeData?.name} artifacts are on the way.
+      </p>
+    </section>
+  )}
+</section>       
   </>
 )}
 
