@@ -204,6 +204,25 @@ console.log("MerchFox credential diagnostic", {
             { status: 500 }
           );
         }
+const merchFoxAuthTest = await fetch(
+  "https://api-sandbox.merchfox.com/api/v1/seller/202311/me/api-keys",
+  {
+    method: "GET",
+    headers: {
+      "X-Mfx-App-Key": merchFoxApiKey,
+      "X-Mfx-App-Secret": merchFoxApiSecret,
+    },
+    cache: "no-store",
+  }
+);
+
+const merchFoxAuthTestBody = await merchFoxAuthTest.json();
+
+console.log("MerchFox Vercel auth test", {
+  httpStatus: merchFoxAuthTest.status,
+  code: merchFoxAuthTestBody?.code,
+  message: merchFoxAuthTestBody?.message,
+});
         const merchFoxResponse = await fetch(
           "https://api-sandbox.merchfox.com/api/v1/orders/quick/submit",
           {
