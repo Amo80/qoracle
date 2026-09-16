@@ -208,7 +208,12 @@ const [shopCategory, setShopCategory] = useState<"artifacts" | "merch">(
 
       <div className="shop-theme-orb">
         <img
-          src={selectedThemeData.image}
+          src={
+  selectedTheme === "jester"
+    ? "/products/jk%20mock.jpg"
+    : selectedThemeData.image
+}
+
           alt={`${selectedThemeData.name} Oracle Plush QR Keychain`}
         />
       </div>
