@@ -80,7 +80,7 @@ if (!countError) {
   }
 
   async function downloadQR() {
-    const url = `${window.location.origin}/q/${code}`;
+    const url = `https://theqrystalballs.com/q/${code}`;
 
     const image = await QRCode.toDataURL(url, {
       width: 1200,
