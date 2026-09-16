@@ -50,98 +50,8 @@ const quantity = Math.max(
     let description: string;
     let variantTitle = "";
     let shippingAmount = 0;
-const isMerchFoxKeychain =
-  orderType === "artifact" &&
-  product === "Jester Oracle QR Keychain" &&
-  theme === "jester";
-if (isMerchFoxKeychain) {
-  if (
-    !shippingAddress?.first_name?.trim() ||
-    !shippingAddress?.last_name?.trim() ||
-    !shippingAddress?.address1?.trim() ||
-    !shippingAddress?.city?.trim() ||
-    !shippingAddress?.region?.trim() ||
-    !shippingAddress?.zip?.trim() ||
-    shippingAddress?.country?.trim().toUpperCase() !== "US"
-  ) {
-    return NextResponse.json(
-      { error: "Complete shipping address required" },
-      { status: 400 }
-    );
-  }
 
-  const apiKey = process.env.MERCHFOX_API_KEY;
-  const apiSecret = process.env.MERCHFOX_APP_SECRET;
 
-  if (!apiKey || !apiSecret) {
-    return NextResponse.json(
-      { error: "MerchFox credentials are missing" },
-      { status: 500 }
-    );
-  }
-
-  const quoteResponse = await fetch(
-    "https://api.merchfox.com/api/v1/orders/quote",
-    {
-      method: "POST",
-      headers: {
-        "X-Mfx-App-Key": apiKey,
-        "X-Mfx-App-Secret": apiSecret,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-       items: [
-  {
-    productId: "6aa2d1c955f4cb0435e94cde",
-variantId: "ab203354-c4d1-4eb3-b834-43ea1bb90b90",
-quantity,
-unitPrice: 14.99,
-  },
-],        shippingAddress: {
-          firstName: shippingAddress.first_name!.trim(),
-          lastName: shippingAddress.last_name!.trim(),
-          address1: shippingAddress.address1!.trim(),
-          address2: shippingAddress.address2?.trim() || "",
-          city: shippingAddress.city!.trim(),
-          state: shippingAddress.region!.trim().toUpperCase(),
-          country: "US",
-          zip: shippingAddress.zip!.trim(),
-        },
-        source: "MANUAL",
-        fulfillmentServiceKey: "FIRST_CLASS",
-        shippingMode: "PROVIDER",
-      }),
-      cache: "no-store",
-    }
-  );
-
-  const quoteResult = await quoteResponse.json().catch(() => null);
-
-  if (!quoteResponse.ok || quoteResult?.code !== 0) {
-    console.error("MerchFox quote failed:", quoteResult);
-
-    return NextResponse.json(
-      { error: "Unable to calculate keychain shipping" },
-      { status: 400 }
-    );
-  }
-
-  const merchFoxShipping = Number(
-    quoteResult?.data?.shippingTotal
-  );
-
-  if (
-    !Number.isFinite(merchFoxShipping) ||
-    merchFoxShipping < 0
-  ) {
-    return NextResponse.json(
-      { error: "Invalid MerchFox shipping quote" },
-      { status: 400 }
-    );
-  }
-
-  shippingAmount = Math.round(merchFoxShipping * 100);
-}
     // =========================
     // MERCH ORDER
     // =========================
@@ -306,8 +216,8 @@ unitPrice: 14.99,
           allowed_countries: ["US"],
         },
 
-        shipping_options:
-           (orderType === "merch" || isMerchFoxKeychain)
+      shipping_options:
+  orderType === "merch"
             ? [{
                 shipping_rate_data: {
                   type: "fixed_amount",
@@ -342,27 +252,19 @@ unitPrice: 14.99,
           printify_variant_title:
             variantTitle,
 quantity: String(quantity),
-          fulfillment_provider:
-            product === "Jester Oracle QR Keychain"
-              ? "merchfox"
-              : "",
-
-          merchfox_sku:
-            product === "Jester Oracle QR Keychain"
-              ? "51200"
-              : "",
+        
          quoted_shipping_zip:
-  (orderType === "merch" || isMerchFoxKeychain)
+  orderType === "merch"
     ? shippingAddress?.zip?.trim() || ""
     : "",
 
 quoted_shipping_state:
-  (orderType === "merch" || isMerchFoxKeychain)
+  orderType === "merch"
     ? shippingAddress?.region?.trim().toUpperCase() || ""
     : "",
 
 quoted_shipping_country:
-  (orderType === "merch" || isMerchFoxKeychain)
+  orderType === "merch"
     ? shippingAddress?.country?.trim().toUpperCase() || ""
     : "",
         },

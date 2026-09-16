@@ -41,8 +41,7 @@ const quantity = Math.max(
 
   const isMerch =
     Boolean(printifyProductId && variantId);
-const needsShipping =
-  isMerch || product === "Jester Oracle QR Keychain";
+const needsShipping = isMerch;
   const parsedUnitPrice =
     Number(price.replace(/[^0-9.-]/g, ""));
   const unitPriceCents = Number.isFinite(parsedUnitPrice)
