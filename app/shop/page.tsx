@@ -199,67 +199,80 @@ const [shopCategory, setShopCategory] = useState<"artifacts" | "merch">(
     </p>
   </div>
 
-  {selectedTheme === "jester" ? (
-    <div className="shop-theme-grid">
-      <div className="shop-theme-card selected theme-card-jester">
-        <div className="shop-theme-card-glow" />
+ {selectedThemeData && (
+  <div className="shop-theme-grid">
+    <div
+      className={`shop-theme-card selected theme-card-${selectedTheme}`}
+    >
+      <div className="shop-theme-card-glow" />
 
-        <div className="shop-theme-orb">
-          <img
-            src="/themes/jester-oracle.png"
-            alt="Jester Oracle QR Keychain"
-          />
-        </div>
-
-        <strong>JESTER QR KEYCHAIN</strong>
-
-        <span className="shop-theme-description">
-          3&quot; Acrylic Oracle Artifact
-        </span>
-
-        <span className="artifact-price">
-  $14.99
-</span>
-
-
-       <button
-  type="button"
-  className="artifacts-merch-button artifact-button"
-  onClick={() =>
-    router.push(
-      `/checkout?product=${encodeURIComponent(
-        "Jester Oracle QR Keychain"
-      )}&theme=jester&price=$14.99`
-    )
-  }
->
-  BUY NOW
-</button>
+      <div className="shop-theme-orb">
+        <img
+          src={selectedThemeData.image}
+          alt={`${selectedThemeData.name} Oracle Plush QR Keychain`}
+        />
       </div>
+
+      <strong>
+        {selectedThemeData.name} PLUSH QR KEYCHAIN
+      </strong>
+
+      <span className="shop-theme-description">
+        4&quot; × 4&quot; Interactive Oracle Plush
+      </span>
+
+      <span className="artifact-price">
+        $14.99
+      </span>
+
+      <button
+        type="button"
+        className="artifacts-merch-button artifact-button"
+        onClick={() => {
+          const printifyProducts: Record<
+            string,
+            { productId: string; variantId: string }
+          > = {
+            jester: {
+              productId: "6aaab81bc1717d20e609b79b",
+              variantId: "125118",
+            },
+            love: {
+              productId: "6aaab81676ae29b3b40bc86f",
+              variantId: "125118",
+            },
+            dnd: {
+              productId: "6aaab82016c20ebea50d936c",
+              variantId: "125118",
+            },
+            chaos: {
+              productId: "6aaab825765d1a4e3c0c7c2f",
+              variantId: "125118",
+            },
+            eclipse: {
+              productId: "6aaab82cc1717d20e609b79c",
+              variantId: "125118",
+            },
+          };
+
+          const printifyProduct = printifyProducts[selectedTheme];
+
+          router.push(
+            `/checkout?product=${encodeURIComponent(
+              `${selectedThemeData.name} Oracle Plush QR Keychain`
+            )}&theme=${selectedTheme}&price=$14.99&printifyProductId=${
+              printifyProduct.productId
+            }&variantId=${printifyProduct.variantId}&variant=${encodeURIComponent(
+              '4" × 4"'
+            )}&orderType=merch`
+          );
+        }}
+      >
+        BUY NOW
+      </button>
     </div>
-  ) : (
-    <section className="artifacts-coming-soon">
-      <div className="artifacts-coming-glow" />
-
-      <p className="artifacts-coming-eyebrow">
-        {selectedThemeData?.name} ORACLE ARTIFACTS
-      </p>
-
-      <h2>
-        ARE COMING
-      </h2>
-
-      <div className="artifacts-coming-divider">
-        ✦
-      </div>
-
-      <p className="artifacts-coming-copy">
-        We&apos;re crafting something special.
-        <br />
-        Unique {selectedThemeData?.name} artifacts are on the way.
-      </p>
-    </section>
-  )}
+  </div>
+)}
 </section>       
   </>
 )}
