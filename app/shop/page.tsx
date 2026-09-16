@@ -222,7 +222,7 @@ const [shopCategory, setShopCategory] = useState<"artifacts" | "merch">(
       </span>
 
       <span className="artifact-price">
-        $14.99
+        $12.99
       </span>
 
       <button
