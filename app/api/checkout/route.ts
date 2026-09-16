@@ -7,7 +7,7 @@ const priceMap: Record<string, number> = {
   "QRystal Balls Sticker": 499,
   "QRystal Balls Card": 799,
   "QRystal Balls Keychain": 1299,
-  "Jester Oracle QR Keychain": 1499,
+  
 };
 
 
