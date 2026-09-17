@@ -2,10 +2,11 @@ import { NextResponse } from "next/server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { requireAdminApi } from "@/lib/auth/admin";
 
-const supabaseAdmin = createAdminClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const getSupabaseAdmin = () =>
+  createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
 
 export async function POST(request: Request) {
   const { response } = await requireAdminApi();
@@ -31,7 +32,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { data: order, error } = await supabaseAdmin
+    const { data: order, error } = await getSupabaseAdmin()
       .from("orders")
       .select("id, printify_order_id")
       .eq("id", orderId)
@@ -95,7 +96,7 @@ export async function POST(request: Request) {
       updateData.tracking_number = shipment.number;
     }
 
-    const { error: updateError } = await supabaseAdmin
+   const { error: updateError } = await getSupabaseAdmin()
       .from("orders")
       .update(updateData)
       .eq("id", order.id);
