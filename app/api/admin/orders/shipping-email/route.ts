@@ -6,10 +6,11 @@ import { buildShippingEmailHtml } from "@/lib/email/shipping";
 
 
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const getSupabase = () =>
+  createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
 
 export async function POST(request: Request) {
   const { response } = await requireAdminApi();
@@ -28,8 +29,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { data: order, error: orderError } = await supabase
-      .from("orders")
+   const { data: order, error: orderError } = await getSupabase()      .from("orders")
       .select("*")
       .eq("id", orderId)
       .single();
@@ -81,8 +81,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { error: updateError } = await supabase
-      .from("orders")
+   const { error: updateError } = await getSupabase()      .from("orders")
       .update({ shipped_email_sent: true })
       .eq("id", order.id);
 
