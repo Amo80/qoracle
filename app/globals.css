@@ -12409,6 +12409,29 @@ strong {
 .shop-category-button:active {
   transform: translateY(0) scale(0.97);
 }
+/* =================================================
+   ARTIFACT PRODUCT CARD — PRICE / BUTTON FIX
+   ================================================= */
+
+.artifact-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.artifact-price {
+  position: static !important;
+  margin: 10px 0 12px;
+  text-align: center;
+  font-weight: 700;
+  z-index: 2;
+}
+
+.artifact-button {
+  position: static !important;
+  width: 100%;
+  margin-top: 0;
+  z-index: 2;
+}
 
 /* QR ARTIFACT PLUSH PRODUCT IMAGE */
 .shop-theme-orb.artifact-plush-image {
