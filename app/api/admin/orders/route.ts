@@ -4,10 +4,11 @@ import { Resend } from "resend";
 import { requireAdminApi } from "@/lib/auth/admin";
 import { buildShippingEmailHtml } from "@/lib/email/shipping";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const getSupabase = () =>
+  createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
 
 const allowedStatuses = ["New", "Processing", "Shipped", "Completed"];
 
@@ -43,7 +44,7 @@ export async function PATCH(request: Request) {
       updateData.tracking_number = String(body.tracking_number).trim();
     }
 
-    const { data: updatedOrder, error: updateError } = await supabase
+    const { data: updatedOrder, error: updateError } = await getSupabase()
       .from("orders")
       .update(updateData)
       .eq("id", id)
@@ -83,7 +84,7 @@ export async function PATCH(request: Request) {
       if (emailError) {
         console.error("Shipping email failed:", emailError);
       } else {
-        await supabase
+        await getSupabase()
           .from("orders")
           .update({ shipped_email_sent: true })
           .eq("id", id);
