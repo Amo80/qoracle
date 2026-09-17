@@ -2,18 +2,35 @@ import { NextResponse } from "next/server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { requireAdminApi } from "@/lib/auth/admin";
 
-const PRINTIFY_SHOP_ID = "28814551";
-
 const supabaseAdmin = createAdminClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
+
+type ShippingAddress = {
+  line1?: string;
+  line2?: string;
+  city?: string;
+  state?: string;
+  postal_code?: string;
+  country?: string;
+};
 
 export async function POST(request: Request) {
   const { response } = await requireAdminApi();
   if (response) return response;
 
   try {
+    const token = process.env.PRINTIFY_API_TOKEN;
+    const shopId = process.env.PRINTIFY_SHOP_ID;
+
+    if (!token || !shopId) {
+      return NextResponse.json(
+        { error: "Printify is not configured" },
+        { status: 500 }
+      );
+    }
+
     const { orderId } = await request.json();
 
     if (!orderId) {
@@ -43,6 +60,16 @@ export async function POST(request: Request) {
       );
     }
 
+    if (order.shipping_quote_mismatch) {
+      return NextResponse.json(
+        {
+          error:
+            "The final Stripe shipping address differs from the address used for the shipping quote. Review the order before fulfillment.",
+        },
+        { status: 409 }
+      );
+    }
+
     if (order.printify_order_id) {
       return NextResponse.json(
         {
@@ -60,7 +87,7 @@ export async function POST(request: Request) {
       );
     }
 
-    let shippingAddress: any = {};
+    let shippingAddress: ShippingAddress = {};
 
     if (order.shipping_address) {
       try {
@@ -98,11 +125,11 @@ export async function POST(request: Request) {
     const externalId = `qrystal-order-${order.id}`;
 
     const printifyResponse = await fetch(
-      `https://api.printify.com/v1/shops/${PRINTIFY_SHOP_ID}/orders.json`,
+      `https://api.printify.com/v1/shops/${shopId}/orders.json`,
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${process.env.PRINTIFY_API_TOKEN}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({

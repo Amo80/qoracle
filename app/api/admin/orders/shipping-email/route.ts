@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { createClient } from "@supabase/supabase-js";
 import { requireAdminApi } from "@/lib/auth/admin";
+import { buildShippingEmailHtml } from "@/lib/email/shipping";
 
 
 
@@ -54,107 +55,21 @@ export async function POST(request: Request) {
       );
     }
 
-    const carrier = order.shipping_carrier || "Carrier";
-    const trackingNumber = order.tracking_number;
-
-    const trackingLinks: Record<string, string> = {
-      USPS: `https://tools.usps.com/go/TrackConfirmAction?tLabels=${encodeURIComponent(
-        trackingNumber
-      )}`,
-      UPS: `https://www.ups.com/track?tracknum=${encodeURIComponent(
-        trackingNumber
-      )}`,
-      FedEx: `https://www.fedex.com/fedextrack/?trknbr=${encodeURIComponent(
-        trackingNumber
-      )}`,
-      DHL: `https://www.dhl.com/us-en/home/tracking.html?tracking-id=${encodeURIComponent(
-        trackingNumber
-      )}`,
-    };
-
-    const trackingUrl =
-      trackingLinks[carrier] || null;
-
     const fromEmail =
       process.env.RESEND_FROM_EMAIL ||
       "The QRystal Balls <onboarding@resend.dev>";
-
-    const customerName =
-      order.customer_name || "Customer";
-
-    const trackingButton = trackingUrl
-      ? `
-        <p style="margin-top: 25px;">
-          <a
-            href="${trackingUrl}"
-            style="
-              display:inline-block;
-              padding:12px 20px;
-              background:#111;
-              color:#fff;
-              text-decoration:none;
-              border-radius:8px;
-              font-weight:bold;
-            "
-          >
-            Track Your Package
-          </a>
-        </p>
-      `
-      : "";
 
     const { error: emailError } = await resend.emails.send({
       from: fromEmail,
       to: order.customer_email,
       subject: `Your QRystal Balls Order #${order.id} Has Shipped`,
-      html: `
-        <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;color:#111;">
-          <h1>The QRystal Balls</h1>
-
-          <h2>Your order has shipped! 📦</h2>
-
-          <p>Hello ${customerName},</p>
-
-          <p>
-            Great news! Your QRystal Balls order
-            <strong>#${order.id}</strong>
-            is on its way.
-          </p>
-
-          <div
-            style="
-              margin:25px 0;
-              padding:20px;
-              background:#f5f5f5;
-              border-radius:10px;
-            "
-          >
-            <p>
-              <strong>Carrier:</strong> ${carrier}
-            </p>
-
-            <p>
-              <strong>Tracking Number:</strong>
-              ${trackingNumber}
-            </p>
-
-            <p>
-              <strong>Product:</strong>
-              ${order.product_name || "QRystal Balls Card"}
-            </p>
-          </div>
-
-          ${trackingButton}
-
-          <p style="margin-top:30px;">
-            Thank you for your order!
-          </p>
-
-          <p>
-            — The QRystal Balls Team
-          </p>
-        </div>
-      `,
+      html: buildShippingEmailHtml({
+        orderId: order.id,
+        customerName: order.customer_name,
+        productName: order.product_name,
+        carrier: order.shipping_carrier,
+        trackingNumber: order.tracking_number,
+      }),
     });
 
     if (emailError) {
@@ -164,6 +79,15 @@ export async function POST(request: Request) {
         { error: "Unable to send shipping email" },
         { status: 500 }
       );
+    }
+
+    const { error: updateError } = await supabase
+      .from("orders")
+      .update({ shipped_email_sent: true })
+      .eq("id", order.id);
+
+    if (updateError) {
+      console.error("Shipping email sent but status could not be saved:", updateError);
     }
 
     return NextResponse.json({

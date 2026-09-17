@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { requireAdminApi } from "@/lib/auth/admin";
 
-const PRINTIFY_SHOP_ID = "28814551";
-
 const supabaseAdmin = createAdminClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -14,6 +12,16 @@ export async function POST(request: Request) {
   if (response) return response;
 
   try {
+    const token = process.env.PRINTIFY_API_TOKEN;
+    const shopId = process.env.PRINTIFY_SHOP_ID;
+
+    if (!token || !shopId) {
+      return NextResponse.json(
+        { error: "Printify is not configured" },
+        { status: 500 }
+      );
+    }
+
     const { orderId } = await request.json();
 
     if (!orderId) {
@@ -44,11 +52,11 @@ export async function POST(request: Request) {
     }
 
     const printifyResponse = await fetch(
-      `https://api.printify.com/v1/shops/${PRINTIFY_SHOP_ID}/orders/${order.printify_order_id}.json`,
+      `https://api.printify.com/v1/shops/${shopId}/orders/${order.printify_order_id}.json`,
       {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${process.env.PRINTIFY_API_TOKEN}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         cache: "no-store",
@@ -75,7 +83,7 @@ export async function POST(request: Request) {
         ? printifyData.shipments[0]
         : null;
 
-    const updateData: Record<string, any> = {
+    const updateData: Record<string, string> = {
       printify_fulfillment_status: fulfillmentStatus,
     };
 

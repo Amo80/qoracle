@@ -176,9 +176,28 @@ export default async function OrderDetailsPage({
   {order.printify_product_id || "—"}
 </p>
 
+{order.shipping_quote_mismatch && (
+  <div
+    role="alert"
+    style={{
+      marginTop: "20px",
+      padding: "16px",
+      border: "1px solid #b45309",
+      borderRadius: "10px",
+      background: "#451a03",
+      color: "#fde68a",
+    }}
+  >
+    <strong>Fulfillment paused:</strong> The final Stripe shipping address
+    differs from the address used for the Printify shipping quote. Review this
+    order before sending it to Printify.
+  </div>
+)}
+
 {order.printify_product_id &&
   order.printify_variant_id &&
   order.payment_status === "paid" &&
+  !order.shipping_quote_mismatch &&
   !order.printify_order_id && (
     <SendToPrintify orderId={order.id} />
   )}

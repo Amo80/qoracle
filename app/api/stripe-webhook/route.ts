@@ -2,6 +2,7 @@ import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { buildOrderRecord } from "@/lib/commerce/order";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -51,85 +52,17 @@ export async function POST(request: Request) {
     const session = event.data.object as Stripe.Checkout.Session;
 
     if (session.payment_status === "paid") {
-      const paymentIntentId =
-        typeof session.payment_intent === "string"
-          ? session.payment_intent
-          : session.payment_intent?.id || null;
-
       const productName =
         session.metadata?.product_name || "QRystal Balls Product";
-
-      const theme = session.metadata?.theme || "jester";
-const printifyProductId =
-  session.metadata?.printify_product_id || null;
-
-const printifyVariantId =
-  session.metadata?.printify_variant_id || null;
-
-const printifyVariantTitle =
-  session.metadata?.printify_variant_title || null;
-
-const metadataQuantity = Number(session.metadata?.quantity);
-const quantity =
-  Number.isInteger(metadataQuantity) &&
-  metadataQuantity >= 1 &&
-  metadataQuantity <= 10
-    ? metadataQuantity
-    : 1;
-
-
-      const customerName =
-        session.customer_details?.name || null;
-
-      const customerEmail =
-        session.customer_details?.email || null;
-
-const shippingDetails = session.collected_information?.shipping_details;
-
-const quotedShippingZip = session.metadata?.quoted_shipping_zip?.trim().toUpperCase() || "";
-const quotedShippingState = session.metadata?.quoted_shipping_state?.trim().toUpperCase() || "";
-const quotedShippingCountry = session.metadata?.quoted_shipping_country?.trim().toUpperCase() || "";
-
-const normalizeUsZip = (zip: string) => zip.replace(/\D/g, "").slice(0, 5);
-
-const finalShippingZip = shippingDetails?.address?.postal_code?.trim().toUpperCase() || "";
-const finalShippingState = shippingDetails?.address?.state?.trim().toUpperCase() || "";
-const finalShippingCountry = shippingDetails?.address?.country?.trim().toUpperCase() || "";
-
-const shippingQuoteMismatch =
-  session.metadata?.order_type === "merch" &&
-
-  (!quotedShippingZip ||
-    !quotedShippingState ||
-    !quotedShippingCountry ||
-    normalizeUsZip(quotedShippingZip) !== normalizeUsZip(finalShippingZip) ||
-    quotedShippingState !== finalShippingState ||
-    quotedShippingCountry !== finalShippingCountry);
-
-const shippingAddress =
-  shippingDetails?.address
-    ? JSON.stringify(shippingDetails.address)
-    : null;
+      const orderRecord = buildOrderRecord(session, productName);
+      const customerEmail = orderRecord.customer_email;
+      const printifyVariantTitle = orderRecord.printify_variant_title;
+      const quantity = orderRecord.quantity;
 
       const { error: upsertError } = await supabase
         .from("orders")
         .upsert(
-          {
-            stripe_session_id: session.id,
-            product_name: productName,
-            theme,
-            customer_name: customerName,
-            stripe_payment_id: paymentIntentId,
-            amount_total: session.amount_total,
-            currency: session.currency,
-printify_product_id: printifyProductId,
-printify_variant_id: printifyVariantId,
-printify_variant_title: printifyVariantTitle,
-            quantity,
-            customer_email: customerEmail,
-            shipping_address: shippingAddress,
-            payment_status: session.payment_status,
-          },
+          orderRecord,
           { onConflict: "stripe_session_id" }
         );
 

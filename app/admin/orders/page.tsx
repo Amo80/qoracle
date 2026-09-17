@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import OrderStatus from "./OrderStatus/page";
 import LogoutButton from "./LogoutButton";
 import { requireAdminPage } from "@/lib/auth/admin";
+import Link from "next/link";
 
 export default async function OrdersPage({
   searchParams,
@@ -144,7 +145,7 @@ export default async function OrdersPage({
           Search
         </button>
 
-        <a
+        <Link
           href="/admin/orders"
           style={{
             padding: "12px 18px",
@@ -157,7 +158,7 @@ export default async function OrdersPage({
           }}
         >
           Clear
-        </a>
+        </Link>
       </form>
 
       <div
