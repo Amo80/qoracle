@@ -207,16 +207,22 @@ const [shopCategory, setShopCategory] = useState<"artifacts" | "merch">(
       <div className="shop-theme-card-glow" />
 
       <div className="shop-theme-orb">
-        <img
-          src={
-  selectedTheme === "jester"
-    ? "/products/jk%20mock.jpg"
-    : selectedThemeData.image
-}
-
-          alt={`${selectedThemeData.name} Oracle Plush QR Keychain`}
-        />
-      </div>
+       <img
+  src={
+    selectedTheme === "jester"
+      ? "/products/jk%20mock.jpg"
+      : selectedTheme === "love"
+      ? "/products/love-keychain-mock.jpeg"
+      : selectedTheme === "dnd"
+      ? "/products/dragon-keychain-mock.jpeg"
+      : selectedTheme === "chaos"
+      ? "/products/chaos-keychain-mock.jpeg"
+      : selectedTheme === "eclipse"
+      ? "/products/eclipse-keychain-mock.jpeg"
+      : selectedThemeData.image
+  }
+  alt={`${selectedThemeData.name} Oracle Plush QR Keychain`}
+/>      </div>
 
       <strong>
         {selectedThemeData.name} PLUSH QR KEYCHAIN
