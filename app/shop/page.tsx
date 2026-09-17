@@ -2,43 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ORACLES, type OracleId } from "@/lib/oracles/registry";
 
-
-const themes = [
-  {
-    id: "jester",
-    name: "JESTER",
-    image: "/themes/jester-oracle.png",
-    description: "Mischief & Mayhem",
-  },
-  {
-    id: "chaos",
-    name: "CHAOS",
-    image: "/themes/chaos-crystal-ball.png",
-    description: "Unpredictable Fate",
-  },
-  {
-    id: "love",
-    name: "LOVE",
-    image: "/themes/love-crystal-ball.png",
-    description: "Romance & Desire",
-  },
-  {
-    id: "eclipse",
-    name: "ECLIPSE",
-    image: "/themes/eclipse-crystal.png",
-    description: "Mystery & Secrets",
-  },
-  {
-    id: "dnd",
-    name: "DRAGON",
-    image: "/themes/DND.crystal.png",
-    description: "Adventure Awaits",
-  },
-];
+const themes = ORACLES;
 export default function ShopPage() {
   const router = useRouter();
-  const [selectedTheme, setSelectedTheme] = useState("jester");
+  const [selectedTheme, setSelectedTheme] = useState<OracleId>("jester");
 const [shopCategory, setShopCategory] = useState<"artifacts" | "merch">(
   "artifacts"
 );

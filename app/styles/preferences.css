@@ -1,0 +1,37 @@
+.experience-controls {
+  position: fixed;
+  right: max(0.75rem, env(safe-area-inset-right));
+  bottom: max(0.75rem, env(safe-area-inset-bottom));
+  z-index: 10000;
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(7, 7, 13, 0.88);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(10px);
+}
+
+.experience-controls button {
+  min-width: 44px;
+  min-height: 44px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.5rem 0.7rem;
+  background: transparent;
+  color: #ddd6fe;
+  font: 700 0.72rem/1 var(--qb-font-sans);
+  cursor: pointer;
+}
+
+.experience-controls button:hover {
+  background: rgba(167, 139, 250, 0.15);
+}
+
+@media (max-width: 420px) {
+  .experience-controls button {
+    padding-inline: 0.55rem;
+    font-size: 0.66rem;
+  }
+}

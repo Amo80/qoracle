@@ -1,4 +1,5 @@
 import OracleQR from "@/components/OracleQR";
+import { normalizeOracleId } from "@/lib/oracles/registry";
 
 export default async function OraclePage({
   searchParams,
@@ -10,7 +11,7 @@ export default async function OraclePage({
 }) {
   const params = await searchParams;
 
-  const theme = params.theme || "jester";
+  const theme = normalizeOracleId(params.theme);
   const code = params.code || "web";
 
   return <OracleQR theme={theme} code={code} />;

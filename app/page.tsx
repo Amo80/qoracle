@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { ORACLES } from "@/lib/oracles/registry";
 
 export default function Home() {
   const [question, setQuestion] = useState("");
@@ -101,63 +102,20 @@ export default function Home() {
   <span>✦</span>
 </div>
      <div className="oracle-cards">
-
-  <Link href="/oracle?theme=jester" className="oracle-card">
-    <img
-      src="/themes/jester-oracle.png"
-      alt="Jester Oracle"
-    />
-    <div className="oracle-card-info">
-      <strong>JESTER</strong>
-      <span>Mischief & Mayhem</span>
-    </div>
-  </Link>
-
-  <Link href="/oracle?theme=chaos" className="oracle-card">
-    <img
-      src="/themes/chaos-crystal-ball.png"
-      alt="Chaos Oracle"
-    />
-    <div className="oracle-card-info">
-      <strong>CHAOS</strong>
-      <span>Unpredictable Fate</span>
-    </div>
-  </Link>
-
-  <Link href="/oracle?theme=love" className="oracle-card">
-    <img
-      src="/themes/love-crystal-ball.png"
-      alt="Love Oracle"
-    />
-    <div className="oracle-card-info">
-      <strong>LOVE</strong>
-      <span>Romance & Desire</span>
-    </div>
-  </Link>
-
-  <Link href="/oracle?theme=eclipse" className="oracle-card">
-    <img
-      src="/themes/eclipse-crystal.png"
-      alt="Eclipse Oracle"
-    />
-    <div className="oracle-card-info">
-      <strong>ECLIPSE</strong>
-      <span>Mystery & Secrets</span>
-    </div>
-  </Link>
-
-  <Link href="/oracle?theme=dnd" className="oracle-card">
-    <img
-      src="/themes/DND.crystal.png"
-     alt="Dragon Oracle"
-    />
-    <div className="oracle-card-info">
-      <strong>DRAGON</strong>
-      <span>Adventure Awaits</span>
-    </div>
-  </Link>
-
-</div>
+       {ORACLES.map((oracle) => (
+         <Link
+           key={oracle.id}
+           href={oracle.oraclePath}
+           className="oracle-card"
+         >
+           <img src={oracle.image} alt={`${oracle.name} Oracle`} />
+           <div className="oracle-card-info">
+             <strong>{oracle.name}</strong>
+             <span>{oracle.description}</span>
+           </div>
+         </Link>
+       ))}
+     </div>
 <section className="ask-anything">
   <div className="ask-anything-heading">
     <span>✦</span>

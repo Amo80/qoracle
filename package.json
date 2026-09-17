@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint .",
     "test": "vitest run",
-    "check": "npm run lint && npm run test && npm run build"
+    "typecheck": "tsc --noEmit",
+    "perf:budget": "node scripts/check-performance.mjs",
+    "check": "npm run lint && npm run typecheck && npm run test && npm run perf:budget && npm run build"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.5",
