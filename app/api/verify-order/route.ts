@@ -3,12 +3,13 @@ import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { buildOrderRecord } from "@/lib/commerce/order";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+const getStripe = () => new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const getSupabase = () =>
+  createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
 
 export async function POST(request: Request) {
   try {
@@ -22,7 +23,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const session = await stripe.checkout.sessions.retrieve(sessionId, {
+  const session = await getStripe().checkout.sessions.retrieve(sessionId,
+ {
       expand: ["line_items"],
     });
 
@@ -39,7 +41,7 @@ export async function POST(request: Request) {
   "QRystal Balls Product";
 
     const orderRecord = buildOrderRecord(session, productName);
-    const { error: upsertError } = await supabase
+    const { error: upsertError } = await getSupabase()
       .from("orders")
       .upsert(
         orderRecord,
