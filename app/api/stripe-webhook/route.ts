@@ -4,12 +4,13 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { buildOrderRecord } from "@/lib/commerce/order";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+const getStripe = () => new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const getSupabase = () =>
+  createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
 
 function escapeHtml(value: string) {
   return value
@@ -34,7 +35,7 @@ export async function POST(request: Request) {
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(
+  event = getStripe().webhooks.constructEvent(
       body,
       signature,
       process.env.STRIPE_WEBHOOK_SECRET!
@@ -59,7 +60,7 @@ export async function POST(request: Request) {
       const printifyVariantTitle = orderRecord.printify_variant_title;
       const quantity = orderRecord.quantity;
 
-      const { error: upsertError } = await supabase
+     const { error: upsertError } = await getSupabase()
         .from("orders")
         .upsert(
           orderRecord,
