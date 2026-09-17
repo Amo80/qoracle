@@ -141,15 +141,14 @@ const [shopCategory, setShopCategory] = useState<"artifacts" | "merch">(
                   onClick={() => setSelectedTheme(theme.id)}
                   aria-pressed={isSelected}
                 >
-                  <div className="shop-theme-card-glow" />
+                 <div className="shop-theme-card-glow" />
 
-                 <div className="shop-theme-orb">
+<div className="shop-theme-orb">
   <img
     src={theme.image}
     alt={`${theme.name} Oracle`}
   />
 </div>
-
                   <strong>{theme.name}</strong>
 
                   <span className="shop-theme-description">
@@ -206,24 +205,24 @@ const [shopCategory, setShopCategory] = useState<"artifacts" | "merch">(
     >
       <div className="shop-theme-card-glow" />
 
-      <div className="shop-theme-orb">
-       <img
-  src={
-    selectedTheme === "jester"
-      ? "/products/jk%20mock.jpg"
-      : selectedTheme === "love"
-      ? "/products/love-keychain-mock.jpeg"
-      : selectedTheme === "dnd"
-      ? "/products/dragon-keychain-mock.jpeg"
-      : selectedTheme === "chaos"
-      ? "/products/chaos-keychain-mock.jpeg"
-      : selectedTheme === "eclipse"
-      ? "/products/eclipse-keychain-mock.jpeg"
-      : selectedThemeData.image
-  }
-  alt={`${selectedThemeData.name} Oracle Plush QR Keychain`}
-/>      </div>
-
+         <div className="shop-theme-orb artifact-plush-image">
+  <img
+    src={
+      selectedTheme === "jester"
+        ? "/products/jk%20mock.jpg"
+        : selectedTheme === "love"
+        ? "/products/love-keychain-mock.jpeg"
+        : selectedTheme === "dnd"
+        ? "/products/dragon-keychain-mock.jpeg"
+        : selectedTheme === "chaos"
+        ? "/products/chaos-keychain-mock.jpeg"
+        : selectedTheme === "eclipse"
+        ? "/products/eclipse-keychain-mock.jpeg"
+        : selectedThemeData.image
+    }
+    alt={`${selectedThemeData.name} Oracle Plush QR Keychain`}
+  />
+</div>
       <strong>
         {selectedThemeData.name} PLUSH QR KEYCHAIN
       </strong>

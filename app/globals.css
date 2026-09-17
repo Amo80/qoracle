@@ -12409,3 +12409,16 @@ strong {
 .shop-category-button:active {
   transform: translateY(0) scale(0.97);
 }
+
+/* QR ARTIFACT PLUSH PRODUCT IMAGE */
+.shop-theme-orb.artifact-plush-image {
+  width: 220px;
+  height: 220px;
+  border-radius: 18px;
+}
+
+.shop-theme-orb.artifact-plush-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
