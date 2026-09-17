@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+const getStripe = () => new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 const priceMap: Record<string, number> = {
   "QRystal Balls Sticker": 499,
@@ -205,7 +205,7 @@ const quantity = Math.max(
     }
 
     const session =
-      await stripe.checkout.sessions.create({
+  await getStripe().checkout.sessions.create({
         mode: "payment",
 
         automatic_tax: {
