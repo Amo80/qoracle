@@ -401,10 +401,12 @@
   opacity: 0.6;
 }
 
-.chamber-oracle:last-child:nth-child(odd) {
-  grid-column: 1 / -1;
-  width: calc((100% - 0.75rem) / 2);
-  justify-self: center;
+@media (max-width: 699px) {
+  .chamber-oracle:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    width: calc((100% - 0.75rem) / 2);
+    justify-self: center;
+  }
 }
 
 .chamber-invitation {
@@ -547,11 +549,6 @@
   .chamber-oracles {
     grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 0.9rem;
-  }
-
-  .chamber-oracle:last-child:nth-child(odd) {
-    grid-column: auto;
-    width: auto;
   }
 
   .chamber-oracle__portrait {
