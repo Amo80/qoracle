@@ -3,6 +3,7 @@ import "./styles/primitives.css";
 import "./globals.css";
 import "./styles/accessibility.css";
 import "./styles/errors.css";
+import "./styles/chamber.css";
 import type { Metadata } from "next";
 import SiteFooter from "@/components/SiteFooter";
 import { ExperiencePreferencesProvider } from "@/components/experience/ExperiencePreferences";
