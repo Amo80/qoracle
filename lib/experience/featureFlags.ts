@@ -15,3 +15,9 @@ export function shouldRenderOracleChamber({
 } = {}) {
   return !classicRequested && isOracleChamberEnabled(environment);
 }
+
+export function isLivingOracleEnabled(
+  environment: ChamberEnvironment = process.env
+) {
+  return environment.LIVING_ORACLE_V3_ENABLED?.trim().toLowerCase() === "true";
+}

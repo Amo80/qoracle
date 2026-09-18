@@ -7,7 +7,17 @@ const budgets = {
   publicBytes: 145 * 1024 * 1024,
   largestAssetBytes: 11 * 1024 * 1024,
   globalCssBytes: 500 * 1024,
+  livingOracleCssBytes: 24 * 1024,
+  selectedCharacterAssetBytes: 3.5 * 1024 * 1024,
 };
+
+const characterAssets = [
+  "public/themes/jester-oracle.png",
+  "public/themes/chaos-crystal-ball.png",
+  "public/themes/love-crystal-ball.png",
+  "public/themes/eclipse-crystal.png",
+  "public/themes/DND.crystal.png",
+];
 
 async function walk(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -31,6 +41,18 @@ const assetStats = await Promise.all(
 const publicBytes = assetStats.reduce((total, asset) => total + asset.bytes, 0);
 const largestAsset = assetStats.sort((a, b) => b.bytes - a.bytes)[0];
 const globalCssBytes = (await stat(join(root, "app/globals.css"))).size;
+const livingOracleCssBytes = (
+  await stat(join(root, "app/styles/living-oracle.css"))
+).size;
+const selectedCharacterAssets = await Promise.all(
+  characterAssets.map(async (path) => ({
+    path,
+    bytes: (await stat(join(root, path))).size,
+  }))
+);
+const largestSelectedCharacterAsset = selectedCharacterAssets.sort(
+  (left, right) => right.bytes - left.bytes
+)[0];
 
 const checks = [
   {
@@ -50,6 +72,18 @@ const checks = [
     actual: globalCssBytes,
     limit: budgets.globalCssBytes,
     detail: `${(globalCssBytes / 1024).toFixed(1)} KiB`,
+  },
+  {
+    name: "Living Oracle CSS",
+    actual: livingOracleCssBytes,
+    limit: budgets.livingOracleCssBytes,
+    detail: `${(livingOracleCssBytes / 1024).toFixed(1)} KiB`,
+  },
+  {
+    name: `selected character entry asset (${largestSelectedCharacterAsset.path})`,
+    actual: largestSelectedCharacterAsset.bytes,
+    limit: budgets.selectedCharacterAssetBytes,
+    detail: formatMiB(largestSelectedCharacterAsset.bytes),
   },
 ];
 

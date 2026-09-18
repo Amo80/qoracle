@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  isLivingOracleEnabled,
   isOracleChamberEnabled,
   shouldRenderOracleChamber,
 } from "./featureFlags";
@@ -27,5 +28,24 @@ describe("Oracle Chamber feature flag", () => {
         classicRequested: true,
       })
     ).toBe(false);
+  });
+});
+
+describe("Living Oracle feature flag", () => {
+  it("is disabled by default and for unexpected values", () => {
+    expect(isLivingOracleEnabled({})).toBe(false);
+    expect(isLivingOracleEnabled({ LIVING_ORACLE_V3_ENABLED: "false" })).toBe(
+      false
+    );
+    expect(isLivingOracleEnabled({ LIVING_ORACLE_V3_ENABLED: "1" })).toBe(false);
+  });
+
+  it("is enabled only by an explicit true value", () => {
+    expect(isLivingOracleEnabled({ LIVING_ORACLE_V3_ENABLED: "true" })).toBe(
+      true
+    );
+    expect(isLivingOracleEnabled({ LIVING_ORACLE_V3_ENABLED: "TRUE" })).toBe(
+      true
+    );
   });
 });
