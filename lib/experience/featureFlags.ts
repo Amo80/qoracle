@@ -21,3 +21,9 @@ export function isLivingOracleEnabled(
 ) {
   return environment.LIVING_ORACLE_V3_ENABLED?.trim().toLowerCase() === "true";
 }
+
+export function isJester3DEnabled(
+  environment: ChamberEnvironment = process.env
+) {
+  return environment.JESTER_3D_V4A_ENABLED?.trim().toLowerCase() === "true";
+}

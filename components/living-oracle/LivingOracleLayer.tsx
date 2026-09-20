@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Suspense,
+  lazy,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Link from "next/link";
 import { useExperiencePreferences } from "@/components/experience/ExperiencePreferences";
 import {
@@ -11,7 +18,16 @@ import {
   type CharacterState,
 } from "@/lib/living-oracle/machine";
 import { getCharacterManifest } from "@/lib/living-oracle/manifests";
+import { shouldLoadJester3D } from "@/lib/living-oracle/jester3d";
+import { detectWebGLSupport } from "@/lib/living-oracle/webgl";
 import { getOracle, ORACLE_IDS, type OracleId } from "@/lib/oracles/registry";
+import { Jester3DErrorBoundary } from "./jester/Jester3DErrorBoundary";
+
+const LazyJester3DStage = lazy(() =>
+  import("./jester/Jester3DStage").then((module) => ({
+    default: module.Jester3DStage,
+  }))
+);
 
 const BUSY_SELECTOR = [
   ".shaking",
@@ -38,13 +54,22 @@ function hasRenderedAnswer(page: HTMLElement) {
   );
 }
 
-export function LivingOracleLayer() {
+export function LivingOracleLayer({
+  jester3DEnabled = false,
+}: {
+  jester3DEnabled?: boolean;
+}) {
   const { motion } = useExperiencePreferences();
   const [oracleId, setOracleId] = useState<OracleId | null>(null);
   const [character, setCharacter] = useState<CharacterState>(
     INITIAL_CHARACTER_STATE
   );
   const [assetStatus, setAssetStatus] = useState<
+    "idle" | "loading" | "ready" | "error"
+  >("idle");
+  const [jesterTarget, setJesterTarget] = useState<HTMLElement | null>(null);
+  const [webGLSupported, setWebGLSupported] = useState(false);
+  const [jester3DStatus, setJester3DStatus] = useState<
     "idle" | "loading" | "ready" | "error"
   >("idle");
   const characterRef = useRef(character);
@@ -86,6 +111,7 @@ export function LivingOracleLayer() {
       const page = document.querySelector<HTMLElement>(".oracle-page");
       if (!page) {
         setOracleId(null);
+        setJesterTarget(null);
         root.removeAttribute("data-living-oracle");
         root.removeAttribute("data-living-oracle-id");
         root.removeAttribute("data-living-oracle-phase");
@@ -95,6 +121,13 @@ export function LivingOracleLayer() {
       const detected = detectOracle(page);
       if (!detected) return;
       setOracleId((current) => (current === detected ? current : detected));
+      setJesterTarget((current) => {
+        const target =
+          detected === "jester"
+            ? page.querySelector<HTMLElement>(".jester-crystal")
+            : null;
+        return current === target ? current : target;
+      });
       root.dataset.livingOracle = "true";
       root.dataset.livingOracleId = detected;
 
@@ -237,6 +270,44 @@ export function LivingOracleLayer() {
     };
   }, [oracleId, transition]);
 
+  useEffect(() => {
+    if (!jester3DEnabled || motion === "reduced") {
+      setWebGLSupported(false);
+      return;
+    }
+    setWebGLSupported(detectWebGLSupport(document));
+  }, [jester3DEnabled, motion]);
+
+  const loadJester3D = shouldLoadJester3D({
+    oracleId,
+    livingOracleEnabled: true,
+    jester3DEnabled,
+    motion,
+    webGLSupported,
+  });
+
+  useEffect(() => {
+    if (!jesterTarget) return;
+    jesterTarget.dataset.jester3dStatus = jester3DStatus;
+    return () => {
+      delete jesterTarget.dataset.jester3dStatus;
+    };
+  }, [jester3DStatus, jesterTarget]);
+
+  useEffect(() => {
+    setJester3DStatus(loadJester3D ? "loading" : "idle");
+  }, [loadJester3D, jesterTarget]);
+
+  const handleJesterReady = useCallback(() => {
+    setJester3DStatus("ready");
+    transition({ type: "ASSET_READY" });
+  }, [transition]);
+
+  const handleJesterError = useCallback(() => {
+    setJester3DStatus("error");
+    transition({ type: "ASSET_ERROR" });
+  }, [transition]);
+
   if (!oracleId) return null;
 
   const oracle = getOracle(oracleId);
@@ -251,6 +322,18 @@ export function LivingOracleLayer() {
         <span aria-hidden="true">←</span> Return to Homepage
       </Link>
       <div className="living-oracle-aura" aria-hidden="true" />
+      {loadJester3D && jesterTarget && jester3DStatus !== "error" ? (
+        <Jester3DErrorBoundary onError={handleJesterError}>
+          <Suspense fallback={null}>
+            <LazyJester3DStage
+              target={jesterTarget}
+              phase={character.phase}
+              onReady={handleJesterReady}
+              onError={handleJesterError}
+            />
+          </Suspense>
+        </Jester3DErrorBoundary>
+      ) : null}
       <p className="qb-visually-hidden" aria-live="polite" aria-atomic="true">
         {oracle.name} Oracle: {character.phase.replace("-", " ")}
       </p>

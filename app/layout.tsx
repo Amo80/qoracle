@@ -9,7 +9,10 @@ import type { Metadata } from "next";
 import SiteFooter from "@/components/SiteFooter";
 import { ExperiencePreferencesProvider } from "@/components/experience/ExperiencePreferences";
 import { LivingOracleLayer } from "@/components/living-oracle/LivingOracleLayer";
-import { isLivingOracleEnabled } from "@/lib/experience/featureFlags";
+import {
+  isJester3DEnabled,
+  isLivingOracleEnabled,
+} from "@/lib/experience/featureFlags";
 
 export const metadata: Metadata = {
   title: "The QRystal Balls",
@@ -18,13 +21,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const livingOracleEnabled = isLivingOracleEnabled();
+  const jester3DEnabled = isJester3DEnabled();
 
   return (
     <html lang="en">
       <body>
         <ExperiencePreferencesProvider>
           {children}
-          {livingOracleEnabled ? <LivingOracleLayer /> : null}
+          {livingOracleEnabled ? (
+            <LivingOracleLayer jester3DEnabled={jester3DEnabled} />
+          ) : null}
           <SiteFooter />
         </ExperiencePreferencesProvider>
       </body>

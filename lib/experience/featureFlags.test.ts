@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  isJester3DEnabled,
   isLivingOracleEnabled,
   isOracleChamberEnabled,
   shouldRenderOracleChamber,
@@ -28,6 +29,28 @@ describe("Oracle Chamber feature flag", () => {
         classicRequested: true,
       })
     ).toBe(false);
+  });
+});
+
+describe("Jester 3D Phase 4A feature flag", () => {
+  it("is disabled by default and for unexpected values", () => {
+    expect(isJester3DEnabled({})).toBe(false);
+    expect(isJester3DEnabled({ JESTER_3D_V4A_ENABLED: "false" })).toBe(false);
+    expect(isJester3DEnabled({ JESTER_3D_V4A_ENABLED: "1" })).toBe(false);
+  });
+
+  it("is enabled only by an explicit true value", () => {
+    expect(isJester3DEnabled({ JESTER_3D_V4A_ENABLED: "true" })).toBe(true);
+    expect(isJester3DEnabled({ JESTER_3D_V4A_ENABLED: "TRUE" })).toBe(true);
+  });
+
+  it("remains independently disableable from the Phase 3 flag", () => {
+    const environment = {
+      LIVING_ORACLE_V3_ENABLED: "true",
+      JESTER_3D_V4A_ENABLED: "false",
+    };
+    expect(isLivingOracleEnabled(environment)).toBe(true);
+    expect(isJester3DEnabled(environment)).toBe(false);
   });
 });
 

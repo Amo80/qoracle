@@ -10,6 +10,8 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "perf:budget": "node scripts/check-performance.mjs",
+    "assets:jester": "node scripts/prepare-jester-3d.mjs",
+    "assets:jester:inspect": "node scripts/inspect-jester-3d.mjs",
     "check": "npm run lint && npm run typecheck && npm run test && npm run perf:budget && npm run build"
   },
   "dependencies": {
@@ -20,13 +22,18 @@
     "react": "latest",
     "react-dom": "latest",
     "resend": "^6.25.0",
-    "stripe": "^22.6.0"
+    "stripe": "^22.6.0",
+    "three": "^0.186.0"
   },
   "devDependencies": {
+    "@gltf-transform/cli": "^4.5.0",
+    "@gltf-transform/core": "^4.5.0",
+    "@gltf-transform/functions": "^4.5.0",
     "@types/node": "latest",
     "@types/qrcode": "^1.5.6",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "@types/three": "^0.186.0",
     "eslint": "^9.0.0",
     "eslint-config-next": "16.3.3",
     "typescript": "latest",

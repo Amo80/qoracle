@@ -11,10 +11,17 @@ const livingCss = read("app/styles/living-oracle.css");
 describe("Living Oracle integration contracts", () => {
   it("keeps Phase 3 behind its disabled-by-default server flag", () => {
     expect(layoutSource).toContain("isLivingOracleEnabled()");
-    expect(layoutSource).toContain(
-      "livingOracleEnabled ? <LivingOracleLayer /> : null"
-    );
+    expect(layoutSource).toContain("<LivingOracleLayer");
     expect(read(".env.example")).toContain("LIVING_ORACLE_V3_ENABLED=false");
+  });
+
+  it("keeps Phase 4A client-only, Jester-only, and independently gated", () => {
+    expect(layoutSource).toContain("isJester3DEnabled()");
+    expect(layoutSource).not.toMatch(/from ["']three/);
+    expect(layerSource).toContain('lazy(() =>');
+    expect(layerSource).toContain('import("./jester/Jester3DStage")');
+    expect(layerSource).toContain('detected === "jester"');
+    expect(read(".env.example")).toContain("JESTER_3D_V4A_ENABLED=false");
   });
 
   it("provides one shared Return to Homepage control for every detected Oracle", () => {

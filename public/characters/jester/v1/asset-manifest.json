@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "sourceFiles": [
+    {
+      "path": "source/Meshy_AI_Jester_Character_biped_Animation_Idle_9_withSkin.glb",
+      "bytes": 53566668,
+      "sha256": "384a27580d0e20510f8d8d705a248b0b08e76f4109dd48624e375dbbc2ad411e"
+    },
+    {
+      "path": "source/Meshy_AI_Jester_Character_biped_Animation_Talk_with_Hands_Open_withSkin.glb",
+      "bytes": 53665596,
+      "sha256": "88812f79c955293c55810b7e469b33984ecddde50025c4cd38b8cc2eb8441631"
+    },
+    {
+      "path": "source/Meshy_AI_Jester_Character_biped_Animation_Big_Heart_Gesture_withSkin.glb",
+      "bytes": 53775964,
+      "sha256": "b40484225ae5785f8f2ef50c26166bb7f40fe4dbaeb82adaf39b8db3fc23fa5f"
+    },
+    {
+      "path": "source/Meshy_AI_Jester_Character_biped_Animation_jazz_danc_withSkin.glb",
+      "bytes": 53603456,
+      "sha256": "cd69db2c3a3047185cc23d24b4ca35fb1ae8e8f48c0d55ba63b3258668bd3aaa"
+    },
+    {
+      "path": "source/Meshy_AI_3d_image_illuminated_0920172816_texture(1).glb",
+      "bytes": 7450616,
+      "sha256": "f8c33bf7b53b8f2ce8b4f0009f8e678b840709269dda20feed9e87f8d7f1f50c"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "public/characters/jester/v1/jester-base.glb",
+      "bytes": 5306504,
+      "sha256": "b7e5b47a343e666126f4b65e9a1064400db9f01da19fec487f2f90181dc4bfdc"
+    },
+    {
+      "path": "public/characters/jester/v1/animations/talk.glb",
+      "bytes": 59764,
+      "sha256": "8fd3babe4a1916dfe991fd459c727e39c051b1031cfb4b472f5679f077e126d8"
+    },
+    {
+      "path": "public/characters/jester/v1/animations/heart.glb",
+      "bytes": 90980,
+      "sha256": "478d390e08d5e699eaea11e595e395474d2bf1db9ffa2dcf246aee5a7f756a6f"
+    },
+    {
+      "path": "public/characters/jester/v1/animations/jazz.glb",
+      "bytes": 49256,
+      "sha256": "855db2072830b2d340c9c72357efa44bfa9e526aabadc90966bf9a5aa5fda3bc"
+    },
+    {
+      "path": "public/characters/jester/v1/crystal-ball.glb",
+      "bytes": 1765912,
+      "sha256": "7b5751b148671255aed8300e82827fd03b9152213e993ebb8066c1aab9dac3af"
+    }
+  ]
+}
