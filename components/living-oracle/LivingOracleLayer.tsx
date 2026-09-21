@@ -19,14 +19,20 @@ import {
 } from "@/lib/living-oracle/machine";
 import { getCharacterManifest } from "@/lib/living-oracle/manifests";
 import { shouldLoadJester3D } from "@/lib/living-oracle/jester3d";
+import { shouldLoadLove3D } from "@/lib/living-oracle/love3d";
 import { detectWebGLSupport } from "@/lib/living-oracle/webgl";
 import { getOracle, ORACLE_IDS, type OracleId } from "@/lib/oracles/registry";
 import { Jester3DErrorBoundary } from "./jester/Jester3DErrorBoundary";
+import { Love3DErrorBoundary } from "./love/Love3DErrorBoundary";
 
 const LazyJester3DStage = lazy(() =>
   import("./jester/Jester3DStage").then((module) => ({
     default: module.Jester3DStage,
   }))
+);
+
+const LazyLove3DStage = lazy(() =>
+  import("./love/Love3DStage").then((module) => ({ default: module.Love3DStage }))
 );
 
 const BUSY_SELECTOR = [
@@ -56,8 +62,10 @@ function hasRenderedAnswer(page: HTMLElement) {
 
 export function LivingOracleLayer({
   jester3DEnabled = false,
+  love3DEnabled = false,
 }: {
   jester3DEnabled?: boolean;
+  love3DEnabled?: boolean;
 }) {
   const { motion } = useExperiencePreferences();
   const [oracleId, setOracleId] = useState<OracleId | null>(null);
@@ -68,8 +76,12 @@ export function LivingOracleLayer({
     "idle" | "loading" | "ready" | "error"
   >("idle");
   const [jesterTarget, setJesterTarget] = useState<HTMLElement | null>(null);
+  const [loveTarget, setLoveTarget] = useState<HTMLElement | null>(null);
   const [webGLSupported, setWebGLSupported] = useState(false);
   const [jester3DStatus, setJester3DStatus] = useState<
+    "idle" | "loading" | "ready" | "error"
+  >("idle");
+  const [love3DStatus, setLove3DStatus] = useState<
     "idle" | "loading" | "ready" | "error"
   >("idle");
   const characterRef = useRef(character);
@@ -112,6 +124,7 @@ export function LivingOracleLayer({
       if (!page) {
         setOracleId(null);
         setJesterTarget(null);
+        setLoveTarget(null);
         root.removeAttribute("data-living-oracle");
         root.removeAttribute("data-living-oracle-id");
         root.removeAttribute("data-living-oracle-phase");
@@ -126,6 +139,10 @@ export function LivingOracleLayer({
           detected === "jester"
             ? page.querySelector<HTMLElement>(".jester-crystal")
             : null;
+        return current === target ? current : target;
+      });
+      setLoveTarget((current) => {
+        const target = detected === "love" ? page : null;
         return current === target ? current : target;
       });
       root.dataset.livingOracle = "true";
@@ -271,17 +288,24 @@ export function LivingOracleLayer({
   }, [oracleId, transition]);
 
   useEffect(() => {
-    if (!jester3DEnabled || motion === "reduced") {
+    if ((!jester3DEnabled && !love3DEnabled) || motion === "reduced") {
       setWebGLSupported(false);
       return;
     }
     setWebGLSupported(detectWebGLSupport(document));
-  }, [jester3DEnabled, motion]);
+  }, [jester3DEnabled, love3DEnabled, motion]);
 
   const loadJester3D = shouldLoadJester3D({
     oracleId,
     livingOracleEnabled: true,
     jester3DEnabled,
+    motion,
+    webGLSupported,
+  });
+  const loadLove3D = shouldLoadLove3D({
+    oracleId,
+    livingOracleEnabled: true,
+    love3DEnabled,
     motion,
     webGLSupported,
   });
@@ -298,6 +322,16 @@ export function LivingOracleLayer({
     setJester3DStatus(loadJester3D ? "loading" : "idle");
   }, [loadJester3D, jesterTarget]);
 
+  useEffect(() => {
+    if (!loveTarget) return;
+    loveTarget.dataset.love3dStatus = love3DStatus;
+    return () => { delete loveTarget.dataset.love3dStatus; };
+  }, [love3DStatus, loveTarget]);
+
+  useEffect(() => {
+    setLove3DStatus(loadLove3D ? "loading" : "idle");
+  }, [loadLove3D, loveTarget]);
+
   const handleJesterReady = useCallback(() => {
     setJester3DStatus("ready");
     transition({ type: "ASSET_READY" });
@@ -305,6 +339,16 @@ export function LivingOracleLayer({
 
   const handleJesterError = useCallback(() => {
     setJester3DStatus("error");
+    transition({ type: "ASSET_ERROR" });
+  }, [transition]);
+
+  const handleLoveReady = useCallback(() => {
+    setLove3DStatus("ready");
+    transition({ type: "ASSET_READY" });
+  }, [transition]);
+
+  const handleLoveError = useCallback(() => {
+    setLove3DStatus("error");
     transition({ type: "ASSET_ERROR" });
   }, [transition]);
 
@@ -333,6 +377,18 @@ export function LivingOracleLayer({
             />
           </Suspense>
         </Jester3DErrorBoundary>
+      ) : null}
+      {loadLove3D && loveTarget && love3DStatus !== "error" ? (
+        <Love3DErrorBoundary onError={handleLoveError}>
+          <Suspense fallback={null}>
+            <LazyLove3DStage
+              target={loveTarget}
+              phase={character.phase}
+              onReady={handleLoveReady}
+              onError={handleLoveError}
+            />
+          </Suspense>
+        </Love3DErrorBoundary>
       ) : null}
       <p className="qb-visually-hidden" aria-live="polite" aria-atomic="true">
         {oracle.name} Oracle: {character.phase.replace("-", " ")}

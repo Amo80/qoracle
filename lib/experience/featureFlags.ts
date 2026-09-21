@@ -27,3 +27,9 @@ export function isJester3DEnabled(
 ) {
   return environment.JESTER_3D_V4A_ENABLED?.trim().toLowerCase() === "true";
 }
+
+export function isLove3DEnabled(
+  environment: ChamberEnvironment = process.env
+) {
+  return environment.LOVE_3D_V4B_ENABLED?.trim().toLowerCase() === "true";
+}

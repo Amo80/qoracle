@@ -162,6 +162,164 @@ html[data-living-oracle-id="jester"][data-living-oracle-phase="returning"]
   display: none;
 }
 
+.love-3d-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.love-3d-stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.theme-love[data-love3d-status="ready"] .love-3d-stage {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  opacity: 1;
+}
+.theme-love[data-love3d-status="ready"] .love-crystal-ball-image { opacity: 0; }
+.theme-love[data-love3d-status="ready"] .love-crystal::before,
+.theme-love[data-love3d-status="ready"] .love-crystal::after { opacity: 0 !important; }
+.theme-love[data-love3d-status="error"] .love-3d-stage { display: none; }
+
+/* Phase 4B keeps OracleQR authoritative while presenting its three internal
+   states as one continuous 3D chamber. These overrides exist only after the
+   renderer is ready; every static/failure/reduced-motion path is untouched. */
+.theme-love[data-love3d-status="ready"] .love-stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  min-height: 0;
+  padding: clamp(4.5rem, 8vh, 6rem) 1rem clamp(1rem, 3vh, 2rem);
+  justify-content: flex-start;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.theme-love[data-love3d-status="ready"] {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+.theme-love[data-love3d-status="ready"] .love-stage > .love-eyebrow,
+.theme-love[data-love3d-status="ready"] .love-stage > .love-title,
+.theme-love[data-love3d-status="ready"] .love-stage > .love-subtitle {
+  flex: 0 0 auto;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.theme-love[data-love3d-status="ready"]
+  .love-stage-one
+  > :is(.love-eyebrow, .love-title, .love-subtitle) {
+  transform: translateY(-0.75rem);
+}
+
+.theme-love[data-love3d-status="ready"] .love-stage-three {
+  padding-bottom: clamp(0.45rem, 1.25vh, 0.85rem);
+}
+
+.theme-love[data-love3d-status="ready"]
+  :is(
+    .love-crystal,
+    .love-crystal-page,
+    .love-instruction,
+    .love-magic-glow,
+    .love-magic-hearts,
+    .love-loading-dots,
+    .love-answer-overlay
+  ) {
+  display: none !important;
+}
+
+.theme-love[data-love3d-status="ready"]
+  :is(
+    .love-question-box,
+    .love-reveal-message,
+    .love-answer-card,
+    .love-again-button
+  ) {
+  pointer-events: auto;
+  position: relative;
+  z-index: 4;
+}
+
+.theme-love[data-love3d-status="ready"] .love-question-box,
+.theme-love[data-love3d-status="ready"] .love-reveal-message,
+.theme-love[data-love3d-status="ready"] .love-answer-card {
+  margin-top: auto !important;
+  width: min(92vw, 480px);
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(255, 205, 230, 0.38);
+  border-radius: 18px;
+  background: rgba(28, 4, 24, 0.74);
+  box-shadow: 0 14px 50px rgba(15, 0, 12, 0.42);
+  backdrop-filter: blur(10px);
+}
+
+.theme-love[data-love3d-status="ready"] .love-reveal-message,
+.theme-love[data-love3d-status="ready"] .love-answer-card {
+  margin-top: auto !important;
+}
+
+.theme-love[data-love3d-status="ready"] .love-question-box {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.theme-love[data-love3d-status="ready"] .love-answer-card {
+  max-height: 30vh;
+  overflow: auto;
+}
+
+.theme-love[data-love3d-status="ready"] .love-again-button {
+  margin-top: 0.75rem;
+}
+
+.theme-love[data-love3d-status="ready"] .love-closing {
+  display: none;
+}
+
+.theme-love[data-love3d-status="ready"] .love-stage > .small {
+  margin: 0.45rem 0 0;
+  flex: 0 0 auto;
+}
+
+@media (max-height: 720px) {
+  .theme-love[data-love3d-status="ready"] .love-stage {
+    padding-top: 3.4rem;
+  }
+
+  .theme-love[data-love3d-status="ready"] .love-subtitle,
+  .theme-love[data-love3d-status="ready"] .love-stage > .small {
+    display: none;
+  }
+
+  .theme-love[data-love3d-status="ready"] .love-answer-card {
+    max-height: 24vh;
+  }
+}
+
+@media (max-width: 640px) {
+  .theme-love[data-love3d-status="ready"]
+    .love-stage-one
+    > :is(.love-eyebrow, .love-title, .love-subtitle) {
+    transform: translateY(-0.35rem);
+  }
+}
+
 /* The remaining Oracles adopt only the shared, lightweight lifecycle vocabulary. */
 html[data-living-oracle="true"]
   :is(
@@ -223,6 +381,8 @@ html[data-living-oracle-phase="asset-error"] .living-oracle-aura {
   .jester-3d-stage {
     display: none !important;
   }
+
+  .love-3d-stage { display: none !important; }
 }
 
 html[data-motion="reduced"] .living-oracle-aura,
@@ -234,6 +394,8 @@ html[data-motion="reduced"][data-living-oracle="true"] .jester-character {
 html[data-motion="reduced"] .jester-3d-stage {
   display: none !important;
 }
+
+html[data-motion="reduced"] .love-3d-stage { display: none !important; }
 
 @keyframes living-aura-breathe {
   to {

@@ -4,7 +4,7 @@ import { join, relative } from "node:path";
 const root = process.cwd();
 const publicRoot = join(root, "public");
 const budgets = {
-  publicBytes: 145 * 1024 * 1024,
+  publicBytes: 160 * 1024 * 1024,
   largestAssetBytes: 11 * 1024 * 1024,
   globalCssBytes: 500 * 1024,
   livingOracleCssBytes: 24 * 1024,
@@ -13,6 +13,11 @@ const budgets = {
   jester3DAnimationBytes: 2 * 1024 * 1024,
   jester3DBallBytes: 3 * 1024 * 1024,
   jester3DInitialTransferBytes: 12 * 1024 * 1024,
+  love3DBaseBytes: 7 * 1024 * 1024,
+  love3DHeartBytes: 4 * 1024 * 1024,
+  love3DPodiumBytes: 4.5 * 1024 * 1024,
+  love3DInitialTransferBytes: 12 * 1024 * 1024,
+  love3DReviewCeilingBytes: 14 * 1024 * 1024,
 };
 
 const characterAssets = [
@@ -29,6 +34,9 @@ const jester3DAnimations = [
   "public/characters/jester/v1/animations/heart.glb",
   "public/characters/jester/v1/animations/jazz.glb",
 ];
+const love3DBase = "public/characters/love/v1/love-base.glb";
+const love3DHeart = "public/characters/love/v1/heart-crystal.glb";
+const love3DPodium = "public/characters/love/v1/podium.glb";
 
 async function walk(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -72,6 +80,10 @@ const jester3DAnimationBytes = (
   )
 ).reduce((total, bytes) => total + bytes, 0);
 const jester3DInitialTransferBytes = jester3DBaseBytes + jester3DBallBytes;
+const love3DBaseBytes = (await stat(join(root, love3DBase))).size;
+const love3DHeartBytes = (await stat(join(root, love3DHeart))).size;
+const love3DPodiumBytes = (await stat(join(root, love3DPodium))).size;
+const love3DInitialTransferBytes = love3DBaseBytes + love3DHeartBytes + love3DPodiumBytes;
 
 const checks = [
   {
@@ -128,6 +140,11 @@ const checks = [
     limit: budgets.jester3DInitialTransferBytes,
     detail: formatMiB(jester3DInitialTransferBytes),
   },
+  { name: "Love 3D base", actual: love3DBaseBytes, limit: budgets.love3DBaseBytes, detail: formatMiB(love3DBaseBytes) },
+  { name: "Love 3D heart", actual: love3DHeartBytes, limit: budgets.love3DHeartBytes, detail: formatMiB(love3DHeartBytes) },
+  { name: "Love 3D podium", actual: love3DPodiumBytes, limit: budgets.love3DPodiumBytes, detail: formatMiB(love3DPodiumBytes) },
+  { name: "Love 3D initial transfer target", actual: love3DInitialTransferBytes, limit: budgets.love3DInitialTransferBytes, detail: formatMiB(love3DInitialTransferBytes) },
+  { name: "Love 3D review ceiling", actual: love3DInitialTransferBytes, limit: budgets.love3DReviewCeilingBytes, detail: formatMiB(love3DInitialTransferBytes) },
 ];
 
 let failed = false;

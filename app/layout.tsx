@@ -11,6 +11,7 @@ import { ExperiencePreferencesProvider } from "@/components/experience/Experienc
 import { LivingOracleLayer } from "@/components/living-oracle/LivingOracleLayer";
 import {
   isJester3DEnabled,
+  isLove3DEnabled,
   isLivingOracleEnabled,
 } from "@/lib/experience/featureFlags";
 
@@ -22,6 +23,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const livingOracleEnabled = isLivingOracleEnabled();
   const jester3DEnabled = isJester3DEnabled();
+  const love3DEnabled = isLove3DEnabled();
 
   return (
     <html lang="en">
@@ -29,7 +31,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ExperiencePreferencesProvider>
           {children}
           {livingOracleEnabled ? (
-            <LivingOracleLayer jester3DEnabled={jester3DEnabled} />
+            <LivingOracleLayer
+              jester3DEnabled={jester3DEnabled}
+              love3DEnabled={love3DEnabled}
+            />
           ) : null}
           <SiteFooter />
         </ExperiencePreferencesProvider>

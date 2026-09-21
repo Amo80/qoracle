@@ -12,6 +12,7 @@
     "perf:budget": "node scripts/check-performance.mjs",
     "assets:jester": "node scripts/prepare-jester-3d.mjs",
     "assets:jester:inspect": "node scripts/inspect-jester-3d.mjs",
+    "assets:love": "node scripts/prepare-love-3d.mjs",
     "check": "npm run lint && npm run typecheck && npm run test && npm run perf:budget && npm run build"
   },
   "dependencies": {

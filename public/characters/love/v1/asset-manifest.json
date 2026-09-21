@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "sourceFiles": [
+    {
+      "path": "source/love-source.glb",
+      "bytes": 109224748,
+      "sha256": "f72b63372750a97bded2eae65d12be2064df055070434a2f64418470683eba75"
+    },
+    {
+      "path": "source/heart-source.glb",
+      "bytes": 126917464,
+      "sha256": "023f609b478fdc849d40d4ad9dc398b909727ff641be94cb5b4cd52e1120cb69"
+    },
+    {
+      "path": "source/podium-source.glb",
+      "bytes": 113938324,
+      "sha256": "b255b943bd4b91a9e467b2b167d73ffc6dece3ab4202ed9c4a0819d4926be10a"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "public/characters/love/v1/love-base.glb",
+      "bytes": 5355112,
+      "sha256": "f5d8f809f9cfc62966fd8b788fe223e16300cdaf037db3e60fb30d3619c967e0"
+    },
+    {
+      "path": "public/characters/love/v1/animations/shrug.glb",
+      "bytes": 39824,
+      "sha256": "a5d3888ad19b55fc8810f5c877f7d6675908e3e63e21e11e1c8e76174868cf29"
+    },
+    {
+      "path": "public/characters/love/v1/animations/bubble-dance.glb",
+      "bytes": 109464,
+      "sha256": "6ad963cee1795ce56b5919a7aff1aea5bdc2514948fddac4077c3efa21aec9e3"
+    },
+    {
+      "path": "public/characters/love/v1/heart-crystal.glb",
+      "bytes": 2893484,
+      "sha256": "3f1424f94b5e494f0a04103448101ad5b434160b1311bee8daa0e5c51fc9b5fa"
+    },
+    {
+      "path": "public/characters/love/v1/podium.glb",
+      "bytes": 3537832,
+      "sha256": "4dd7b4f5812ea95079e82109bdeadc20256cff0d8fd65e4ac203f81967b40054"
+    }
+  ],
+  "optimization": {
+    "characterGeometry": "preserved",
+    "characterQuantization": "KHR_mesh_quantization",
+    "textureMaximum": 2048,
+    "textureFormat": "webp",
+    "textureQuality": 88,
+    "heartSimplifyRatio": 0.03,
+    "podiumSimplifyRatio": 0.025,
+    "simplifyError": 0.001,
+    "propQuantization": "KHR_mesh_quantization",
+    "defaultAnimation": "Idle_7",
+    "optionalAnimations": [
+      "Shrug",
+      "Bubble_Dance"
+    ],
+    "excludedAnimations": [
+      "Walking",
+      "Running",
+      "restpose"
+    ]
+  }
+}

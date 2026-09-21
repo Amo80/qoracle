@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   isJester3DEnabled,
+  isLove3DEnabled,
   isLivingOracleEnabled,
   isOracleChamberEnabled,
   shouldRenderOracleChamber,
@@ -29,6 +30,15 @@ describe("Oracle Chamber feature flag", () => {
         classicRequested: true,
       })
     ).toBe(false);
+  });
+});
+
+describe("Love 3D feature flag", () => {
+  it("is disabled by default and accepts only true", () => {
+    expect(isLove3DEnabled({})).toBe(false);
+    expect(isLove3DEnabled({ LOVE_3D_V4B_ENABLED: "false" })).toBe(false);
+    expect(isLove3DEnabled({ LOVE_3D_V4B_ENABLED: "1" })).toBe(false);
+    expect(isLove3DEnabled({ LOVE_3D_V4B_ENABLED: " TRUE " })).toBe(true);
   });
 });
 
