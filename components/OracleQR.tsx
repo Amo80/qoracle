@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { normalizeOracleId } from "@/lib/oracles/registry";
 import { ORACLE_ANSWERS } from "@/lib/oracles/answers";
 import { stopOracleAudio } from "@/lib/oracles/audioLifecycle";
+import { focusWithoutViewportScroll } from "@/lib/oracles/focusWithoutScroll";
 
 export default function OracleQR({
   theme,
@@ -39,7 +40,11 @@ useEffect(() => {
 
 useEffect(() => {
   if (!answer || busy) return;
-  const frame = window.requestAnimationFrame(() => answerRegionRef.current?.focus());
+  const frame = window.requestAnimationFrame(() => {
+    if (answerRegionRef.current) {
+      focusWithoutViewportScroll(answerRegionRef.current);
+    }
+  });
   return () => window.cancelAnimationFrame(frame);
 }, [answer, busy, activeTheme]);
 

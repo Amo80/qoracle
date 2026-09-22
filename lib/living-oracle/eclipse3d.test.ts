@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ECLIPSE_CAMERA_FRAMING, ECLIPSE_PROCEDURAL_BONES, getEclipseCelestialPresentation, getEclipsePose, getEclipseViewportProfile, shouldLoadEclipse3D } from "./eclipse3d";
+import { ECLIPSE_CAMERA_FRAMING, ECLIPSE_CELESTIAL_SIDES, ECLIPSE_PROCEDURAL_BONES, getEclipseCelestialPresentation, getEclipsePose, getEclipseViewportProfile, shouldLoadEclipse3D } from "./eclipse3d";
 
 describe("Eclipse 3D presentation contract", () => {
   it("loads only for the eligible full-motion Eclipse", () => {
@@ -24,6 +24,46 @@ describe("Eclipse 3D presentation contract", () => {
     expect(climax.scale).toBeGreaterThan(1.5);
     expect(getEclipseCelestialPresentation("idle", 0)).toEqual(getEclipseCelestialPresentation("idle", 0));
     expect(getEclipsePose("idle", 0)).toEqual(getEclipsePose("idle", 0));
+  });
+
+  it.each([
+    ["desktop", 16 / 9],
+    ["mobile", 400 / 642],
+  ] as const)("keeps the Sun on gold and Moon on violet in %s idle", (_name, aspect) => {
+    const profile = getEclipseViewportProfile(aspect, "idle");
+    const idle = getEclipseCelestialPresentation("idle", 0);
+    expect(ECLIPSE_CELESTIAL_SIDES).toEqual({
+      sun: "right-hand-gold",
+      moon: "left-hand-violet",
+    });
+    expect(idle.sunX).toBeGreaterThan(0);
+    expect(idle.moonX).toBeLessThan(0);
+    expect(profile.separateOrbit).toBeGreaterThan(0);
+  });
+
+  it("returns exactly to corrected sides without accumulating across cycles", () => {
+    const idle = getEclipseCelestialPresentation("idle", 0);
+    const returned = getEclipseCelestialPresentation("returning", 0.45);
+    expect(returned).toMatchObject({
+      sunX: idle.sunX,
+      moonX: idle.moonX,
+      sunY: idle.sunY,
+      moonY: idle.moonY,
+      sunZ: idle.sunZ,
+      moonZ: idle.moonZ,
+      scale: idle.scale,
+    });
+    expect(getEclipseCelestialPresentation("idle", 0)).toEqual(idle);
+    expect(getEclipseCelestialPresentation("returning", 0.45)).toEqual(returned);
+  });
+
+  it("converges deterministically with the Moon still in front of the Sun", () => {
+    const first = getEclipseCelestialPresentation("speaking", 0.9);
+    const repeated = getEclipseCelestialPresentation("speaking", 0.9);
+    expect(first).toEqual(repeated);
+    expect(first.sunX).toBeCloseTo(0);
+    expect(first.moonX).toBeCloseTo(0);
+    expect(first.moonZ).toBeGreaterThan(first.sunZ);
   });
 
   it("separates mobile orbit sizing from the dominant total-eclipse scale", () => {

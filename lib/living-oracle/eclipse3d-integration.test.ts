@@ -42,6 +42,8 @@ describe("Eclipse 3D integration boundaries", () => {
     expect(stage).toContain("const sharpCorona = new Group()");
     expect(stage).toContain("const prominences = new Group()");
     expect(stage).toContain("new RingGeometry(.37,.405,128)");
+    expect(stage).toContain("const sunAnchor=rightHandAnchor.clone().lerp(celestialCenter,convergence)");
+    expect(stage).toContain("const moonAnchor=leftHandAnchor.clone().lerp(celestialCenter,convergence)");
   });
   it("disposes partial and superseded initialization without leaking GPU or observer state", () => {
     expect(stage).toContain("Promise.allSettled");

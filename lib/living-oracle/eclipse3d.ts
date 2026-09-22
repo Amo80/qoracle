@@ -26,6 +26,11 @@ export const ECLIPSE_CAMERA_FRAMING = {
   narrow: { distance: 6.05, positionY: 0.24, targetY: 0.32 },
 } as const;
 
+export const ECLIPSE_CELESTIAL_SIDES = {
+  sun: "right-hand-gold",
+  moon: "left-hand-violet",
+} as const;
+
 export type EclipseBoneOffset = Readonly<{ x: number; y: number; z: number }>;
 export type EclipsePose = Readonly<Record<string, EclipseBoneOffset>>;
 export type EclipseCelestialPresentation = Readonly<{
@@ -112,13 +117,13 @@ export function getEclipsePose(phase: CharacterPhase, elapsed: number): EclipseP
 export function getEclipseCelestialPresentation(phase: CharacterPhase, elapsed: number): EclipseCelestialPresentation {
   const t = Math.max(0, elapsed);
   const baseOrbit = t * 0.24;
-  const base = { sunX: -0.78, moonX: 0.78, sunY: 0.35, moonY: 0.28, sunZ: 0.12, moonZ: 0.34, scale: 1, orbit: baseOrbit, corona: 0.18, rays: 0.1, altarGlow: 0.22 };
-  if (phase === "listening") return { ...base, orbit: t * 0.08, sunX: -0.68, moonX: 0.68, corona: 0.24, altarGlow: 0.34 };
-  if (phase === "awakening") { const w = smooth(t / 0.35); return { ...base, sunX: -0.78 + 0.28 * w, moonX: 0.78 - 0.28 * w, sunY: 0.35 + 0.08 * w, moonY: 0.28 + 0.15 * w, scale: 1 + 0.1 * w, orbit: t * 0.38, corona: 0.35 + 0.2 * w, rays: 0.25, altarGlow: 0.62 }; }
-  if (phase === "anticipating") return { ...base, sunX: -0.31, moonX: 0.31, sunY: 0.42, moonY: 0.42, sunZ: 0.12, moonZ: 0.46, scale: 1.18, orbit: t * 0.62, corona: 0.72, rays: 0.48, altarGlow: 0.82 };
-  if (phase === "speaking") { const w = smooth(t / 0.22); return { ...base, sunX: -0.31 * (1 - w), moonX: 0.31 * (1 - w), sunY: 0.42, moonY: 0.42, sunZ: 0.08, moonZ: 0.58, scale: 1.18 + 0.48 * w, orbit: t * 0.78, corona: 0.72 + 0.78 * w, rays: 0.55 + 0.75 * w, altarGlow: 1 }; }
+  const base = { sunX: 0.78, moonX: -0.78, sunY: 0.35, moonY: 0.28, sunZ: 0.12, moonZ: 0.34, scale: 1, orbit: baseOrbit, corona: 0.18, rays: 0.1, altarGlow: 0.22 };
+  if (phase === "listening") return { ...base, orbit: t * 0.08, sunX: 0.68, moonX: -0.68, corona: 0.24, altarGlow: 0.34 };
+  if (phase === "awakening") { const w = smooth(t / 0.35); return { ...base, sunX: 0.78 - 0.28 * w, moonX: -0.78 + 0.28 * w, sunY: 0.35 + 0.08 * w, moonY: 0.28 + 0.15 * w, scale: 1 + 0.1 * w, orbit: t * 0.38, corona: 0.35 + 0.2 * w, rays: 0.25, altarGlow: 0.62 }; }
+  if (phase === "anticipating") return { ...base, sunX: 0.31, moonX: -0.31, sunY: 0.42, moonY: 0.42, sunZ: 0.12, moonZ: 0.46, scale: 1.18, orbit: t * 0.62, corona: 0.72, rays: 0.48, altarGlow: 0.82 };
+  if (phase === "speaking") { const w = smooth(t / 0.22); return { ...base, sunX: 0.31 * (1 - w), moonX: -0.31 * (1 - w), sunY: 0.42, moonY: 0.42, sunZ: 0.08, moonZ: 0.58, scale: 1.18 + 0.48 * w, orbit: t * 0.78, corona: 0.72 + 0.78 * w, rays: 0.55 + 0.75 * w, altarGlow: 1 }; }
   if (phase === "reacting") { const pulse = Math.sin(clamp01(t / 0.65) * Math.PI); return { ...base, sunX: 0, moonX: 0, sunY: 0.42, moonY: 0.42, sunZ: 0.08, moonZ: 0.58, scale: 1.66 + pulse * 0.16, orbit: t * 0.5, corona: 1.5 + pulse * 0.38, rays: 1.3 + pulse * 0.25, altarGlow: 1 + pulse * 0.25 }; }
-  if (phase === "returning") { const w = smooth(t / 0.45); return { ...base, sunX: -0.78 * w, moonX: 0.78 * w, sunY: 0.42 - 0.07 * w, moonY: 0.42 - 0.14 * w, sunZ: 0.08 + 0.04 * w, moonZ: 0.58 - 0.24 * w, scale: 1.66 - 0.66 * w, orbit: t * 0.3, corona: 1.5 - 1.32 * w, rays: 1.3 - 1.2 * w, altarGlow: 1 - 0.78 * w }; }
+  if (phase === "returning") { if (t >= 0.45) return { ...base, orbit: t * 0.3 }; const w = smooth(t / 0.45); return { ...base, sunX: 0.78 * w, moonX: -0.78 * w, sunY: 0.42 - 0.07 * w, moonY: 0.42 - 0.14 * w, sunZ: 0.08 + 0.04 * w, moonZ: 0.58 - 0.24 * w, scale: 1.66 - 0.66 * w, orbit: t * 0.3, corona: 1.5 - 1.32 * w, rays: 1.3 - 1.2 * w, altarGlow: 1 - 0.78 * w }; }
   return base;
 }
 

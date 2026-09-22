@@ -163,7 +163,7 @@ async function createController({ canvas, container, initialPhase, onReady, onEr
     empressGltf.scene.updateMatrixWorld(true);
     const p=getEclipseCelestialPresentation(phase,phaseElapsed);const spin=p.orbit;const profile=getEclipseViewportProfile(stageAspect,phase);
     const separation=Math.min(1,Math.abs(p.sunX-p.moonX)/1.56);const convergence=1-separation;const orbitRadius=(narrow?.022:.035)*profile.separateOrbit*separation;
-    const sunAnchor=leftHandAnchor.clone().lerp(celestialCenter,convergence);const moonAnchor=rightHandAnchor.clone().lerp(celestialCenter,convergence);
+    const sunAnchor=rightHandAnchor.clone().lerp(celestialCenter,convergence);const moonAnchor=leftHandAnchor.clone().lerp(celestialCenter,convergence);
     sunAnchor.x=celestialCenter.x+(sunAnchor.x-celestialCenter.x)*profile.separateOrbit;moonAnchor.x=celestialCenter.x+(moonAnchor.x-celestialCenter.x)*profile.separateOrbit;
     sunAnchor.y+=Math.sin(spin)*orbitRadius;moonAnchor.y-=Math.sin(spin)*orbitRadius;sunAnchor.x+=Math.cos(spin)*orbitRadius;moonAnchor.x-=Math.cos(spin)*orbitRadius;
     sunAnchor.z=.44+(p.sunZ-.12);moonAnchor.z=.48+(p.moonZ-.34);sun.position.copy(sunAnchor);moon.position.copy(moonAnchor);solarPlasma.position.copy(sun.position);hotLimb.position.copy(sun.position);moonRim.position.copy(moon.position);

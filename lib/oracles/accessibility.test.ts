@@ -16,7 +16,8 @@ describe("Oracle question and answer accessibility", () => {
     expect(oracle.match(/aria-live="polite"/g)).toHaveLength(5);
     expect(oracle.match(/aria-atomic="true"/g)).toHaveLength(5);
     expect(oracle.match(/tabIndex=\{-1\}/g)?.length).toBeGreaterThanOrEqual(5);
-    expect(oracle).toContain("answerRegionRef.current?.focus()");
+    expect(oracle).toContain("focusWithoutViewportScroll(answerRegionRef.current)");
+    expect(oracle).not.toContain("answerRegionRef.current?.focus()");
   });
 
   it("captures mounted audio nodes and tears them down on theme change or unmount", () => {
