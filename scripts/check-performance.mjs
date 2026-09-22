@@ -4,10 +4,10 @@ import { join, relative } from "node:path";
 const root = process.cwd();
 const publicRoot = join(root, "public");
 const budgets = {
-  publicBytes: 180 * 1024 * 1024,
+  publicBytes: 195 * 1024 * 1024,
   largestAssetBytes: 11 * 1024 * 1024,
   globalCssBytes: 500 * 1024,
-  livingOracleCssBytes: 24 * 1024,
+  livingOracleCssBytes: 32 * 1024,
   selectedCharacterAssetBytes: 3.5 * 1024 * 1024,
   jester3DBaseBytes: 8 * 1024 * 1024,
   jester3DAnimationBytes: 2 * 1024 * 1024,
@@ -27,6 +27,10 @@ const budgets = {
   chaos3DVortexBytes: 0.5 * 1024 * 1024,
   chaos3DInitialTransferBytes: 8 * 1024 * 1024,
   chaos3DReviewCeilingBytes: 9 * 1024 * 1024,
+  eclipse3DEmpressBytes: 10 * 1024 * 1024,
+  eclipse3DAltarBytes: 7 * 1024 * 1024,
+  eclipse3DInitialTransferBytes: 16 * 1024 * 1024,
+  eclipse3DReviewCeilingBytes: 18 * 1024 * 1024,
 };
 
 const characterAssets = [
@@ -52,6 +56,8 @@ const dragon3DAltar = "public/characters/dragon/v1/arcane-altar.glb";
 const chaos3DPedestal = "public/characters/chaos/v1/pedestal.glb";
 const chaos3DRift = "public/characters/chaos/v1/rift-crystal.glb";
 const chaos3DVortex = "public/characters/chaos/v1/vortex.webp";
+const eclipse3DEmpress = "public/characters/eclipse/v1/empress.glb";
+const eclipse3DAltar = "public/characters/eclipse/v1/celestial-altar.glb";
 
 async function walk(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -107,6 +113,9 @@ const chaos3DPedestalBytes = (await stat(join(root, chaos3DPedestal))).size;
 const chaos3DRiftBytes = (await stat(join(root, chaos3DRift))).size;
 const chaos3DVortexBytes = (await stat(join(root, chaos3DVortex))).size;
 const chaos3DInitialTransferBytes = chaos3DPedestalBytes + chaos3DRiftBytes + chaos3DVortexBytes;
+const eclipse3DEmpressBytes = (await stat(join(root, eclipse3DEmpress))).size;
+const eclipse3DAltarBytes = (await stat(join(root, eclipse3DAltar))).size;
+const eclipse3DInitialTransferBytes = eclipse3DEmpressBytes + eclipse3DAltarBytes;
 
 const checks = [
   {
@@ -177,6 +186,10 @@ const checks = [
   { name: "Chaos 3D vortex", actual: chaos3DVortexBytes, limit: budgets.chaos3DVortexBytes, detail: formatMiB(chaos3DVortexBytes) },
   { name: "Chaos 3D initial transfer target", actual: chaos3DInitialTransferBytes, limit: budgets.chaos3DInitialTransferBytes, detail: formatMiB(chaos3DInitialTransferBytes) },
   { name: "Chaos 3D review ceiling", actual: chaos3DInitialTransferBytes, limit: budgets.chaos3DReviewCeilingBytes, detail: formatMiB(chaos3DInitialTransferBytes) },
+  { name: "Eclipse 3D Empress", actual: eclipse3DEmpressBytes, limit: budgets.eclipse3DEmpressBytes, detail: formatMiB(eclipse3DEmpressBytes) },
+  { name: "Eclipse 3D altar", actual: eclipse3DAltarBytes, limit: budgets.eclipse3DAltarBytes, detail: formatMiB(eclipse3DAltarBytes) },
+  { name: "Eclipse 3D initial transfer target", actual: eclipse3DInitialTransferBytes, limit: budgets.eclipse3DInitialTransferBytes, detail: formatMiB(eclipse3DInitialTransferBytes) },
+  { name: "Eclipse 3D review ceiling", actual: eclipse3DInitialTransferBytes, limit: budgets.eclipse3DReviewCeilingBytes, detail: formatMiB(eclipse3DInitialTransferBytes) },
 ];
 
 let failed = false;

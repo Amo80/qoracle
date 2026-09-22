@@ -2,12 +2,22 @@ import { describe, expect, it } from "vitest";
 import {
   isChaos3DEnabled,
   isDragon3DEnabled,
+  isEclipse3DEnabled,
   isJester3DEnabled,
   isLove3DEnabled,
   isLivingOracleEnabled,
   isOracleChamberEnabled,
   shouldRenderOracleChamber,
 } from "./featureFlags";
+
+describe("Eclipse 3D Phase 4E feature flag", () => {
+  it("is disabled by default and accepts only explicit true", () => {
+    expect(isEclipse3DEnabled({})).toBe(false);
+    expect(isEclipse3DEnabled({ ECLIPSE_3D_V4E_ENABLED: "false" })).toBe(false);
+    expect(isEclipse3DEnabled({ ECLIPSE_3D_V4E_ENABLED: "1" })).toBe(false);
+    expect(isEclipse3DEnabled({ ECLIPSE_3D_V4E_ENABLED: " TRUE " })).toBe(true);
+  });
+});
 
 describe("Dragon 3D Phase 4C feature flag", () => {
   it("is disabled by default and accepts only explicit true", () => {

@@ -22,12 +22,14 @@ import { shouldLoadJester3D } from "@/lib/living-oracle/jester3d";
 import { shouldLoadLove3D } from "@/lib/living-oracle/love3d";
 import { shouldLoadDragon3D } from "@/lib/living-oracle/dragon3d";
 import { shouldLoadChaos3D } from "@/lib/living-oracle/chaos3d";
+import { shouldLoadEclipse3D } from "@/lib/living-oracle/eclipse3d";
 import { detectWebGLSupport } from "@/lib/living-oracle/webgl";
 import { getOracle, ORACLE_IDS, type OracleId } from "@/lib/oracles/registry";
 import { Jester3DErrorBoundary } from "./jester/Jester3DErrorBoundary";
 import { Love3DErrorBoundary } from "./love/Love3DErrorBoundary";
 import { Dragon3DErrorBoundary } from "./dragon/Dragon3DErrorBoundary";
 import { Chaos3DErrorBoundary } from "./chaos/Chaos3DErrorBoundary";
+import { Eclipse3DErrorBoundary } from "./eclipse/Eclipse3DErrorBoundary";
 
 const LazyJester3DStage = lazy(() =>
   import("./jester/Jester3DStage").then((module) => ({
@@ -47,6 +49,10 @@ const LazyChaos3DStage = lazy(() =>
   import("./chaos/Chaos3DStage").then((module) => ({
     default: module.Chaos3DStage,
   }))
+);
+
+const LazyEclipse3DStage = lazy(() =>
+  import("./eclipse/Eclipse3DStage").then((module) => ({ default: module.Eclipse3DStage }))
 );
 
 const BUSY_SELECTOR = [
@@ -79,11 +85,13 @@ export function LivingOracleLayer({
   love3DEnabled = false,
   dragon3DEnabled = false,
   chaos3DEnabled = false,
+  eclipse3DEnabled = false,
 }: {
   jester3DEnabled?: boolean;
   love3DEnabled?: boolean;
   dragon3DEnabled?: boolean;
   chaos3DEnabled?: boolean;
+  eclipse3DEnabled?: boolean;
 }) {
   const { motion } = useExperiencePreferences();
   const [oracleId, setOracleId] = useState<OracleId | null>(null);
@@ -97,6 +105,7 @@ export function LivingOracleLayer({
   const [loveTarget, setLoveTarget] = useState<HTMLElement | null>(null);
   const [dragonTarget, setDragonTarget] = useState<HTMLElement | null>(null);
   const [chaosTarget, setChaosTarget] = useState<HTMLElement | null>(null);
+  const [eclipseTarget, setEclipseTarget] = useState<HTMLElement | null>(null);
   const [webGLSupported, setWebGLSupported] = useState(false);
   const [jester3DStatus, setJester3DStatus] = useState<
     "idle" | "loading" | "ready" | "error"
@@ -110,6 +119,7 @@ export function LivingOracleLayer({
   const [chaos3DStatus, setChaos3DStatus] = useState<
     "idle" | "loading" | "ready" | "error"
   >("idle");
+  const [eclipse3DStatus, setEclipse3DStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const characterRef = useRef(character);
   const scheduledRef = useRef(new Set<string>());
   const timersRef = useRef<number[]>([]);
@@ -153,6 +163,7 @@ export function LivingOracleLayer({
         setLoveTarget(null);
         setDragonTarget(null);
         setChaosTarget(null);
+        setEclipseTarget(null);
         root.removeAttribute("data-living-oracle");
         root.removeAttribute("data-living-oracle-id");
         root.removeAttribute("data-living-oracle-phase");
@@ -179,6 +190,10 @@ export function LivingOracleLayer({
       });
       setChaosTarget((current) => {
         const target = detected === "chaos" ? page : null;
+        return current === target ? current : target;
+      });
+      setEclipseTarget((current) => {
+        const target = detected === "eclipse" ? page : null;
         return current === target ? current : target;
       });
       root.dataset.livingOracle = "true";
@@ -325,14 +340,14 @@ export function LivingOracleLayer({
 
   useEffect(() => {
     if (
-      (!jester3DEnabled && !love3DEnabled && !dragon3DEnabled && !chaos3DEnabled) ||
+      (!jester3DEnabled && !love3DEnabled && !dragon3DEnabled && !chaos3DEnabled && !eclipse3DEnabled) ||
       motion === "reduced"
     ) {
       setWebGLSupported(false);
       return;
     }
     setWebGLSupported(detectWebGLSupport(document));
-  }, [chaos3DEnabled, dragon3DEnabled, jester3DEnabled, love3DEnabled, motion]);
+  }, [chaos3DEnabled, dragon3DEnabled, eclipse3DEnabled, jester3DEnabled, love3DEnabled, motion]);
 
   const loadJester3D = shouldLoadJester3D({
     oracleId,
@@ -362,6 +377,7 @@ export function LivingOracleLayer({
     motion,
     webGLSupported,
   });
+  const loadEclipse3D = shouldLoadEclipse3D({ oracleId, livingOracleEnabled: true, eclipse3DEnabled, motion, webGLSupported });
 
   useEffect(() => {
     if (!jesterTarget) return;
@@ -407,6 +423,16 @@ export function LivingOracleLayer({
     setChaos3DStatus(loadChaos3D ? "loading" : "idle");
   }, [chaosTarget, loadChaos3D]);
 
+  useEffect(() => {
+    if (!eclipseTarget) return;
+    eclipseTarget.dataset.eclipse3dStatus = eclipse3DStatus;
+    return () => { delete eclipseTarget.dataset.eclipse3dStatus; };
+  }, [eclipse3DStatus, eclipseTarget]);
+
+  useEffect(() => {
+    setEclipse3DStatus(loadEclipse3D ? "loading" : "idle");
+  }, [eclipseTarget, loadEclipse3D]);
+
   const handleJesterReady = useCallback(() => {
     setJester3DStatus("ready");
     transition({ type: "ASSET_READY" });
@@ -446,6 +472,9 @@ export function LivingOracleLayer({
     setChaos3DStatus("error");
     transition({ type: "ASSET_ERROR" });
   }, [transition]);
+
+  const handleEclipseReady = useCallback(() => { setEclipse3DStatus("ready"); transition({ type: "ASSET_READY" }); }, [transition]);
+  const handleEclipseError = useCallback(() => { setEclipse3DStatus("error"); transition({ type: "ASSET_ERROR" }); }, [transition]);
 
   if (!oracleId) return null;
 
@@ -508,6 +537,13 @@ export function LivingOracleLayer({
             />
           </Suspense>
         </Chaos3DErrorBoundary>
+      ) : null}
+      {loadEclipse3D && eclipseTarget && eclipse3DStatus !== "error" ? (
+        <Eclipse3DErrorBoundary onError={handleEclipseError}>
+          <Suspense fallback={null}>
+            <LazyEclipse3DStage target={eclipseTarget} phase={character.phase} onReady={handleEclipseReady} onError={handleEclipseError} />
+          </Suspense>
+        </Eclipse3DErrorBoundary>
       ) : null}
       <p className="qb-visually-hidden" aria-live="polite" aria-atomic="true">
         {oracle.name} Oracle: {character.phase.replace("-", " ")}

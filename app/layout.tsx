@@ -12,6 +12,7 @@ import { LivingOracleLayer } from "@/components/living-oracle/LivingOracleLayer"
 import {
   isChaos3DEnabled,
   isDragon3DEnabled,
+  isEclipse3DEnabled,
   isJester3DEnabled,
   isLove3DEnabled,
   isLivingOracleEnabled,
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const love3DEnabled = isLove3DEnabled();
   const dragon3DEnabled = isDragon3DEnabled();
   const chaos3DEnabled = isChaos3DEnabled();
+  const eclipse3DEnabled = isEclipse3DEnabled();
 
   return (
     <html lang="en">
@@ -40,6 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               love3DEnabled={love3DEnabled}
               dragon3DEnabled={dragon3DEnabled}
               chaos3DEnabled={chaos3DEnabled}
+              eclipse3DEnabled={eclipse3DEnabled}
             />
           ) : null}
           <SiteFooter />

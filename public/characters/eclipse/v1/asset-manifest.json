@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "empress": "empress.glb",
+  "altar": "celestial-altar.glb",
+  "neutralClip": "restpose",
+  "excludedClips": ["Running", "Walking"],
+  "celestial": "native-three-procedural"
+}

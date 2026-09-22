@@ -45,3 +45,9 @@ export function isChaos3DEnabled(
 ) {
   return environment.CHAOS_3D_V4D_ENABLED?.trim().toLowerCase() === "true";
 }
+
+export function isEclipse3DEnabled(
+  environment: ChamberEnvironment = process.env
+) {
+  return environment.ECLIPSE_3D_V4E_ENABLED?.trim().toLowerCase() === "true";
+}

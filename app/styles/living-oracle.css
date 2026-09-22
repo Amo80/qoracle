@@ -312,6 +312,115 @@ html[data-living-oracle-id="jester"][data-living-oracle-phase="returning"]
   }
 }
 
+/* Phase 4E: the Empress, altar, and native celestial system remain mounted
+   while the protected Eclipse page states continue internally. */
+.eclipse-3d-stage {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+
+.eclipse-3d-stage canvas { display: block; width: 100%; height: 100%; pointer-events: none; }
+
+.theme-eclipse[data-eclipse3d-status="ready"] {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+html:has(.theme-eclipse[data-eclipse3d-status="ready"]),
+html:has(.theme-eclipse[data-eclipse3d-status="ready"]) body {
+  width: 100% !important;
+  height: 100dvh !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  overscroll-behavior: none;
+}
+
+.theme-eclipse[data-eclipse3d-status="ready"] .eclipse-3d-stage { opacity: 1; }
+.theme-eclipse[data-eclipse3d-status="error"] .eclipse-3d-stage { display: none; }
+
+.theme-eclipse[data-eclipse3d-status="ready"] .eclipse-stage {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 2 !important;
+  width: 100% !important;
+  height: 100dvh !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: clamp(3.8rem, 7vh, 5rem) 1rem clamp(.65rem, 2vh, 1.1rem) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  overflow: hidden !important;
+  background: transparent !important;
+}
+
+.theme-eclipse[data-eclipse3d-status="ready"] .eclipse-stage > :is(.eclipse-eyebrow, .eclipse-title, .eclipse-subtitle) {
+  position: relative !important;
+  z-index: 4 !important;
+  flex: 0 0 auto !important;
+  pointer-events: none;
+}
+
+.theme-eclipse[data-eclipse3d-status="ready"] .eclipse-eyebrow { margin: 0 0 .2rem !important; }
+.theme-eclipse[data-eclipse3d-status="ready"] .eclipse-title { margin: 0 !important; font-size: clamp(2.1rem, 5vw, 4rem) !important; line-height: .92 !important; }
+.theme-eclipse[data-eclipse3d-status="ready"] .eclipse-subtitle { margin: .4rem 0 0 !important; font-size: clamp(.85rem, 1.6vw, 1.05rem) !important; }
+
+.theme-eclipse[data-eclipse3d-status="ready"] :is(.eclipse-crystal, .eclipse-instruction, .eclipse-loading-dots) { display: none !important; }
+
+.theme-eclipse[data-eclipse3d-status="ready"] :is(.eclipse-question-box, .eclipse-reveal-message, .eclipse-answer-card, .eclipse-again-button) {
+  position: relative !important;
+  z-index: 5 !important;
+  width: min(92vw, 550px) !important;
+  pointer-events: auto;
+}
+
+.theme-eclipse[data-eclipse3d-status="ready"] :is(.eclipse-question-box, .eclipse-reveal-message, .eclipse-answer-card) {
+  margin-top: auto !important;
+  padding: .75rem .9rem !important;
+  border: 1px solid rgba(239, 194, 103, .44) !important;
+  border-radius: 18px !important;
+  background: rgba(8, 4, 22, .79) !important;
+  box-shadow: 0 14px 50px rgba(2, 0, 12, .58), 0 0 34px rgba(136, 70, 255, .13) !important;
+  backdrop-filter: blur(11px);
+}
+
+.theme-eclipse[data-eclipse3d-status="ready"] .eclipse-question-box { display: grid !important; gap: .62rem !important; }
+.theme-eclipse[data-eclipse3d-status="ready"] .eclipse-answer-card { max-height: 24vh !important; overflow: auto !important; }
+.theme-eclipse[data-eclipse3d-status="ready"] .eclipse-again-button { min-height: 46px !important; margin: .6rem auto 0 !important; }
+.theme-eclipse[data-eclipse3d-status="ready"] .eclipse-closing { display: none !important; }
+.theme-eclipse[data-eclipse3d-status="ready"] .eclipse-stage > .small { position: relative !important; z-index: 5 !important; flex: 0 0 auto; margin: .3rem 0 0 !important; }
+
+@media (max-width: 700px) {
+  .theme-eclipse[data-eclipse3d-status="ready"] .eclipse-stage { padding: 4.45rem .6rem max(.55rem, env(safe-area-inset-bottom)) !important; }
+  .theme-eclipse[data-eclipse3d-status="ready"] .eclipse-eyebrow { font-size: .62rem !important; letter-spacing: .13rem !important; }
+  .theme-eclipse[data-eclipse3d-status="ready"] .eclipse-title { font-size: clamp(1.85rem, 9vw, 2.8rem) !important; }
+  .theme-eclipse[data-eclipse3d-status="ready"] .eclipse-subtitle { margin-top: .2rem !important; font-size: .82rem !important; }
+  .theme-eclipse[data-eclipse3d-status="ready"] :is(.eclipse-question-box, .eclipse-reveal-message, .eclipse-answer-card, .eclipse-again-button) { width: min(94vw, 520px) !important; }
+  .theme-eclipse[data-eclipse3d-status="ready"] :is(.eclipse-question-box, .eclipse-reveal-message, .eclipse-answer-card) { padding: .62rem .68rem !important; }
+  .theme-eclipse[data-eclipse3d-status="ready"] .eclipse-answer-card { max-height: 23vh !important; }
+}
+
+@media (max-height: 720px) {
+  .theme-eclipse[data-eclipse3d-status="ready"] .eclipse-stage { padding-top: 3.35rem !important; }
+  .theme-eclipse[data-eclipse3d-status="ready"] .eclipse-subtitle,
+  .theme-eclipse[data-eclipse3d-status="ready"] .eclipse-stage > .small { display: none !important; }
+  .theme-eclipse[data-eclipse3d-status="ready"] .eclipse-answer-card { max-height: 23vh !important; }
+}
+
 @media (max-width: 640px) {
   .theme-love[data-love3d-status="ready"]
     .love-stage-one
@@ -771,7 +880,9 @@ html[data-living-oracle-phase="asset-error"] .living-oracle-aura {
   }
 
   .love-3d-stage,
-  .dragon-3d-stage { display: none !important; }
+  .dragon-3d-stage,
+  .chaos-3d-stage,
+  .eclipse-3d-stage { display: none !important; }
 }
 
 html[data-motion="reduced"] .living-oracle-aura,
@@ -785,6 +896,7 @@ html[data-motion="reduced"] .jester-3d-stage {
 }
 
 html[data-motion="reduced"] .love-3d-stage { display: none !important; }
+html[data-motion="reduced"] :is(.chaos-3d-stage, .eclipse-3d-stage) { display: none !important; }
 
 @keyframes living-aura-breathe {
   to {
