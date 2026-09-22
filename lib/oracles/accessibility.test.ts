@@ -1,0 +1,27 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { describe, expect, it } from "vitest";
+
+const oracle = readFileSync(join(process.cwd(), "components/OracleQR.tsx"), "utf8");
+
+describe("Oracle question and answer accessibility", () => {
+  it.each(["Love", "Dungeon", "Eclipse", "Jester", "Chaos"])(
+    "gives the %s question field a persistent accessible name",
+    (name) => expect(oracle).toContain(`aria-label="Ask the ${name} Oracle a question"`)
+  );
+
+  it("announces and focuses each authoritative answer card", () => {
+    expect(oracle.match(/ref=\{answerRegionRef\}/g)).toHaveLength(5);
+    expect(oracle.match(/role="status"/g)).toHaveLength(5);
+    expect(oracle.match(/aria-live="polite"/g)).toHaveLength(5);
+    expect(oracle.match(/aria-atomic="true"/g)).toHaveLength(5);
+    expect(oracle.match(/tabIndex=\{-1\}/g)?.length).toBeGreaterThanOrEqual(5);
+    expect(oracle).toContain("answerRegionRef.current?.focus()");
+  });
+
+  it("captures mounted audio nodes and tears them down on theme change or unmount", () => {
+    expect(oracle).toContain("const activeAudio = [loveMusicRef.current, dndMusicRef.current, chaosMusicRef.current, jesterLaughRef.current]");
+    expect(oracle).toContain("return () => stopOracleAudio(activeAudio)");
+    expect(oracle).toContain("ref={jesterLaughRef}");
+  });
+});

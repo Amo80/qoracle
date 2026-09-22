@@ -40,6 +40,10 @@ export const INITIAL_CHARACTER_STATE: CharacterState = {
   resumePhase: null,
 };
 
+export function canBeginQuestionCycle(phase: CharacterPhase) {
+  return !["awakening", "anticipating", "paused"].includes(phase);
+}
+
 function isCurrentCycle(state: CharacterState, cycle: number) {
   return state.cycle === cycle;
 }
@@ -81,7 +85,7 @@ export function characterReducer(
         ? { ...state, phase: "idle" }
         : state;
     case "RESET":
-      return { ...state, phase: "idle", resumePhase: null };
+      return INITIAL_CHARACTER_STATE;
     case "HIDDEN":
       return state.phase === "paused"
         ? state

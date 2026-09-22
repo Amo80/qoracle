@@ -12,6 +12,7 @@ import Link from "next/link";
 import { useExperiencePreferences } from "@/components/experience/ExperiencePreferences";
 import {
   INITIAL_CHARACTER_STATE,
+  canBeginQuestionCycle,
   characterReducer,
   getCharacterTimings,
   type CharacterEvent,
@@ -122,7 +123,9 @@ export function LivingOracleLayer({
   const [eclipse3DStatus, setEclipse3DStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const characterRef = useRef(character);
   const scheduledRef = useRef(new Set<string>());
-  const timersRef = useRef<number[]>([]);
+  const timersRef = useRef(new Map<string, number>());
+  const oracleRef = useRef<OracleId | null>(null);
+  const generationRef = useRef(0);
 
   const transition = useCallback((event: CharacterEvent) => {
     const next = characterReducer(characterRef.current, event);
@@ -133,23 +136,50 @@ export function LivingOracleLayer({
     return next;
   }, []);
 
+  const cancelSchedules = useCallback(() => {
+    for (const timer of timersRef.current.values()) {
+      window.clearTimeout(timer);
+    }
+    timersRef.current.clear();
+    scheduledRef.current.clear();
+  }, []);
+
+  const beginOracleSession = useCallback(
+    (nextOracle: OracleId | null) => {
+      if (oracleRef.current === nextOracle) return;
+      generationRef.current += 1;
+      oracleRef.current = nextOracle;
+      cancelSchedules();
+      transition({ type: "RESET" });
+    },
+    [cancelSchedules, transition]
+  );
+
+  const beginQuestionCycle = useCallback(() => {
+    generationRef.current += 1;
+    cancelSchedules();
+    return transition({ type: "SUBMIT" });
+  }, [cancelSchedules, transition]);
+
   const schedule = useCallback(
     (key: string, delay: number, event: CharacterEvent) => {
       if (scheduledRef.current.has(key)) return;
+      const generation = generationRef.current;
       scheduledRef.current.add(key);
       const timer = window.setTimeout(() => {
         scheduledRef.current.delete(key);
+        timersRef.current.delete(key);
+        if (generation !== generationRef.current) return;
         transition(event);
       }, delay);
-      timersRef.current.push(timer);
+      timersRef.current.set(key, timer);
     },
     [transition]
   );
 
   useEffect(() => {
-    const timers = timersRef.current;
-    return () => timers.forEach((timer) => window.clearTimeout(timer));
-  }, []);
+    return cancelSchedules;
+  }, [cancelSchedules]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -158,6 +188,7 @@ export function LivingOracleLayer({
     const synchronize = () => {
       const page = document.querySelector<HTMLElement>(".oracle-page");
       if (!page) {
+        beginOracleSession(null);
         setOracleId(null);
         setJesterTarget(null);
         setLoveTarget(null);
@@ -172,6 +203,7 @@ export function LivingOracleLayer({
 
       const detected = detectOracle(page);
       if (!detected) return;
+      beginOracleSession(detected);
       setOracleId((current) => (current === detected ? current : detected));
       setJesterTarget((current) => {
         const target =
@@ -203,8 +235,8 @@ export function LivingOracleLayer({
       const answered = hasRenderedAnswer(page);
       let current = characterRef.current;
 
-      if (busy && (current.phase === "idle" || current.phase === "listening" || current.phase === "returning")) {
-        current = transition({ type: "SUBMIT" });
+      if (busy && canBeginQuestionCycle(current.phase)) {
+        current = beginQuestionCycle();
         schedule(
           `${current.cycle}:awakened`,
           timings.awakening,
@@ -303,7 +335,7 @@ export function LivingOracleLayer({
       root.removeAttribute("data-living-oracle-id");
       root.removeAttribute("data-living-oracle-phase");
     };
-  }, [motion, schedule, transition]);
+  }, [beginOracleSession, beginQuestionCycle, motion, schedule, transition]);
 
   useEffect(() => {
     document.documentElement.dataset.livingOraclePhase = character.phase;

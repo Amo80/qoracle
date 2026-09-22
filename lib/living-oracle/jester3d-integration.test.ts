@@ -55,4 +55,11 @@ describe("Jester 3D integration boundaries", () => {
     expect(stage).toContain("positiveReaction.name");
     expect(stage).not.toMatch(/setTimeout|REACTION_COMPLETE|RETURN_COMPLETE/);
   });
+
+  it("suppresses deferred clip rejection callbacks after disposal", () => {
+    expect(stage).toContain("const reportActiveError = () =>");
+    expect(stage).toContain("if (!disposed) onError()");
+    expect(stage).toContain(".catch(reportActiveError)");
+    expect(stage).not.toContain("void playPhase(phase).catch(onError)");
+  });
 });

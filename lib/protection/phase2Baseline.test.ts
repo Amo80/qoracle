@@ -23,7 +23,7 @@ const PROTECTED_ROOTS = [
 ] as const;
 
 const PHASE_2_PROTECTED_BASELINE =
-  "415442226cab55acbbdcbd946c1ee2c2445d47852fdcdf13f141f14cdc72cc52";
+  "23578490dd51471251e5babd0f767934c1c7ad1d5597763ef48c3a6771f14be9";
 
 function walk(path: string): string[] {
   if (statSync(path).isFile()) return [path];

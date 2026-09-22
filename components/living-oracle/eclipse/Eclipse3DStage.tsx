@@ -94,18 +94,34 @@ function resolveActiveBones(root: Object3D) {
   throw new Error(`Eclipse active skin did not resolve ${ECLIPSE_PROCEDURAL_BONES.length} approved bones.`);
 }
 
-async function createController({ canvas, container, initialPhase, onReady, onError, isActive }: { canvas: HTMLCanvasElement; container: HTMLElement; initialPhase: CharacterPhase; onReady: () => void; onError: () => void; isActive: () => boolean }): Promise<Controller> {
+async function createController({ canvas, container, initialPhase, onReady, onError, isActive, registerCleanup }: { canvas: HTMLCanvasElement; container: HTMLElement; initialPhase: CharacterPhase; onReady: () => void; onError: () => void; isActive: () => boolean; registerCleanup: (cleanup: () => void) => void }): Promise<Controller> {
   let disposed = false; let phase = initialPhase; let phaseElapsed = 0; let elapsed = 0;
   const loader = new GLTFLoader(); const clock = new Clock(); const scene = new Scene();
   const camera = new PerspectiveCamera(35, 1, .05, 100); const renderer = new WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "high-performance" });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5)); renderer.outputColorSpace = SRGBColorSpace; renderer.toneMapping = ACESFilmicToneMapping; renderer.toneMappingExposure = 1.12; renderer.setClearColor(new Color(0), 0);
+  let mixer: AnimationMixer | null = null; let observer: ResizeObserver | null = null; let contextLost: ((event: Event) => void) | null = null; let cleaned = false;
+  const loadedRoots = new Set<Object3D>();
+  const cleanup = () => {
+    if (cleaned) return;
+    cleaned = true; disposed = true; renderer.setAnimationLoop(null); observer?.disconnect();
+    if (contextLost) canvas.removeEventListener("webglcontextlost", contextLost);
+    mixer?.stopAllAction(); disposeObject(scene);
+    loadedRoots.forEach((root) => { if (!root.parent) disposeObject(root); });
+    renderer.dispose();
+  };
+  registerCleanup(cleanup);
+  try {
   scene.add(new AmbientLight(0x8a79b9, 1.45)); const key = new DirectionalLight(0xffd49a, 2.4); key.position.set(3,5,5); const fill = new DirectionalLight(0x7955ff, 2); fill.position.set(-4,3,3); scene.add(key, fill);
   const content = new Group(); const empressGroup = new Group(); const altarGroup = new Group(); const celestial = new Group(); content.add(empressGroup, altarGroup, celestial); scene.add(content);
-  const [empressGltf, altarGltf] = await Promise.all([loader.loadAsync(ECLIPSE_3D_MANIFEST.empress), loader.loadAsync(ECLIPSE_3D_MANIFEST.altar)]);
+  const loads = await Promise.allSettled([loader.loadAsync(ECLIPSE_3D_MANIFEST.empress), loader.loadAsync(ECLIPSE_3D_MANIFEST.altar)]);
+  loads.forEach((result) => { if (result.status === "fulfilled") { if (cleaned) disposeObject(result.value.scene); else loadedRoots.add(result.value.scene); } });
+  const rejected = loads.find((result) => result.status === "rejected"); if (rejected?.status === "rejected") throw rejected.reason;
+  const empressGltf = loads[0].status === "fulfilled" ? loads[0].value : null; const altarGltf = loads[1].status === "fulfilled" ? loads[1].value : null;
+  if (!empressGltf || !altarGltf) throw new Error("Eclipse runtime assets did not load.");
   if (disposed || !isActive()) throw new Error("Eclipse initialization superseded.");
   const forbidden = empressGltf.animations.filter((clip) => ECLIPSE_3D_MANIFEST.excludedClips.includes(clip.name as "Running" | "Walking"));
   const rest = empressGltf.animations.find((clip) => clip.name === ECLIPSE_3D_MANIFEST.neutralClip); if (!rest || forbidden.length) throw new Error("Eclipse runtime derivative clip contract failed.");
-  const mixer = new AnimationMixer(empressGltf.scene); mixer.clipAction(rest).play(); mixer.setTime(0); mixer.update(0);
+  mixer = new AnimationMixer(empressGltf.scene); mixer.clipAction(rest).play(); mixer.setTime(0); mixer.update(0);
   const { mesh: activeMesh, bones } = resolveActiveBones(empressGltf.scene); if (activeMesh.skeleton.bones.length !== 28) throw new Error("Eclipse runtime skin is not the approved 28-joint skeleton.");
   const neutral = new Map<string, Quaternion>(); bones.forEach((bone, name) => neutral.set(name, bone.quaternion.clone()));
   normalize(empressGltf.scene, empressGroup, 3.5, -1.64, -0.72); normalize(altarGltf.scene, altarGroup, 1.48, -1.64, 0.3);
@@ -135,12 +151,12 @@ async function createController({ canvas, container, initialPhase, onReady, onEr
 
   const compositionBounds = new Box3().setFromObject(content); let narrow = false; let stageAspect = 1;
   const resize = () => { const rect=container.getBoundingClientRect(); const width=rect.width>1?rect.width:window.innerWidth; const height=rect.height>1?rect.height:window.innerHeight; renderer.setSize(width,height,false); camera.aspect=width/height; stageAspect=camera.aspect; narrow=width<=520||camera.aspect<.72; const framing=narrow?ECLIPSE_CAMERA_FRAMING.narrow:ECLIPSE_CAMERA_FRAMING.desktop; camera.position.set(0,framing.positionY,framing.distance); camera.lookAt(0,framing.targetY,0); camera.updateProjectionMatrix(); };
-  const observer = new ResizeObserver(resize); observer.observe(container); resize();
-  const contextLost=(event:Event)=>{event.preventDefault();onError();}; canvas.addEventListener("webglcontextlost",contextLost);
+  observer = new ResizeObserver(resize); observer.observe(container); resize();
+  contextLost=(event:Event)=>{event.preventDefault();onError();}; canvas.addEventListener("webglcontextlost",contextLost);
 
   const render=()=>{
     if(disposed||!isActive())return;
-    const delta=Math.min(clock.getDelta(),.05);elapsed+=delta;phaseElapsed+=delta;mixer.update(delta);
+    const delta=Math.min(clock.getDelta(),.05);elapsed+=delta;phaseElapsed+=delta;mixer!.update(delta);
     bones.forEach((bone,name)=>{const q=neutral.get(name);if(q)bone.quaternion.copy(q);});
     const pose=getEclipsePose(phase,phaseElapsed);
     for(const [name,offset] of Object.entries(pose)){const bone=bones.get(name);if(bone)bone.quaternion.multiply(new Quaternion().setFromEuler(new Euler(offset.x,offset.y,offset.z,"XYZ")));}
@@ -165,11 +181,15 @@ async function createController({ canvas, container, initialPhase, onReady, onEr
     renderer.render(scene,camera);bones.forEach((bone,name)=>{const q=neutral.get(name);if(q)bone.quaternion.copy(q);});
   };
   renderer.setAnimationLoop(render); onReady();
-  return {setPhase(next){if(next===phase)return;phase=next;phaseElapsed=0;if(next==="idle")elapsed=0;if(next==="paused")renderer.setAnimationLoop(null);else renderer.setAnimationLoop(render);},dispose(){disposed=true;renderer.setAnimationLoop(null);observer.disconnect();canvas.removeEventListener("webglcontextlost",contextLost);disposeObject(scene);renderer.dispose();void compositionBounds;}};
+  return {setPhase(next){if(next===phase)return;phase=next;phaseElapsed=0;if(next==="idle")elapsed=0;if(next==="paused")renderer.setAnimationLoop(null);else renderer.setAnimationLoop(render);},dispose(){cleanup();void compositionBounds;}};
+  } catch (error) {
+    cleanup();
+    throw error;
+  }
 }
 
 export function Eclipse3DStage({target,phase,onReady,onError}:Props){const canvasRef=useRef<HTMLCanvasElement>(null);const stageRef=useRef<HTMLDivElement>(null);const controllerRef=useRef<Controller|null>(null);
-  useEffect(()=>{const canvas=canvasRef.current,stage=stageRef.current;if(!canvas||!stage)return;let active=true;let controller:Controller|null=null;const frame=window.requestAnimationFrame(()=>{if(!active)return;void createController({canvas,container:stage,initialPhase:phase,onReady:()=>{if(active)onReady();},onError:()=>{if(active)onError();},isActive:()=>active}).then(created=>{if(!active){created.dispose();return;}controller=created;controllerRef.current=created;}).catch(()=>{if(active)onError();});});return()=>{active=false;window.cancelAnimationFrame(frame);controller?.dispose();if(controllerRef.current===controller)controllerRef.current=null;};
+  useEffect(()=>{const canvas=canvasRef.current,stage=stageRef.current;if(!canvas||!stage)return;let active=true;let controller:Controller|null=null;let pendingCleanup:(()=>void)|null=null;const frame=window.requestAnimationFrame(()=>{if(!active)return;void createController({canvas,container:stage,initialPhase:phase,onReady:()=>{if(active)onReady();},onError:()=>{if(active)onError();},isActive:()=>active,registerCleanup:(cleanup)=>{pendingCleanup=cleanup;if(!active)cleanup();}}).then(created=>{pendingCleanup=null;if(!active){created.dispose();return;}controller=created;controllerRef.current=created;}).catch(()=>{pendingCleanup=null;if(active)onError();});});return()=>{active=false;window.cancelAnimationFrame(frame);pendingCleanup?.();controller?.dispose();if(controllerRef.current===controller)controllerRef.current=null;};
     // The controller receives subsequent phases through setPhase below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   },[onError,onReady,target]);

@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { normalizeOracleId } from "@/lib/oracles/registry";
 import { ORACLE_ANSWERS } from "@/lib/oracles/answers";
+import { stopOracleAudio } from "@/lib/oracles/audioLifecycle";
 
 export default function OracleQR({
   theme,
@@ -28,6 +29,19 @@ const [eclipseSide, setEclipseSide] = useState<"light" | "dark">("light");
 const loveMusicRef = useRef<HTMLAudioElement | null>(null);
 const dndMusicRef = useRef<HTMLAudioElement | null>(null);
 const chaosMusicRef = useRef<HTMLAudioElement | null>(null);
+const jesterLaughRef = useRef<HTMLAudioElement | null>(null);
+const answerRegionRef = useRef<HTMLDivElement | null>(null);
+
+useEffect(() => {
+  const activeAudio = [loveMusicRef.current, dndMusicRef.current, chaosMusicRef.current, jesterLaughRef.current];
+  return () => stopOracleAudio(activeAudio);
+}, [activeTheme]);
+
+useEffect(() => {
+  if (!answer || busy) return;
+  const frame = window.requestAnimationFrame(() => answerRegionRef.current?.focus());
+  return () => window.cancelAnimationFrame(frame);
+}, [answer, busy, activeTheme]);
 
 async function ask() {
   if (!question.trim() || busy) return;
@@ -249,6 +263,7 @@ if (activeTheme === "eclipse") {
 
             <div className="love-question-box">
               <input
+                aria-label="Ask the Love Oracle a question"
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
                 placeholder="Ask your heart a question..."
@@ -383,7 +398,7 @@ if (activeTheme === "eclipse") {
 
     </div>
 
-    <div className="love-answer-card">
+    <div ref={answerRegionRef} className="love-answer-card" role="status" aria-live="polite" aria-atomic="true" tabIndex={-1}>
 
       <span>
         THE LOVE ORACLE SAYS
@@ -508,6 +523,7 @@ if (activeTheme === "dnd") {
           <div className="dnd-question-box">
 
             <input
+              aria-label="Ask the Dungeon Oracle a question"
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               onKeyDown={(e) => {
@@ -646,7 +662,7 @@ if (activeTheme === "dnd") {
 
           </div>
 
-          <div className="dnd-answer-card">
+          <div ref={answerRegionRef} className="dnd-answer-card" role="status" aria-live="polite" aria-atomic="true" tabIndex={-1}>
 
             <span>
               THE DUNGEON ORACLE SAYS
@@ -737,6 +753,7 @@ if (activeTheme === "dnd") {
             <div className="eclipse-question-box">
 
               <input
+                aria-label="Ask the Eclipse Oracle a question"
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
                 onKeyDown={(e) => {
@@ -856,7 +873,7 @@ if (activeTheme === "dnd") {
 
             </div>
 
-            <div className="eclipse-answer-card">
+            <div ref={answerRegionRef} className="eclipse-answer-card" role="status" aria-live="polite" aria-atomic="true" tabIndex={-1}>
 
               <span>
                 THE ECLIPSE ORACLE SAYS
@@ -897,6 +914,7 @@ if (activeTheme === "dnd") {
     return (
       <main className="oracle-page theme-jester">
 <audio
+  ref={jesterLaughRef}
   id="jesterLaugh"
   src="/themes/jester-laugh.mp3"
   preload="auto"
@@ -935,6 +953,7 @@ if (activeTheme === "dnd") {
 
         <div className="question">
           <input
+            aria-label="Ask the Jester Oracle a question"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             onKeyDown={(e) => {
@@ -956,7 +975,7 @@ if (activeTheme === "dnd") {
         </div>
 
         {answer && !busy && (
-          <div className="result">
+          <div ref={answerRegionRef} className="result" role="status" aria-live="polite" aria-atomic="true" tabIndex={-1}>
             <span>THE JESTER SAYS</span>
             <strong>{answer}</strong>
             <button className="secondary" onClick={askAgain}>
@@ -1054,6 +1073,7 @@ if (activeTheme === "dnd") {
 
       <div className="question">
         <input
+          aria-label="Ask the Chaos Oracle a question"
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
           onKeyDown={(e) => {
@@ -1075,7 +1095,7 @@ if (activeTheme === "dnd") {
       </div>
 
       {answer && !busy && (
-        <div className="result">
+        <div ref={answerRegionRef} className="result" role="status" aria-live="polite" aria-atomic="true" tabIndex={-1}>
           <span>THE ORACLE SAYS</span>
           <strong>{answer}</strong>
           <button

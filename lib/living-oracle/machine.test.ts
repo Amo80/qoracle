@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   INITIAL_CHARACTER_STATE,
+  canBeginQuestionCycle,
   characterReducer,
   getCharacterTimings,
 } from "./machine";
@@ -16,6 +17,23 @@ function completeCycle(cycle = 1) {
 }
 
 describe("Living Oracle character lifecycle", () => {
+  it.each(["speaking", "reacting", "returning"] as const)(
+    "starts a deterministic replacement cycle while the prior cycle is %s",
+    (phase) => {
+      const previous = { phase, cycle: 4, resumePhase: null } as const;
+      expect(canBeginQuestionCycle(phase)).toBe(true);
+      expect(characterReducer(previous, { type: "SUBMIT" })).toEqual({
+        phase: "awakening",
+        cycle: 5,
+        resumePhase: null,
+      });
+    }
+  );
+
+  it("does not retrigger a cycle while the current submit is awakening or anticipating", () => {
+    expect(canBeginQuestionCycle("awakening")).toBe(false);
+    expect(canBeginQuestionCycle("anticipating")).toBe(false);
+  });
   it("moves through listening, awakening, anticipation, speaking, reaction, and idle", () => {
     let state = characterReducer(INITIAL_CHARACTER_STATE, { type: "FOCUS" });
     expect(state.phase).toBe("listening");

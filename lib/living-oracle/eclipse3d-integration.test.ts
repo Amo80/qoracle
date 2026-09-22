@@ -43,4 +43,18 @@ describe("Eclipse 3D integration boundaries", () => {
     expect(stage).toContain("const prominences = new Group()");
     expect(stage).toContain("new RingGeometry(.37,.405,128)");
   });
+  it("disposes partial and superseded initialization without leaking GPU or observer state", () => {
+    expect(stage).toContain("Promise.allSettled");
+    expect(stage).toContain("const cleanup = () =>");
+    expect(stage).toContain("if (cleaned) return");
+    expect(stage).toContain("mixer?.stopAllAction()");
+    expect(stage).toContain("observer?.disconnect()");
+    expect(stage).toContain('canvas.removeEventListener("webglcontextlost", contextLost)');
+    expect(stage).toContain("loadedRoots.forEach");
+    expect(stage).toContain("registerCleanup(cleanup)");
+    expect(stage).toContain("pendingCleanup?.()");
+    expect(stage).toContain("if (cleaned) disposeObject(result.value.scene)");
+    expect(stage).toMatch(/if \(disposed \|\| !isActive\(\)\) throw new Error\("Eclipse initialization superseded\."\)/);
+    expect(stage).toMatch(/catch \(error\) \{\s*cleanup\(\);\s*throw error;/);
+  });
 });

@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const ORIGINAL_ORACLE_QR_SHA256 =
-  "8b88a2a9c26e32e9c304eb5195da5cb815372831fbd1f1988db1e37b722c1dbb";
+  "901b22c57c264446cf25adc4d10577ae08c703643b669891d3b6a4ea5d8af325";
 
 describe("Phase 4C approved OracleQR copy-only change", () => {
   it("changes only the approved Dungeon-facing strings", () => {

@@ -95,6 +95,9 @@ async function createJesterController({
   const clock = new Clock();
   const actions = new Map<string, AnimationAction>();
   const clipPromises = new Map<string, Promise<AnimationClip>>();
+  const reportActiveError = () => {
+    if (!disposed) onError();
+  };
   const scene = new Scene();
   const camera = new PerspectiveCamera(32, 1, 0.1, 100);
   const characterGroup = new Group();
@@ -221,7 +224,7 @@ async function createJesterController({
     // asset while speaking so network latency cannot consume the reaction.
     if (phase === "speaking") {
       void loadClip(JESTER_3D_MANIFEST.clips.positiveReaction.name).catch(
-        onError
+        reportActiveError
       );
     }
 
@@ -283,7 +286,7 @@ async function createJesterController({
         clock.start();
         renderer.setAnimationLoop(render);
       }
-      void playPhase(phase).catch(onError);
+      void playPhase(phase).catch(reportActiveError);
     },
     dispose() {
       disposed = true;
