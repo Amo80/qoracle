@@ -1,5 +1,8 @@
 type ChamberEnvironment = Readonly<Record<string, string | undefined>>;
 
+const enabled = (value: string | undefined) =>
+  value?.trim().toLowerCase() === "true";
+
 export function isOracleChamberEnabled(
   environment: ChamberEnvironment = process.env
 ) {
@@ -50,4 +53,38 @@ export function isEclipse3DEnabled(
   environment: ChamberEnvironment = process.env
 ) {
   return environment.ECLIPSE_3D_V4E_ENABLED?.trim().toLowerCase() === "true";
+}
+
+export function isOracleIntelligenceEnabled(
+  environment: ChamberEnvironment = process.env
+) {
+  return enabled(environment.ORACLE_INTELLIGENCE_ENABLED);
+}
+
+const INTELLIGENCE_ORACLE_FLAGS = {
+  jester: "ORACLE_INTELLIGENCE_JESTER_ENABLED",
+  love: "ORACLE_INTELLIGENCE_LOVE_ENABLED",
+  dnd: "ORACLE_INTELLIGENCE_DUNGEON_ENABLED",
+  chaos: "ORACLE_INTELLIGENCE_CHAOS_ENABLED",
+  eclipse: "ORACLE_INTELLIGENCE_ECLIPSE_ENABLED",
+} as const;
+
+export function getOracleIntelligenceRolloutPercent(
+  environment: ChamberEnvironment = process.env
+) {
+  const raw = environment.ORACLE_INTELLIGENCE_ROLLOUT_PERCENT?.trim();
+  if (!raw || !/^\d{1,3}$/.test(raw)) return 0;
+  const value = Number(raw);
+  return Number.isInteger(value) && value >= 0 && value <= 100 ? value : 0;
+}
+
+export function isOracleIntelligenceEnabledFor(
+  oracleId: keyof typeof INTELLIGENCE_ORACLE_FLAGS,
+  environment: ChamberEnvironment = process.env
+) {
+  return (
+    isOracleIntelligenceEnabled(environment) &&
+    enabled(environment[INTELLIGENCE_ORACLE_FLAGS[oracleId]]) &&
+    getOracleIntelligenceRolloutPercent(environment) > 0
+  );
 }
