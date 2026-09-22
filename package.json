@@ -19,6 +19,7 @@
     "@supabase/ssr": "^0.12.5",
     "@supabase/supabase-js": "latest",
     "next": "latest",
+    "openai": "^7.21.0",
     "qrcode": "^1.5.4",
     "react": "latest",
     "react-dom": "latest",

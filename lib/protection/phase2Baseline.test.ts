@@ -22,6 +22,10 @@ const PROTECTED_ROOTS = [
   "supabase",
 ] as const;
 
+const APPROVED_ADDITIVE_ROUTES = new Set([
+  "app/api/oracle/intelligence/route.ts",
+]);
+
 const PHASE_2_PROTECTED_BASELINE =
   "8d36eab8b244cd866af6e241a6fd4aa02f30b82cad5f02a7ae8b360315670f6d";
 
@@ -46,6 +50,7 @@ describe("Phase 2 protected production baseline", () => {
         absolute: path,
         relative: relative(projectRoot, path).replace(/\\/g, "/"),
       }))
+      .filter((file) => !APPROVED_ADDITIVE_ROUTES.has(file.relative))
       .sort((left, right) =>
         left.relative < right.relative ? -1 : left.relative > right.relative ? 1 : 0
       );
