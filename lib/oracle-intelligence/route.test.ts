@@ -41,6 +41,18 @@ describe("POST /api/oracle/intelligence", () => {
     expect((await POST(request(validBody, { "content-type": "text/plain" }))).status).toBe(400);
     expect((await POST(request(validBody, { origin: "https://attacker.example" }))).status).toBe(400);
     expect((await POST(request({ ...validBody, source: "oracle-ai" }))).status).toBe(400);
+    expect((await POST(request({ ...validBody, reasoningEffort: "none" }))).status).toBe(400);
+    expect((await POST(request({ ...validBody, timeoutMs: 5000 }))).status).toBe(400);
     expect((await POST(request({ ...validBody, question: "x".repeat(3000) }))).status).toBe(400);
+  });
+
+  it("never exposes qualification diagnostics on the normal route", async () => {
+    process.env.ORACLE_INTELLIGENCE_ENABLED = "false";
+    process.env.ORACLE_INTELLIGENCE_DIAGNOSTICS_ENABLED = "true";
+    process.env.VERCEL_ENV = "preview";
+    const response = await POST(request(validBody));
+    expect(response.headers.get("server-timing")).toBeNull();
+    expect(response.headers.get("x-oracle-diagnostic")).toBeNull();
+    expect(await response.json()).not.toHaveProperty("diagnostic");
   });
 });

@@ -24,6 +24,7 @@ const PROTECTED_ROOTS = [
 
 const APPROVED_ADDITIVE_ROUTES = new Set([
   "app/api/oracle/intelligence/route.ts",
+  "app/api/oracle/intelligence/qualification/[profile]/route.ts",
 ]);
 
 const PHASE_2_PROTECTED_BASELINE =

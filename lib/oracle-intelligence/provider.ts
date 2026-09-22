@@ -1,4 +1,5 @@
 import type { OracleIntelligenceRequestV1, ProviderOracleOutputV1 } from "./types";
+import type { ProviderDiagnosticRecorder } from "./diagnostics";
 
 export type ProviderFailureKind =
   | "timeout"
@@ -12,7 +13,11 @@ export type ProviderResult =
   | Readonly<{ ok: false; kind: ProviderFailureKind; safetyCategory?: "standard" | "crisis" | "refusal" }>;
 
 export interface OracleIntelligenceProvider {
-  generate(request: OracleIntelligenceRequestV1, signal: AbortSignal): Promise<ProviderResult>;
+  generate(
+    request: OracleIntelligenceRequestV1,
+    signal: AbortSignal,
+    diagnostics?: ProviderDiagnosticRecorder
+  ): Promise<ProviderResult>;
 }
 
 export function cancelledResult(): ProviderResult {

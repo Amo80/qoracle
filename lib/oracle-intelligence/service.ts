@@ -5,6 +5,8 @@ import { createDeterministicSafetyResponse } from "./safetyResponse";
 import { validateIntelligenceRequest, validateProviderOutput } from "./schema";
 import { buildTrustedOracleResponse } from "./trust";
 import { generateWithTimeout } from "./timeout";
+import { generateWithQualificationTimeout } from "./timeout";
+import type { PreviewIntelligenceDiagnosticRecorder } from "./diagnostics";
 import type { OracleIntelligenceProvider, ProviderFailureKind } from "./provider";
 import type { OracleIntelligenceRateLimiter } from "./rateLimit";
 import type { IntelligenceTelemetrySink } from "./telemetry";
@@ -45,6 +47,8 @@ export async function runOracleIntelligenceService({
   telemetry = NOOP_INTELLIGENCE_TELEMETRY,
   environment = process.env,
   signal,
+  qualificationMode = false,
+  diagnostics,
 }: {
   candidateRequest: unknown;
   sessionId: string;
@@ -53,6 +57,8 @@ export async function runOracleIntelligenceService({
   telemetry?: IntelligenceTelemetrySink;
   environment?: Readonly<Record<string, string | undefined>>;
   signal?: AbortSignal;
+  qualificationMode?: boolean;
+  diagnostics?: PreviewIntelligenceDiagnosticRecorder;
 }): Promise<IntelligenceServiceResult | null> {
   const validatedRequest = validateIntelligenceRequest(candidateRequest);
   if (!validatedRequest.ok) return null;
@@ -91,7 +97,9 @@ export async function runOracleIntelligenceService({
   }
 
   const startedAt = Date.now();
-  const generated = await generateWithTimeout({ provider, request, parentSignal: signal });
+  const generated = qualificationMode
+    ? await generateWithQualificationTimeout({ provider, request, parentSignal: signal, diagnostics })
+    : await generateWithTimeout({ provider, request, parentSignal: signal, diagnostics });
   const latencyMs = Date.now() - startedAt;
   if (!generated.ok) {
     const reason = providerFailureReason(generated.kind);
@@ -112,7 +120,9 @@ export async function runOracleIntelligenceService({
 
   // Provider adapters validate, but the service validates again at the final
   // server trust boundary before building application-owned metadata.
+  const finalValidationStartedAt = performance.now();
   const localValidation = validateProviderOutput(generated.output, request.oracleId);
+  diagnostics?.recordFinalServiceValidation(performance.now() - finalValidationStartedAt);
   if (!localValidation.ok) {
     await telemetry.record({ ...metadata, event: "validation_error", latencyMs, outcome: "validation_rejection", failureCode: "validation_rejection" });
     return fallback(request, "validation_rejection");
