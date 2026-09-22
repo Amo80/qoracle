@@ -23,7 +23,14 @@ const PROTECTED_ROOTS = [
 ] as const;
 
 const PHASE_2_PROTECTED_BASELINE =
-  "06ce5bcc6c974f0f356344d5633eb16d89a65942bd57fd667b2b8dbf66e01614";
+  "8d36eab8b244cd866af6e241a6fd4aa02f30b82cad5f02a7ae8b360315670f6d";
+
+function canonicalizeText(bytes: Buffer) {
+  return bytes
+    .toString("utf8")
+    .replace(/^\uFEFF/, "")
+    .replace(/\r\n?/g, "\n");
+}
 
 function walk(path: string): string[] {
   if (statSync(path).isFile()) return [path];
@@ -47,19 +54,19 @@ describe("Phase 2 protected production baseline", () => {
     for (const file of files) {
       digest.update(file.relative);
       digest.update("\0");
-      const bytes = readFileSync(file.absolute);
+      const source = canonicalizeText(readFileSync(file.absolute));
       // Phase 4C permits only these four presentation-copy substitutions in
       // OracleQR. Canonicalize them back to the protected Phase 2 wording so
-      // every other byte of the authoritative engine remains protected.
-      const protectedBytes = file.relative === "components/OracleQR.tsx"
-        ? Buffer.from(
-            bytes.toString("utf8")
+      // every other canonical source character remains protected. UTF-8 BOMs
+      // are removed and CRLF/lone CR are normalized to LF before hashing so
+      // checkout settings cannot change the protected digest.
+      const protectedSource = file.relative === "components/OracleQR.tsx"
+        ? source
               .split("Dungeon Oracle music could not autoplay:").join("D&D Oracle music could not autoplay:")
               .split("The QRystal Balls • DUNGEON").join("The QRystal Balls • D&D")
               .split("✦ Theme: Dungeon").join("⚙ Theme: D&D")
-          )
-        : bytes;
-      digest.update(protectedBytes);
+        : source;
+      digest.update(protectedSource, "utf8");
       digest.update("\0");
     }
 
