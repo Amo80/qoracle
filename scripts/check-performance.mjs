@@ -4,7 +4,7 @@ import { join, relative } from "node:path";
 const root = process.cwd();
 const publicRoot = join(root, "public");
 const budgets = {
-  publicBytes: 175 * 1024 * 1024,
+  publicBytes: 180 * 1024 * 1024,
   largestAssetBytes: 11 * 1024 * 1024,
   globalCssBytes: 500 * 1024,
   livingOracleCssBytes: 24 * 1024,
@@ -22,6 +22,11 @@ const budgets = {
   dragon3DD20Bytes: 4.5 * 1024 * 1024,
   dragon3DAltarBytes: 4.5 * 1024 * 1024,
   dragon3DReviewCeilingBytes: 16 * 1024 * 1024,
+  chaos3DPedestalBytes: 4.75 * 1024 * 1024,
+  chaos3DRiftBytes: 2.75 * 1024 * 1024,
+  chaos3DVortexBytes: 0.5 * 1024 * 1024,
+  chaos3DInitialTransferBytes: 8 * 1024 * 1024,
+  chaos3DReviewCeilingBytes: 9 * 1024 * 1024,
 };
 
 const characterAssets = [
@@ -44,6 +49,9 @@ const love3DPodium = "public/characters/love/v1/podium.glb";
 const dragon3DBase = "public/characters/dragon/v1/dragon.glb";
 const dragon3DD20 = "public/characters/dragon/v1/mystic-d20.glb";
 const dragon3DAltar = "public/characters/dragon/v1/arcane-altar.glb";
+const chaos3DPedestal = "public/characters/chaos/v1/pedestal.glb";
+const chaos3DRift = "public/characters/chaos/v1/rift-crystal.glb";
+const chaos3DVortex = "public/characters/chaos/v1/vortex.webp";
 
 async function walk(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -95,6 +103,10 @@ const dragon3DBaseBytes = (await stat(join(root, dragon3DBase))).size;
 const dragon3DD20Bytes = (await stat(join(root, dragon3DD20))).size;
 const dragon3DAltarBytes = (await stat(join(root, dragon3DAltar))).size;
 const dragon3DInitialTransferBytes = dragon3DBaseBytes + dragon3DD20Bytes + dragon3DAltarBytes;
+const chaos3DPedestalBytes = (await stat(join(root, chaos3DPedestal))).size;
+const chaos3DRiftBytes = (await stat(join(root, chaos3DRift))).size;
+const chaos3DVortexBytes = (await stat(join(root, chaos3DVortex))).size;
+const chaos3DInitialTransferBytes = chaos3DPedestalBytes + chaos3DRiftBytes + chaos3DVortexBytes;
 
 const checks = [
   {
@@ -160,6 +172,11 @@ const checks = [
   { name: "Dragon 3D Mystic D20", actual: dragon3DD20Bytes, limit: budgets.dragon3DD20Bytes, detail: formatMiB(dragon3DD20Bytes) },
   { name: "Dragon 3D Arcane Altar", actual: dragon3DAltarBytes, limit: budgets.dragon3DAltarBytes, detail: formatMiB(dragon3DAltarBytes) },
   { name: "Dungeon 3D review ceiling", actual: dragon3DInitialTransferBytes, limit: budgets.dragon3DReviewCeilingBytes, detail: formatMiB(dragon3DInitialTransferBytes) },
+  { name: "Chaos 3D pedestal", actual: chaos3DPedestalBytes, limit: budgets.chaos3DPedestalBytes, detail: formatMiB(chaos3DPedestalBytes) },
+  { name: "Chaos 3D shared Rift", actual: chaos3DRiftBytes, limit: budgets.chaos3DRiftBytes, detail: formatMiB(chaos3DRiftBytes) },
+  { name: "Chaos 3D vortex", actual: chaos3DVortexBytes, limit: budgets.chaos3DVortexBytes, detail: formatMiB(chaos3DVortexBytes) },
+  { name: "Chaos 3D initial transfer target", actual: chaos3DInitialTransferBytes, limit: budgets.chaos3DInitialTransferBytes, detail: formatMiB(chaos3DInitialTransferBytes) },
+  { name: "Chaos 3D review ceiling", actual: chaos3DInitialTransferBytes, limit: budgets.chaos3DReviewCeilingBytes, detail: formatMiB(chaos3DInitialTransferBytes) },
 ];
 
 let failed = false;

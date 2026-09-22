@@ -39,3 +39,9 @@ export function isDragon3DEnabled(
 ) {
   return environment.DRAGON_3D_V4C_ENABLED?.trim().toLowerCase() === "true";
 }
+
+export function isChaos3DEnabled(
+  environment: ChamberEnvironment = process.env
+) {
+  return environment.CHAOS_3D_V4D_ENABLED?.trim().toLowerCase() === "true";
+}

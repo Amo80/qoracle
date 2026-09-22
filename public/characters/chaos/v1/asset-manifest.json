@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "presentation": "layered-front-vortex-with-transparent-shell",
+  "outputs": [
+    {
+      "path": "/characters/chaos/v1/pedestal.glb",
+      "bytes": 4656236,
+      "triangles": 113108,
+      "sha256": "f059bb7c7c5b6fb330ec2ff25ab3239e82f077f36b0300731edb680c233c8548"
+    },
+    {
+      "path": "/characters/chaos/v1/rift-crystal.glb",
+      "bytes": 2774648,
+      "triangles": 44872,
+      "sha256": "6d02326d933af02b8321a22f959136667a904a4dd8517328a47ccf5daf6803ef"
+    },
+    {
+      "path": "/characters/chaos/v1/vortex.webp",
+      "bytes": 404230,
+      "dimensions": "1024x1024",
+      "sha256": "965323df5e6b41f2d4756b2782eb9eeb04b7f9f879ca11b3412af66810d748d5"
+    }
+  ],
+  "optimization": {
+    "pedestalSimplifyRatio": 0.1,
+    "riftSimplifyRatio": 0.1,
+    "simplifyError": 0.001,
+    "textureFormat": "webp",
+    "textureMaximum": 2048,
+    "vortexResolution": 1024,
+    "fragmentInstancesDesktop": 6,
+    "fragmentInstancesNarrow": 5
+  }
+}
