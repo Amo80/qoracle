@@ -320,6 +320,227 @@ html[data-living-oracle-id="jester"][data-living-oracle-phase="returning"]
   }
 }
 
+/* Phase 4C: fixed, continuous Dungeon chamber. These rules activate only
+   after all three independently loaded objects are ready. */
+.dragon-3d-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.dragon-3d-stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.theme-dnd[data-dragon3d-status="ready"] {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  min-height: 100dvh !important;
+  overflow: hidden !important;
+}
+
+html:has(.theme-dnd[data-dragon3d-status="ready"]),
+html:has(.theme-dnd[data-dragon3d-status="ready"]) body {
+  width: 100% !important;
+  height: 100dvh !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  overscroll-behavior: none;
+}
+
+.theme-dnd[data-dragon3d-status="ready"] .dragon-3d-stage {
+  opacity: 1;
+}
+
+.theme-dnd[data-dragon3d-status="error"] .dragon-3d-stage {
+  display: none;
+}
+
+.theme-dnd[data-dragon3d-status="ready"] .dnd-stage {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  max-width: none !important;
+  height: 100dvh !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: clamp(3.75rem, 7vh, 5rem) 1rem clamp(0.75rem, 2vh, 1.25rem) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+}
+
+.theme-dnd[data-dragon3d-status="ready"]
+  :is(
+    .dnd-crystal,
+    .dnd-floating-dice,
+    .dnd-instruction,
+    .dnd-magic-glow,
+    .dnd-magic-runes,
+    .dnd-loading-dots,
+    .dnd-answer-overlay
+  ) {
+  display: none !important;
+}
+
+.theme-dnd[data-dragon3d-status="ready"]
+  :is(.dnd-question-box, .dnd-reveal-message, .dnd-answer-card, .dnd-again-button) {
+  position: relative;
+  z-index: 4;
+  pointer-events: auto;
+}
+
+.theme-dnd[data-dragon3d-status="ready"] .dnd-topbar,
+.theme-dnd[data-dragon3d-status="ready"] .dnd-stage > :is(.dnd-eyebrow, .dnd-title, .dnd-subtitle) {
+  position: relative !important;
+  z-index: 3 !important;
+  flex: 0 0 auto !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.theme-dnd[data-dragon3d-status="ready"] .dnd-topbar {
+  position: absolute !important;
+  inset: 0.6rem 0.75rem auto !important;
+  width: auto !important;
+  margin: 0 !important;
+}
+
+.theme-dnd[data-dragon3d-status="ready"] .dnd-eyebrow {
+  margin: 0 0 0.25rem !important;
+}
+
+.theme-dnd[data-dragon3d-status="ready"] .dnd-title {
+  margin: 0 !important;
+  font-size: clamp(2.25rem, 5vw, 4.25rem) !important;
+  line-height: 0.9 !important;
+}
+
+.theme-dnd[data-dragon3d-status="ready"] .dnd-subtitle {
+  margin: 0.45rem 0 0 !important;
+}
+
+.theme-dnd[data-dragon3d-status="ready"] .dnd-question-box,
+.theme-dnd[data-dragon3d-status="ready"] .dnd-reveal-message,
+.theme-dnd[data-dragon3d-status="ready"] .dnd-answer-card {
+  margin-top: auto !important;
+  width: min(92vw, 540px) !important;
+  padding: 0.8rem 0.9rem !important;
+  border: 1px solid rgba(203, 155, 255, 0.42);
+  border-radius: 18px;
+  background: rgba(15, 5, 28, 0.78);
+  box-shadow: 0 14px 50px rgba(5, 0, 14, 0.5);
+  backdrop-filter: blur(10px);
+}
+
+.theme-dnd[data-dragon3d-status="ready"] .dnd-question-box {
+  display: grid !important;
+  gap: 0.65rem !important;
+}
+
+.theme-dnd[data-dragon3d-status="ready"] .dnd-answer-card {
+  max-height: 25vh !important;
+  overflow: auto !important;
+}
+
+.theme-dnd[data-dragon3d-status="ready"] .dnd-again-button {
+  width: min(88vw, 500px) !important;
+  min-height: 48px !important;
+  margin-top: 0.65rem !important;
+}
+
+.theme-dnd[data-dragon3d-status="ready"] .dnd-closing {
+  display: none;
+}
+
+.theme-dnd[data-dragon3d-status="ready"] .dnd-stage > .small {
+  position: relative;
+  z-index: 3;
+  flex: 0 0 auto;
+  margin: 0.35rem 0 0 !important;
+}
+
+@media (max-width: 700px) {
+  .theme-dnd[data-dragon3d-status="ready"] .dnd-stage {
+    padding: 4.7rem 0.65rem max(0.65rem, env(safe-area-inset-bottom)) !important;
+  }
+
+  .theme-dnd[data-dragon3d-status="ready"] .dnd-topbar {
+    inset: max(0.4rem, env(safe-area-inset-top)) 0.5rem auto !important;
+  }
+
+  .theme-dnd[data-dragon3d-status="ready"] .dnd-brand {
+    font-size: 0.9rem !important;
+  }
+
+  .theme-dnd[data-dragon3d-status="ready"] .dnd-back,
+  .theme-dnd[data-dragon3d-status="ready"] .dnd-theme-badge {
+    min-height: 36px !important;
+    padding: 0.35rem 0.65rem !important;
+    font-size: 0.72rem !important;
+  }
+
+  .theme-dnd[data-dragon3d-status="ready"] .dnd-eyebrow {
+    margin-top: 0 !important;
+    font-size: 0.64rem !important;
+    letter-spacing: 0.14rem !important;
+  }
+
+  .theme-dnd[data-dragon3d-status="ready"] .dnd-title {
+    font-size: clamp(2rem, 10vw, 3rem) !important;
+  }
+
+  .theme-dnd[data-dragon3d-status="ready"] .dnd-subtitle {
+    margin-top: 0.25rem !important;
+    font-size: 0.9rem !important;
+  }
+
+  .theme-dnd[data-dragon3d-status="ready"]
+    :is(.dnd-question-box, .dnd-reveal-message, .dnd-answer-card) {
+    width: min(94vw, 520px) !important;
+    padding: 0.65rem 0.7rem !important;
+  }
+
+  .theme-dnd[data-dragon3d-status="ready"] .dnd-button {
+    width: 100% !important;
+    min-height: 46px !important;
+    font-size: 0.9rem !important;
+  }
+
+  .theme-dnd[data-dragon3d-status="ready"] .dnd-answer-card {
+    max-height: 24vh !important;
+  }
+}
+
+@media (max-height: 720px) {
+  .theme-dnd[data-dragon3d-status="ready"] .dnd-stage {
+    padding-top: 3.4rem !important;
+  }
+
+  .theme-dnd[data-dragon3d-status="ready"] .dnd-subtitle,
+  .theme-dnd[data-dragon3d-status="ready"] .dnd-stage > .small {
+    display: none;
+  }
+
+  .theme-dnd[data-dragon3d-status="ready"] .dnd-answer-card {
+    max-height: 24vh;
+  }
+}
+
 /* The remaining Oracles adopt only the shared, lightweight lifecycle vocabulary. */
 html[data-living-oracle="true"]
   :is(
@@ -382,7 +603,8 @@ html[data-living-oracle-phase="asset-error"] .living-oracle-aura {
     display: none !important;
   }
 
-  .love-3d-stage { display: none !important; }
+  .love-3d-stage,
+  .dragon-3d-stage { display: none !important; }
 }
 
 html[data-motion="reduced"] .living-oracle-aura,

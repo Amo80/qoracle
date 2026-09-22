@@ -20,10 +20,12 @@ import {
 import { getCharacterManifest } from "@/lib/living-oracle/manifests";
 import { shouldLoadJester3D } from "@/lib/living-oracle/jester3d";
 import { shouldLoadLove3D } from "@/lib/living-oracle/love3d";
+import { shouldLoadDragon3D } from "@/lib/living-oracle/dragon3d";
 import { detectWebGLSupport } from "@/lib/living-oracle/webgl";
 import { getOracle, ORACLE_IDS, type OracleId } from "@/lib/oracles/registry";
 import { Jester3DErrorBoundary } from "./jester/Jester3DErrorBoundary";
 import { Love3DErrorBoundary } from "./love/Love3DErrorBoundary";
+import { Dragon3DErrorBoundary } from "./dragon/Dragon3DErrorBoundary";
 
 const LazyJester3DStage = lazy(() =>
   import("./jester/Jester3DStage").then((module) => ({
@@ -33,6 +35,10 @@ const LazyJester3DStage = lazy(() =>
 
 const LazyLove3DStage = lazy(() =>
   import("./love/Love3DStage").then((module) => ({ default: module.Love3DStage }))
+);
+
+const LazyDragon3DStage = lazy(() =>
+  import("./dragon/Dragon3DStage").then((module) => ({ default: module.Dragon3DStage }))
 );
 
 const BUSY_SELECTOR = [
@@ -63,9 +69,11 @@ function hasRenderedAnswer(page: HTMLElement) {
 export function LivingOracleLayer({
   jester3DEnabled = false,
   love3DEnabled = false,
+  dragon3DEnabled = false,
 }: {
   jester3DEnabled?: boolean;
   love3DEnabled?: boolean;
+  dragon3DEnabled?: boolean;
 }) {
   const { motion } = useExperiencePreferences();
   const [oracleId, setOracleId] = useState<OracleId | null>(null);
@@ -77,11 +85,15 @@ export function LivingOracleLayer({
   >("idle");
   const [jesterTarget, setJesterTarget] = useState<HTMLElement | null>(null);
   const [loveTarget, setLoveTarget] = useState<HTMLElement | null>(null);
+  const [dragonTarget, setDragonTarget] = useState<HTMLElement | null>(null);
   const [webGLSupported, setWebGLSupported] = useState(false);
   const [jester3DStatus, setJester3DStatus] = useState<
     "idle" | "loading" | "ready" | "error"
   >("idle");
   const [love3DStatus, setLove3DStatus] = useState<
+    "idle" | "loading" | "ready" | "error"
+  >("idle");
+  const [dragon3DStatus, setDragon3DStatus] = useState<
     "idle" | "loading" | "ready" | "error"
   >("idle");
   const characterRef = useRef(character);
@@ -125,6 +137,7 @@ export function LivingOracleLayer({
         setOracleId(null);
         setJesterTarget(null);
         setLoveTarget(null);
+        setDragonTarget(null);
         root.removeAttribute("data-living-oracle");
         root.removeAttribute("data-living-oracle-id");
         root.removeAttribute("data-living-oracle-phase");
@@ -143,6 +156,10 @@ export function LivingOracleLayer({
       });
       setLoveTarget((current) => {
         const target = detected === "love" ? page : null;
+        return current === target ? current : target;
+      });
+      setDragonTarget((current) => {
+        const target = detected === "dnd" ? page : null;
         return current === target ? current : target;
       });
       root.dataset.livingOracle = "true";
@@ -288,12 +305,12 @@ export function LivingOracleLayer({
   }, [oracleId, transition]);
 
   useEffect(() => {
-    if ((!jester3DEnabled && !love3DEnabled) || motion === "reduced") {
+    if ((!jester3DEnabled && !love3DEnabled && !dragon3DEnabled) || motion === "reduced") {
       setWebGLSupported(false);
       return;
     }
     setWebGLSupported(detectWebGLSupport(document));
-  }, [jester3DEnabled, love3DEnabled, motion]);
+  }, [dragon3DEnabled, jester3DEnabled, love3DEnabled, motion]);
 
   const loadJester3D = shouldLoadJester3D({
     oracleId,
@@ -306,6 +323,13 @@ export function LivingOracleLayer({
     oracleId,
     livingOracleEnabled: true,
     love3DEnabled,
+    motion,
+    webGLSupported,
+  });
+  const loadDragon3D = shouldLoadDragon3D({
+    oracleId,
+    livingOracleEnabled: true,
+    dragon3DEnabled,
     motion,
     webGLSupported,
   });
@@ -332,6 +356,16 @@ export function LivingOracleLayer({
     setLove3DStatus(loadLove3D ? "loading" : "idle");
   }, [loadLove3D, loveTarget]);
 
+  useEffect(() => {
+    if (!dragonTarget) return;
+    dragonTarget.dataset.dragon3dStatus = dragon3DStatus;
+    return () => { delete dragonTarget.dataset.dragon3dStatus; };
+  }, [dragon3DStatus, dragonTarget]);
+
+  useEffect(() => {
+    setDragon3DStatus(loadDragon3D ? "loading" : "idle");
+  }, [dragonTarget, loadDragon3D]);
+
   const handleJesterReady = useCallback(() => {
     setJester3DStatus("ready");
     transition({ type: "ASSET_READY" });
@@ -349,6 +383,16 @@ export function LivingOracleLayer({
 
   const handleLoveError = useCallback(() => {
     setLove3DStatus("error");
+    transition({ type: "ASSET_ERROR" });
+  }, [transition]);
+
+  const handleDragonReady = useCallback(() => {
+    setDragon3DStatus("ready");
+    transition({ type: "ASSET_READY" });
+  }, [transition]);
+
+  const handleDragonError = useCallback(() => {
+    setDragon3DStatus("error");
     transition({ type: "ASSET_ERROR" });
   }, [transition]);
 
@@ -389,6 +433,18 @@ export function LivingOracleLayer({
             />
           </Suspense>
         </Love3DErrorBoundary>
+      ) : null}
+      {loadDragon3D && dragonTarget && dragon3DStatus !== "error" ? (
+        <Dragon3DErrorBoundary onError={handleDragonError}>
+          <Suspense fallback={null}>
+            <LazyDragon3DStage
+              target={dragonTarget}
+              phase={character.phase}
+              onReady={handleDragonReady}
+              onError={handleDragonError}
+            />
+          </Suspense>
+        </Dragon3DErrorBoundary>
       ) : null}
       <p className="qb-visually-hidden" aria-live="polite" aria-atomic="true">
         {oracle.name} Oracle: {character.phase.replace("-", " ")}

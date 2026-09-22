@@ -4,7 +4,7 @@ import { join, relative } from "node:path";
 const root = process.cwd();
 const publicRoot = join(root, "public");
 const budgets = {
-  publicBytes: 160 * 1024 * 1024,
+  publicBytes: 175 * 1024 * 1024,
   largestAssetBytes: 11 * 1024 * 1024,
   globalCssBytes: 500 * 1024,
   livingOracleCssBytes: 24 * 1024,
@@ -18,6 +18,10 @@ const budgets = {
   love3DPodiumBytes: 4.5 * 1024 * 1024,
   love3DInitialTransferBytes: 12 * 1024 * 1024,
   love3DReviewCeilingBytes: 14 * 1024 * 1024,
+  dragon3DBaseBytes: 8 * 1024 * 1024,
+  dragon3DD20Bytes: 4.5 * 1024 * 1024,
+  dragon3DAltarBytes: 4.5 * 1024 * 1024,
+  dragon3DReviewCeilingBytes: 16 * 1024 * 1024,
 };
 
 const characterAssets = [
@@ -37,6 +41,9 @@ const jester3DAnimations = [
 const love3DBase = "public/characters/love/v1/love-base.glb";
 const love3DHeart = "public/characters/love/v1/heart-crystal.glb";
 const love3DPodium = "public/characters/love/v1/podium.glb";
+const dragon3DBase = "public/characters/dragon/v1/dragon.glb";
+const dragon3DD20 = "public/characters/dragon/v1/mystic-d20.glb";
+const dragon3DAltar = "public/characters/dragon/v1/arcane-altar.glb";
 
 async function walk(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -84,6 +91,10 @@ const love3DBaseBytes = (await stat(join(root, love3DBase))).size;
 const love3DHeartBytes = (await stat(join(root, love3DHeart))).size;
 const love3DPodiumBytes = (await stat(join(root, love3DPodium))).size;
 const love3DInitialTransferBytes = love3DBaseBytes + love3DHeartBytes + love3DPodiumBytes;
+const dragon3DBaseBytes = (await stat(join(root, dragon3DBase))).size;
+const dragon3DD20Bytes = (await stat(join(root, dragon3DD20))).size;
+const dragon3DAltarBytes = (await stat(join(root, dragon3DAltar))).size;
+const dragon3DInitialTransferBytes = dragon3DBaseBytes + dragon3DD20Bytes + dragon3DAltarBytes;
 
 const checks = [
   {
@@ -145,6 +156,10 @@ const checks = [
   { name: "Love 3D podium", actual: love3DPodiumBytes, limit: budgets.love3DPodiumBytes, detail: formatMiB(love3DPodiumBytes) },
   { name: "Love 3D initial transfer target", actual: love3DInitialTransferBytes, limit: budgets.love3DInitialTransferBytes, detail: formatMiB(love3DInitialTransferBytes) },
   { name: "Love 3D review ceiling", actual: love3DInitialTransferBytes, limit: budgets.love3DReviewCeilingBytes, detail: formatMiB(love3DInitialTransferBytes) },
+  { name: "Dragon 3D guardian", actual: dragon3DBaseBytes, limit: budgets.dragon3DBaseBytes, detail: formatMiB(dragon3DBaseBytes) },
+  { name: "Dragon 3D Mystic D20", actual: dragon3DD20Bytes, limit: budgets.dragon3DD20Bytes, detail: formatMiB(dragon3DD20Bytes) },
+  { name: "Dragon 3D Arcane Altar", actual: dragon3DAltarBytes, limit: budgets.dragon3DAltarBytes, detail: formatMiB(dragon3DAltarBytes) },
+  { name: "Dungeon 3D review ceiling", actual: dragon3DInitialTransferBytes, limit: budgets.dragon3DReviewCeilingBytes, detail: formatMiB(dragon3DInitialTransferBytes) },
 ];
 
 let failed = false;

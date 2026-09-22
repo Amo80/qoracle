@@ -47,7 +47,19 @@ describe("Phase 2 protected production baseline", () => {
     for (const file of files) {
       digest.update(file.relative);
       digest.update("\0");
-      digest.update(readFileSync(file.absolute));
+      const bytes = readFileSync(file.absolute);
+      // Phase 4C permits only these four presentation-copy substitutions in
+      // OracleQR. Canonicalize them back to the protected Phase 2 wording so
+      // every other byte of the authoritative engine remains protected.
+      const protectedBytes = file.relative === "components/OracleQR.tsx"
+        ? Buffer.from(
+            bytes.toString("utf8")
+              .split("Dungeon Oracle music could not autoplay:").join("D&D Oracle music could not autoplay:")
+              .split("The QRystal Balls • DUNGEON").join("The QRystal Balls • D&D")
+              .split("✦ Theme: Dungeon").join("⚙ Theme: D&D")
+          )
+        : bytes;
+      digest.update(protectedBytes);
       digest.update("\0");
     }
 

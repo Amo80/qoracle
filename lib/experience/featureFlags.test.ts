@@ -1,11 +1,21 @@
 import { describe, expect, it } from "vitest";
 import {
+  isDragon3DEnabled,
   isJester3DEnabled,
   isLove3DEnabled,
   isLivingOracleEnabled,
   isOracleChamberEnabled,
   shouldRenderOracleChamber,
 } from "./featureFlags";
+
+describe("Dragon 3D Phase 4C feature flag", () => {
+  it("is disabled by default and accepts only explicit true", () => {
+    expect(isDragon3DEnabled({})).toBe(false);
+    expect(isDragon3DEnabled({ DRAGON_3D_V4C_ENABLED: "false" })).toBe(false);
+    expect(isDragon3DEnabled({ DRAGON_3D_V4C_ENABLED: "1" })).toBe(false);
+    expect(isDragon3DEnabled({ DRAGON_3D_V4C_ENABLED: " TRUE " })).toBe(true);
+  });
+});
 
 describe("Oracle Chamber feature flag", () => {
   it("is disabled when the environment value is missing", () => {

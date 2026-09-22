@@ -33,3 +33,9 @@ export function isLove3DEnabled(
 ) {
   return environment.LOVE_3D_V4B_ENABLED?.trim().toLowerCase() === "true";
 }
+
+export function isDragon3DEnabled(
+  environment: ChamberEnvironment = process.env
+) {
+  return environment.DRAGON_3D_V4C_ENABLED?.trim().toLowerCase() === "true";
+}

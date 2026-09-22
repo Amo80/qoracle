@@ -10,6 +10,7 @@ import SiteFooter from "@/components/SiteFooter";
 import { ExperiencePreferencesProvider } from "@/components/experience/ExperiencePreferences";
 import { LivingOracleLayer } from "@/components/living-oracle/LivingOracleLayer";
 import {
+  isDragon3DEnabled,
   isJester3DEnabled,
   isLove3DEnabled,
   isLivingOracleEnabled,
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const livingOracleEnabled = isLivingOracleEnabled();
   const jester3DEnabled = isJester3DEnabled();
   const love3DEnabled = isLove3DEnabled();
+  const dragon3DEnabled = isDragon3DEnabled();
 
   return (
     <html lang="en">
@@ -34,6 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <LivingOracleLayer
               jester3DEnabled={jester3DEnabled}
               love3DEnabled={love3DEnabled}
+              dragon3DEnabled={dragon3DEnabled}
             />
           ) : null}
           <SiteFooter />

@@ -54,7 +54,7 @@ if (activeTheme === "eclipse") {
     try {
       await dndMusicRef.current.play();
     } catch (error) {
-      console.log("D&D Oracle music could not autoplay:", error);
+      console.log("Dungeon Oracle music could not autoplay:", error);
     }
   }
 
@@ -466,11 +466,11 @@ if (activeTheme === "dnd") {
             </button>
 
             <div className="dnd-brand">
-              The QRystal Balls • D&D
+              The QRystal Balls • DUNGEON
             </div>
 
             <div className="dnd-theme-badge">
-              ⚙ Theme: D&D
+              ✦ Theme: Dungeon
             </div>
           </div>
 
@@ -550,7 +550,7 @@ if (activeTheme === "dnd") {
         <section className="dnd-stage dnd-stage-two">
 
           <p className="dnd-eyebrow">
-            The QRystal Balls • D&D
+            The QRystal Balls • DUNGEON
           </p>
 
           <h1 className="dnd-title">
@@ -616,7 +616,7 @@ if (activeTheme === "dnd") {
         <section className="dnd-stage dnd-stage-three">
 
           <p className="dnd-eyebrow">
-            The QRystal Balls • D&D
+            The QRystal Balls • DUNGEON
           </p>
 
           <h1 className="dnd-title">

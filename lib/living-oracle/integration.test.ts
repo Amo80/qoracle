@@ -24,6 +24,14 @@ describe("Living Oracle integration contracts", () => {
     expect(read(".env.example")).toContain("JESTER_3D_V4A_ENABLED=false");
   });
 
+  it("keeps Phase 4C client-only, internal-dnd-only, and independently gated", () => {
+    expect(layoutSource).toContain("isDragon3DEnabled()");
+    expect(layoutSource).not.toMatch(/from ["']three/);
+    expect(layerSource).toContain('import("./dragon/Dragon3DStage")');
+    expect(layerSource).toContain('detected === "dnd"');
+    expect(read(".env.example")).toContain("DRAGON_3D_V4C_ENABLED=false");
+  });
+
   it("provides one shared Return to Homepage control for every detected Oracle", () => {
     expect(layerSource).toContain('href="/"');
     expect(layerSource).toContain("Return to Homepage");
