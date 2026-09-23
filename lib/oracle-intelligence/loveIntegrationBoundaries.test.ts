@@ -43,7 +43,7 @@ describe("Love intelligence integration boundaries", () => {
   });
 
   it("keeps the remaining unintegrated Oracles outside visitor intelligence", () => {
-    for (const stage of ["chaos/Chaos3DStage.tsx", "eclipse/Eclipse3DStage.tsx"]) {
+    for (const stage of ["eclipse/Eclipse3DStage.tsx"]) {
       expect(read(`components/living-oracle/${stage}`)).not.toContain("oracle-intelligence");
     }
   });

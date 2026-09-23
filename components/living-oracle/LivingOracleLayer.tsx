@@ -29,7 +29,7 @@ import { getOracle, ORACLE_IDS, type OracleId } from "@/lib/oracles/registry";
 import { normalizeClientPresentation } from "@/lib/oracle-intelligence/schema";
 import type { JesterPresentation } from "@/lib/oracle-intelligence/types";
 import type { LovePresentation } from "@/lib/oracle-intelligence/types";
-import type { DungeonPresentation } from "@/lib/oracle-intelligence/types";
+import type { DungeonPresentation, ChaosPresentation } from "@/lib/oracle-intelligence/types";
 import {
   JESTER_PRESENTATION_EVENT,
   JESTER_PRESENTATION_RESET_EVENT,
@@ -42,6 +42,10 @@ import {
   DUNGEON_PRESENTATION_EVENT,
   DUNGEON_PRESENTATION_RESET_EVENT,
 } from "@/lib/oracle-intelligence/dungeonIntegration";
+import {
+  CHAOS_PRESENTATION_EVENT,
+  CHAOS_PRESENTATION_RESET_EVENT,
+} from "@/lib/oracle-intelligence/chaosIntegration";
 import { Jester3DErrorBoundary } from "./jester/Jester3DErrorBoundary";
 import { Love3DErrorBoundary } from "./love/Love3DErrorBoundary";
 import { Dragon3DErrorBoundary } from "./dragon/Dragon3DErrorBoundary";
@@ -127,9 +131,11 @@ export function LivingOracleLayer({
   const [jesterPresentation, setJesterPresentation] = useState<JesterPresentation | null>(null);
   const [lovePresentation, setLovePresentation] = useState<LovePresentation | null>(null);
   const [dungeonPresentation, setDungeonPresentation] = useState<DungeonPresentation | null>(null);
+  const [chaosPresentation, setChaosPresentation] = useState<ChaosPresentation | null>(null);
   const [jesterIntelligencePending, setJesterIntelligencePending] = useState(false);
   const [loveIntelligencePending, setLoveIntelligencePending] = useState(false);
   const [dungeonIntelligencePending, setDungeonIntelligencePending] = useState(false);
+  const [chaosIntelligencePending, setChaosIntelligencePending] = useState(false);
   const [jester3DStatus, setJester3DStatus] = useState<
     "idle" | "loading" | "ready" | "error"
   >("idle");
@@ -176,6 +182,7 @@ export function LivingOracleLayer({
       setJesterPresentation(null);
       setLovePresentation(null);
       setDungeonPresentation(null);
+      setChaosPresentation(null);
     },
     [cancelSchedules, transition]
   );
@@ -201,6 +208,23 @@ export function LivingOracleLayer({
     },
     [transition]
   );
+
+  useEffect(() => {
+    const onPresentation = (event: Event) => {
+      if (!(event instanceof CustomEvent) || oracleRef.current !== "chaos") return;
+      const detail = event.detail as { oracleId?: unknown; presentation?: unknown } | null;
+      if (detail?.oracleId !== "chaos") return;
+      const trusted = normalizeClientPresentation(detail.presentation, "chaos");
+      if (trusted?.oracleId === "chaos") setChaosPresentation(trusted);
+    };
+    const onReset = () => setChaosPresentation(null);
+    window.addEventListener(CHAOS_PRESENTATION_EVENT, onPresentation);
+    window.addEventListener(CHAOS_PRESENTATION_RESET_EVENT, onReset);
+    return () => {
+      window.removeEventListener(CHAOS_PRESENTATION_EVENT, onPresentation);
+      window.removeEventListener(CHAOS_PRESENTATION_RESET_EVENT, onReset);
+    };
+  }, []);
 
   useEffect(() => {
     return cancelSchedules;
@@ -274,6 +298,7 @@ export function LivingOracleLayer({
         setJesterIntelligencePending(false);
         setLoveIntelligencePending(false);
         setDungeonIntelligencePending(false);
+        setChaosIntelligencePending(false);
         root.removeAttribute("data-living-oracle");
         root.removeAttribute("data-living-oracle-id");
         root.removeAttribute("data-living-oracle-phase");
@@ -317,6 +342,9 @@ export function LivingOracleLayer({
       );
       setDungeonIntelligencePending(
         detected === "dnd" && page.dataset.dungeonIntelligence === "pending"
+      );
+      setChaosIntelligencePending(
+        detected === "chaos" && page.dataset.chaosIntelligence === "pending"
       );
 
       const busy = Boolean(page.querySelector(BUSY_SELECTOR));
@@ -408,7 +436,7 @@ export function LivingOracleLayer({
       childList: true,
       subtree: true,
       attributes: true,
-      attributeFilter: ["class", "data-jester-intelligence", "data-love-intelligence", "data-dungeon-intelligence"],
+      attributeFilter: ["class", "data-jester-intelligence", "data-love-intelligence", "data-dungeon-intelligence", "data-chaos-intelligence"],
     });
     document.addEventListener("focusin", onFocusIn);
     document.addEventListener("focusout", onFocusOut);
@@ -655,6 +683,7 @@ export function LivingOracleLayer({
             <LazyChaos3DStage
               target={chaosTarget}
               phase={character.phase}
+              presentation={chaosPresentation}
               onReady={handleChaosReady}
               onError={handleChaosError}
             />
@@ -670,10 +699,10 @@ export function LivingOracleLayer({
       ) : null}
       <p
         className="qb-visually-hidden"
-        aria-live={jesterIntelligencePending || loveIntelligencePending || dungeonIntelligencePending ? "off" : "polite"}
+        aria-live={jesterIntelligencePending || loveIntelligencePending || dungeonIntelligencePending || chaosIntelligencePending ? "off" : "polite"}
         aria-atomic="true"
       >
-        {jesterIntelligencePending || loveIntelligencePending || dungeonIntelligencePending ? "" : `${oracle.name} Oracle: ${character.phase.replace("-", " ")}`}
+        {jesterIntelligencePending || loveIntelligencePending || dungeonIntelligencePending || chaosIntelligencePending ? "" : `${oracle.name} Oracle: ${character.phase.replace("-", " ")}`}
       </p>
     </div>
   );

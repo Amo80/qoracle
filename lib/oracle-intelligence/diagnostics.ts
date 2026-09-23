@@ -1,6 +1,6 @@
 export type QualificationReasoningProfile = "default" | "low" | "none";
 export type QualificationReasoningEffort = "low" | "none";
-export type QualificationProfile = QualificationReasoningProfile | "full-standard" | "compact-standard" | "jester-integration" | "love-integration" | "dungeon-integration";
+export type QualificationProfile = QualificationReasoningProfile | "full-standard" | "compact-standard" | "jester-integration" | "love-integration" | "dungeon-integration" | "chaos-integration";
 
 export type CompletedProviderMetadata = Readonly<{
   requestId?: string;

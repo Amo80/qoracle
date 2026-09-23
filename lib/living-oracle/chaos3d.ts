@@ -1,6 +1,7 @@
 import type { MotionPreference } from "@/lib/experience/preferences";
 import type { OracleId } from "@/lib/oracles/registry";
 import type { CharacterPhase } from "./machine";
+import type { ChaosPresentation as ChaosIntelligencePresentation } from "@/lib/oracle-intelligence/types";
 
 export const CHAOS_3D_MANIFEST = {
   version: 1,
@@ -211,6 +212,45 @@ export function getChaosPresentation(
     default:
       return base;
   }
+}
+
+/** Applies trusted semantic cues only to existing Phase 4D-qualified channels. */
+export function applyChaosIntelligencePresentation(
+  base: ChaosPresentation,
+  phase: CharacterPhase,
+  semantic: ChaosIntelligencePresentation | null
+): ChaosPresentation {
+  if (!semantic) return base;
+  const intensity = semantic.intensity === 1 ? 0.82 : semantic.intensity === 3 ? 1.14 : 1;
+  const delivery = semantic.delivery === "dramatic" ? 1.1 : semantic.delivery === "lateral" ? 1.04 : 0.96;
+  const reveal = phase === "speaking" || phase === "reacting"
+    ? semantic.reveal === "dramatic" ? 1.12 : semantic.reveal === "subtle" ? 0.88 : 1
+    : 1;
+  const reaction = phase === "reacting"
+    ? semantic.reaction === "strong_burst" ? 1.14 : semantic.reaction === "restrained_burst" ? 0.82 : 0.76
+    : 1;
+  const scale = intensity * delivery * reveal * reaction;
+  const coreScale = semantic.gesture === "core_focus" ? 1.06 : 1;
+  const radiusScale = semantic.gesture === "fragments_contract" ? 0.88 : semantic.gesture === "fragments_spread" ? 1.12 : 1;
+  const instabilityScale = semantic.gesture === "controlled_instability" ? 1.1 : 1;
+  const orbitScale = semantic.environment === "orbit_slow" ? 0.76 : semantic.environment === "orbit_fast" ? 1.16 : 1;
+  const pedestalScale = semantic.environment === "pedestal_low" ? 0.76 : semantic.environment === "pedestal_high" ? 1.16 : 1;
+  return {
+    ...base,
+    coreSpeed: Math.min(1.34, Math.max(0, base.coreSpeed * scale)),
+    counterSpeed: Math.max(-0.86, Math.min(0, base.counterSpeed * scale)),
+    coreScale: Math.min(1.13, base.coreScale * coreScale * Math.min(scale, 1.06)),
+    coreLift: Math.min(0.1, base.coreLift * Math.min(scale, 1.15)),
+    wobbleX: Math.max(-0.065, Math.min(0.065, base.wobbleX * instabilityScale * scale)),
+    wobbleY: Math.max(-0.075, Math.min(0.075, base.wobbleY * instabilityScale * scale)),
+    singularity: Math.min(2.25, base.singularity * scale),
+    shell: Math.min(1, base.shell * Math.min(scale, 1.08)),
+    fragmentRadius: Math.min(1.42, Math.max(0.78, base.fragmentRadius * radiusScale)),
+    fragmentSpeed: Math.min(5.8, Math.max(0, base.fragmentSpeed * scale * orbitScale)),
+    fragmentElevation: Math.min(1.3, base.fragmentElevation * instabilityScale),
+    reverseOdd: base.reverseOdd || semantic.environment === "reverse_approved",
+    pedestalGlow: Math.min(1.48, base.pedestalGlow * scale * pedestalScale),
+  };
 }
 
 export function getChaosCameraFillFraction(aspect: number) {

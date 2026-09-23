@@ -9,6 +9,8 @@ import {
   generateWithLovePreviewTimeout,
   generateWithDungeonPreviewTimeout,
   DUNGEON_PREVIEW_PROVIDER_TIMEOUT_MS,
+  generateWithChaosPreviewTimeout,
+  CHAOS_PREVIEW_PROVIDER_TIMEOUT_MS,
   ORACLE_INTELLIGENCE_QUALIFICATION_TIMEOUT_MS,
   ORACLE_INTELLIGENCE_TIMEOUT_MS,
 } from "./timeout";
@@ -69,6 +71,20 @@ describe("Oracle provider timeout and cancellation", () => {
     expect(DUNGEON_PREVIEW_PROVIDER_TIMEOUT_MS).toBe(4250);
     expect(LOVE_PREVIEW_PROVIDER_TIMEOUT_MS).toBe(4250);
     expect(JESTER_PREVIEW_PROVIDER_TIMEOUT_MS).toBe(4250);
+    expect(ORACLE_INTELLIGENCE_TIMEOUT_MS).toBe(1550);
+  });
+
+  it("gives Chaos the same bounded Preview ceiling without changing earlier timeouts", async () => {
+    vi.useFakeTimers();
+    const chaosRequest = { ...request, oracleId: "chaos" as const };
+    const provider: OracleIntelligenceProvider = { generate: async (_request, signal) => new Promise((resolve) => {
+      signal.addEventListener("abort", () => resolve({ ok: false, kind: "cancelled" }), { once: true });
+    }) };
+    const pending = generateWithChaosPreviewTimeout({ provider, request: chaosRequest });
+    await vi.advanceTimersByTimeAsync(CHAOS_PREVIEW_PROVIDER_TIMEOUT_MS);
+    await expect(pending).resolves.toEqual({ ok: false, kind: "timeout" });
+    expect(CHAOS_PREVIEW_PROVIDER_TIMEOUT_MS).toBe(4250);
+    expect(DUNGEON_PREVIEW_PROVIDER_TIMEOUT_MS).toBe(4250);
     expect(ORACLE_INTELLIGENCE_TIMEOUT_MS).toBe(1550);
   });
 

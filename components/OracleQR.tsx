@@ -27,6 +27,13 @@ import {
   runDungeonIntelligenceCycle,
   type DungeonCycleIdentity,
 } from "@/lib/oracle-intelligence/dungeonIntegration";
+import {
+  createChaosCycleIdentity,
+  emitChaosPresentation,
+  resetChaosPresentation,
+  runChaosIntelligenceCycle,
+  type ChaosCycleIdentity,
+} from "@/lib/oracle-intelligence/chaosIntegration";
 
 export default function OracleQR({
   theme,
@@ -34,12 +41,14 @@ export default function OracleQR({
   jesterIntelligenceEnabled = false,
   loveIntelligenceEnabled = false,
   dungeonIntelligenceEnabled = false,
+  chaosIntelligenceEnabled = false,
 }: {
   theme: string;
   code: string;
   jesterIntelligenceEnabled?: boolean;
   loveIntelligenceEnabled?: boolean;
   dungeonIntelligenceEnabled?: boolean;
+  chaosIntelligenceEnabled?: boolean;
 }) {
   const searchParams = useSearchParams();
   // Normalize theme names so URLs like ?theme=Jester and legacy Classic links work.
@@ -71,6 +80,10 @@ const dungeonIntelligenceCycleRef = useRef<Readonly<{
   identity: DungeonCycleIdentity;
   controller: AbortController;
 }> | null>(null);
+const chaosIntelligenceCycleRef = useRef<Readonly<{
+  identity: ChaosCycleIdentity;
+  controller: AbortController;
+}> | null>(null);
 const [intelligenceAnnouncement, setIntelligenceAnnouncement] = useState("");
 
 function cancelJesterIntelligenceCycle() {
@@ -91,6 +104,12 @@ function cancelDungeonIntelligenceCycle() {
   resetDungeonPresentation();
 }
 
+function cancelChaosIntelligenceCycle() {
+  chaosIntelligenceCycleRef.current?.controller.abort("chaos-cycle-superseded");
+  chaosIntelligenceCycleRef.current = null;
+  resetChaosPresentation();
+}
+
 useEffect(() => {
   const activeAudio = [loveMusicRef.current, dndMusicRef.current, chaosMusicRef.current, jesterLaughRef.current];
   return () => stopOracleAudio(activeAudio);
@@ -104,6 +123,8 @@ useEffect(() => {
     loveIntelligenceCycleRef.current = null;
     dungeonIntelligenceCycleRef.current?.controller.abort("dungeon-oracle-unmounted");
     dungeonIntelligenceCycleRef.current = null;
+    chaosIntelligenceCycleRef.current?.controller.abort("chaos-oracle-unmounted");
+    chaosIntelligenceCycleRef.current = null;
   };
 }, [activeTheme]);
 
@@ -337,6 +358,36 @@ if (activeTheme === "chaos" && chaosMusicRef.current) {
     return;
   }
 
+  if (activeTheme === "chaos" && chaosIntelligenceEnabled) {
+    cancelChaosIntelligenceCycle();
+    const identity = createChaosCycleIdentity();
+    const controller = new AbortController();
+    chaosIntelligenceCycleRef.current = { identity, controller };
+    setIntelligenceAnnouncement("The Oracle is considering your question.");
+
+    const list = ORACLE_ANSWERS.chaos;
+    const fallbackAnswer = list[Math.floor(Math.random() * list.length)];
+    const decision = await runChaosIntelligenceCycle({ identity, question: question.trim(), fallbackAnswer, controller });
+    const activeCycle = chaosIntelligenceCycleRef.current;
+    if (!activeCycle || activeCycle.identity.oracleId !== "chaos" || activeCycle.identity.cycleId !== decision.identity.cycleId || activeCycle.identity.requestId !== decision.identity.requestId || decision.fallbackReason === "cancelled") return;
+
+    chaosIntelligenceCycleRef.current = null;
+    if (decision.presentation) emitChaosPresentation(identity, decision.presentation);
+    else resetChaosPresentation();
+    setIntelligenceAnnouncement("");
+    console.info("[QRystal Chaos intelligence]", {
+      attempted: true,
+      source: decision.source,
+      fallbackReason: decision.fallbackReason ?? null,
+      clientDecisionElapsedMs: Math.round(decision.clientDecisionElapsedMs),
+      diagnostic: decision.diagnostic ?? null,
+      semanticPresentation: decision.presentation,
+    });
+    setAnswer(decision.answer);
+    setBusy(false);
+    return;
+  }
+
   // Let the rolling animation play
   await new Promise((resolve) => setTimeout(resolve, 1800));
 
@@ -417,6 +468,7 @@ function askAgain() {
   cancelJesterIntelligenceCycle();
   cancelLoveIntelligenceCycle();
   cancelDungeonIntelligenceCycle();
+  cancelChaosIntelligenceCycle();
   setIntelligenceAnnouncement("");
   setAnswer("");
   setQuestion("");
@@ -1264,7 +1316,11 @@ if (activeTheme === "dnd") {
      CHAOS ORACLE — DEFAULT LEGACY EXPERIENCE
      ========================================================= */
   return (
-    <main className={`oracle-page theme-${activeTheme}`}>
+    <main
+      className={`oracle-page theme-${activeTheme}`}
+      aria-busy={chaosIntelligenceEnabled && busy ? "true" : undefined}
+      data-chaos-intelligence={chaosIntelligenceEnabled && busy ? "pending" : "idle"}
+    >
       <audio
         ref={chaosMusicRef}
         src="/themes/qoracle-chaos-theme.wav"
@@ -1369,15 +1425,16 @@ if (activeTheme === "dnd") {
           <strong>{answer}</strong>
           <button
             className="secondary"
-            onClick={() => {
-              setAnswer("");
-              setQuestion("");
-            }}
+            onClick={askAgain}
           >
             ASK AGAIN
           </button>
         </div>
       )}
+
+      <p className="qb-visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+        {intelligenceAnnouncement}
+      </p>
 
       <p className="small">
         QR: {code} • For entertainment only.

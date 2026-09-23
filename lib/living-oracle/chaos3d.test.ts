@@ -6,6 +6,7 @@ import {
   getChaosCameraDistance,
   getChaosCameraFillFraction,
   getChaosPresentation,
+  applyChaosIntelligencePresentation,
   shouldLoadChaos3D,
 } from "./chaos3d";
 
@@ -62,5 +63,29 @@ describe("Chaos 3D production contract", () => {
       CHAOS_SCENE_PRESENTATION.camera.narrowFillFraction
     );
     expect(mobile).toBeGreaterThan(desktop);
+  });
+
+  it("maps trusted Chaos cues only through bounded existing channels", () => {
+    const base = getChaosPresentation("speaking", 0.3);
+    const directed = applyChaosIntelligencePresentation(base, "speaking", {
+      oracleId: "chaos", emotion: "energetic", intensity: 3, delivery: "dramatic",
+      gesture: "controlled_instability", reveal: "dramatic", reaction: "strong_burst", environment: "reverse_approved",
+    });
+    expect(directed.coreSpeed).toBeLessThanOrEqual(1.34);
+    expect(directed.fragmentSpeed).toBeLessThanOrEqual(5.8);
+    expect(Math.abs(directed.wobbleX)).toBeLessThanOrEqual(0.065);
+    expect(Math.abs(directed.wobbleY)).toBeLessThanOrEqual(0.075);
+    expect(directed.reverseOdd).toBe(true);
+    expect(directed.singularity).toBeGreaterThan(base.singularity);
+  });
+
+  it("keeps sensitive Chaos direction restrained, deterministic, and optional", () => {
+    const base = getChaosPresentation("reacting", 0.3);
+    const cue = { oracleId: "chaos" as const, emotion: "clear" as const, intensity: 1 as const, delivery: "direct" as const, gesture: "core_focus" as const, reveal: "subtle" as const, reaction: "settle" as const, environment: "orbit_slow" as const };
+    const first = applyChaosIntelligencePresentation(base, "reacting", cue);
+    expect(first).toEqual(applyChaosIntelligencePresentation(base, "reacting", cue));
+    expect(first.fragmentSpeed).toBeLessThan(base.fragmentSpeed);
+    expect(first.singularity).toBeLessThan(base.singularity);
+    expect(applyChaosIntelligencePresentation(base, "reacting", null)).toBe(base);
   });
 });

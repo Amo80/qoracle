@@ -5,6 +5,7 @@ import {
   isJesterIntelligencePreviewIntegrationEnabled,
   isLoveIntelligencePreviewIntegrationEnabled,
   isDungeonIntelligencePreviewIntegrationEnabled,
+  isChaosIntelligencePreviewIntegrationEnabled,
 } from "@/lib/experience/featureFlags";
 
 export default async function QRPage({ params }: { params: Promise<{ code: string }> }) {
@@ -72,5 +73,6 @@ if (!data.active) {
     jesterIntelligenceEnabled={isJesterIntelligencePreviewIntegrationEnabled()}
     loveIntelligenceEnabled={isLoveIntelligencePreviewIntegrationEnabled()}
     dungeonIntelligenceEnabled={isDungeonIntelligencePreviewIntegrationEnabled()}
+    chaosIntelligenceEnabled={isChaosIntelligencePreviewIntegrationEnabled()}
   />;
 }

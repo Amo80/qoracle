@@ -41,18 +41,22 @@ import {
   CHAOS_SCENE_PRESENTATION,
   getChaosCameraDistance,
   getChaosPresentation,
+  applyChaosIntelligencePresentation,
 } from "@/lib/living-oracle/chaos3d";
 import type { CharacterPhase } from "@/lib/living-oracle/machine";
+import type { ChaosPresentation } from "@/lib/oracle-intelligence/types";
 
 type Props = Readonly<{
   target: HTMLElement;
   phase: CharacterPhase;
+  presentation?: ChaosPresentation | null;
   onReady: () => void;
   onError: () => void;
 }>;
 
 type Controller = Readonly<{
   setPhase: (phase: CharacterPhase) => void;
+  setPresentation: (presentation: ChaosPresentation | null) => void;
   dispose: () => void;
 }>;
 
@@ -126,6 +130,7 @@ async function createController({
   canvas,
   container,
   initialPhase,
+  initialPresentation,
   onReady,
   onError,
   isActive,
@@ -133,6 +138,7 @@ async function createController({
   canvas: HTMLCanvasElement;
   container: HTMLElement;
   initialPhase: CharacterPhase;
+  initialPresentation: ChaosPresentation | null;
   onReady: () => void;
   onError: () => void;
   isActive: () => boolean;
@@ -140,6 +146,7 @@ async function createController({
   let disposed = false;
   let phase = initialPhase;
   let phaseElapsed = 0;
+  let semanticPresentation = initialPresentation;
   let elapsed = 0;
   let coreSpin = 0;
   let returnStartCore = 0;
@@ -433,8 +440,12 @@ async function createController({
     fragmentInstances!.computeBoundingBox();
   };
 
-  const initialPresentation = getChaosPresentation(phase, 0);
-  updateFragments(0, initialPresentation);
+  const initialPhasePresentation = applyChaosIntelligencePresentation(
+    getChaosPresentation(phase, 0),
+    phase,
+    semanticPresentation
+  );
+  updateFragments(0, initialPhasePresentation);
   scene.updateMatrixWorld(true);
   compositionBounds = new Box3()
     .setFromObject(core)
@@ -449,7 +460,11 @@ async function createController({
       elapsed += delta;
       phaseElapsed += delta;
     }
-    const presentation = getChaosPresentation(phase, phaseElapsed);
+    const presentation = applyChaosIntelligencePresentation(
+      getChaosPresentation(phase, phaseElapsed),
+      phase,
+      semanticPresentation
+    );
     canvas.dataset.chaosPhase = phase;
     canvas.dataset.chaosPhaseElapsed = phaseElapsed.toFixed(3);
     canvas.dataset.chaosFragmentCount = String(
@@ -516,6 +531,9 @@ async function createController({
         renderer.setAnimationLoop(render);
       }
     },
+    setPresentation(next) {
+      semanticPresentation = next;
+    },
     dispose() {
       disposed = true;
       renderer.setAnimationLoop(null);
@@ -527,7 +545,7 @@ async function createController({
   };
 }
 
-export function Chaos3DStage({ target, phase, onReady, onError }: Props) {
+export function Chaos3DStage({ target, phase, presentation = null, onReady, onError }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const controllerRef = useRef<Controller | null>(null);
@@ -544,6 +562,7 @@ export function Chaos3DStage({ target, phase, onReady, onError }: Props) {
         canvas,
         container: stage,
         initialPhase: phase,
+        initialPresentation: presentation,
         onReady: () => {
           if (active) onReady();
         },
@@ -576,6 +595,10 @@ export function Chaos3DStage({ target, phase, onReady, onError }: Props) {
   useEffect(() => {
     controllerRef.current?.setPhase(phase);
   }, [phase]);
+
+  useEffect(() => {
+    controllerRef.current?.setPresentation(presentation);
+  }, [presentation]);
 
   return createPortal(
     <div ref={stageRef} className="chaos-3d-stage" aria-hidden="true">

@@ -102,6 +102,14 @@ describe("compact semantic-intent experiment", () => {
     expect(deriveCompactPresentation("dnd", intent)).toEqual(direction);
   });
 
+  it("derives Chaos-only cues and restrains sensitive unstable energy", () => {
+    const intent = { answer: "When the old map dissolves, choose one solid next step. Uncertainty can open a door without requiring you to sprint through every wall.", emotion: "clear", intensity: 2, delivery: "direct", safetyCategory: "sensitive" } as const;
+    const direction = deriveCompactPresentation("chaos", intent);
+    expect(direction).toMatchObject({ oracleId: "chaos", gesture: "core_focus", reveal: "subtle", reaction: "settle", environment: "orbit_slow" });
+    expect(JSON.stringify(direction)).not.toMatch(/open_hands|heart_|d20_|celestial_/);
+    expect(deriveCompactPresentation("chaos", intent)).toEqual(direction);
+  });
+
   it("expands into the existing full trusted boundary with server-owned metadata", () => {
     const expanded = expandCompactIntent("jester", jesterIntent);
     expect(expanded).toMatchObject({

@@ -4,6 +4,7 @@ import {
   isJesterIntelligencePreviewIntegrationEnabled,
   isLoveIntelligencePreviewIntegrationEnabled,
   isDungeonIntelligencePreviewIntegrationEnabled,
+  isChaosIntelligencePreviewIntegrationEnabled,
 } from "@/lib/experience/featureFlags";
 
 export default async function OraclePage({
@@ -25,5 +26,6 @@ export default async function OraclePage({
     jesterIntelligenceEnabled={isJesterIntelligencePreviewIntegrationEnabled()}
     loveIntelligenceEnabled={isLoveIntelligencePreviewIntegrationEnabled()}
     dungeonIntelligenceEnabled={isDungeonIntelligencePreviewIntegrationEnabled()}
+    chaosIntelligenceEnabled={isChaosIntelligencePreviewIntegrationEnabled()}
   />;
 }

@@ -130,3 +130,17 @@ export function isDungeonIntelligencePreviewIntegrationEnabled(
     Boolean(environment.OPENAI_API_KEY?.trim())
   );
 }
+
+/** Server-only gate for the visitor-facing Chaos Preview qualification. */
+export function isChaosIntelligencePreviewIntegrationEnabled(
+  environment: ChamberEnvironment = process.env
+) {
+  const previewRuntime =
+    environment.VERCEL_ENV === "preview" ||
+    environment.NODE_ENV === "development";
+  return (
+    previewRuntime &&
+    isOracleIntelligenceEnabledFor("chaos", environment) &&
+    Boolean(environment.OPENAI_API_KEY?.trim())
+  );
+}
