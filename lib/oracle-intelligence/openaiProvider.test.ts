@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { OpenAIOracleIntelligenceProvider, ORACLE_PROVIDER_MAX_OUTPUT_TOKENS, createOpenAIProviderFromEnvironment, type OpenAIResponsesClient } from "./openaiProvider";
+import { OpenAICompactIntentQualificationProvider, OpenAIOracleIntelligenceProvider, ORACLE_PROVIDER_MAX_OUTPUT_TOKENS, createOpenAIProviderFromEnvironment, type OpenAIResponsesClient } from "./openaiProvider";
 import type { OracleIntelligenceRequestV1 } from "./types";
 
 const request: OracleIntelligenceRequestV1 = {
@@ -95,5 +95,43 @@ describe("server-only OpenAI provider adapter", () => {
   it("requires a server API key without exposing or requiring one when absent", () => {
     expect(createOpenAIProviderFromEnvironment({})).toBeNull();
     expect(createOpenAIProviderFromEnvironment({ OPENAI_API_KEY: " server-test-key ", ORACLE_INTELLIGENCE_MODEL: "model-test" })?.model).toBe("model-test");
+  });
+});
+
+describe("Preview-only compact semantic-intent provider", () => {
+  it("keeps default reasoning, standard service, 512 tokens, and the compact schema", async () => {
+    let captured: Record<string, unknown> | undefined;
+    const client: OpenAIResponsesClient = { responses: { create: async (body) => {
+      captured = body;
+      return { output_text: JSON.stringify({
+        answer: validOutput.answer,
+        emotion: "mischievous",
+        intensity: 3,
+        delivery: "theatrical",
+        safetyCategory: "standard",
+      }) };
+    } } };
+    const result = await new OpenAICompactIntentQualificationProvider(client).generate(request, new AbortController().signal);
+    expect(result.ok).toBe(true);
+    expect(captured).not.toHaveProperty("reasoning");
+    expect(captured).not.toHaveProperty("service_tier");
+    expect(captured?.max_output_tokens).toBe(512);
+    const schemaText = JSON.stringify((captured?.text as { format: { schema: unknown } }).format.schema);
+    expect(schemaText).not.toMatch(/gesture|reveal|reaction|environment|oracleId|schemaVersion|deliveryMode/);
+    expect(String(captured?.instructions)).not.toMatch(/Allowed gestures|Allowed reactions|Allowed environment|Allowed reveal/);
+    if (result.ok) expect(result.output.presentation.oracleId).toBe("jester");
+  });
+
+  it("rejects mechanical fields emitted by a compact provider", async () => {
+    const client: OpenAIResponsesClient = { responses: { create: async () => ({ output_text: JSON.stringify({
+      answer: validOutput.answer,
+      emotion: "mischievous",
+      intensity: 2,
+      delivery: "teasing",
+      safetyCategory: "standard",
+      gesture: "open_hands",
+    }) }) } };
+    await expect(new OpenAICompactIntentQualificationProvider(client).generate(request, new AbortController().signal))
+      .resolves.toEqual({ ok: false, kind: "malformed_output" });
   });
 });

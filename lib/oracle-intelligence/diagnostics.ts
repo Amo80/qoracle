@@ -1,5 +1,6 @@
 export type QualificationReasoningProfile = "default" | "low" | "none";
 export type QualificationReasoningEffort = "low" | "none";
+export type QualificationProfile = QualificationReasoningProfile | "full-standard" | "compact-standard";
 
 export type CompletedProviderMetadata = Readonly<{
   requestId?: string;
@@ -47,7 +48,7 @@ export class PreviewIntelligenceDiagnosticRecorder implements ProviderDiagnostic
   constructor(
     readonly instanceId: string,
     readonly invocationCount: number,
-    readonly profile: QualificationReasoningProfile,
+    readonly profile: QualificationProfile,
     readonly timeoutMs: number
   ) {}
 
@@ -154,4 +155,10 @@ export function isPreviewIntelligenceDiagnosticsEnabled(
 
 export function parseQualificationReasoningProfile(value: string): QualificationReasoningProfile | null {
   return value === "default" || value === "low" || value === "none" ? value : null;
+}
+
+export function parseQualificationProfile(value: string): QualificationProfile | null {
+  return value === "full-standard" || value === "compact-standard"
+    ? value
+    : parseQualificationReasoningProfile(value);
 }

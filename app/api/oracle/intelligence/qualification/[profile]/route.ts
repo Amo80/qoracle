@@ -7,7 +7,7 @@ import {
 } from "../../../../../../lib/oracle-intelligence/cohort";
 import {
   isPreviewIntelligenceDiagnosticsEnabled,
-  parseQualificationReasoningProfile,
+  parseQualificationProfile,
   PreviewIntelligenceDiagnosticRecorder,
 } from "../../../../../../lib/oracle-intelligence/diagnostics";
 import {
@@ -34,7 +34,7 @@ export async function POST(
   context: { params: Promise<{ profile: string }> }
 ) {
   if (!isPreviewIntelligenceDiagnosticsEnabled()) return notFound();
-  const profile = parseQualificationReasoningProfile((await context.params).profile);
+  const profile = parseQualificationProfile((await context.params).profile);
   if (!profile) return notFound();
   if (!isAllowedIntelligenceOrigin(request) || !isJsonContentType(request)) return invalidRequest();
 

@@ -85,6 +85,15 @@ export type ProviderOracleOutputV1 = Readonly<{
   }>;
 }>;
 
+/** Preview-qualification-only compact provider intent. */
+export type CompactOracleIntentV1 = Readonly<{
+  answer: string;
+  emotion: string;
+  intensity: IntelligenceIntensity;
+  delivery: string;
+  safetyCategory: IntelligenceSafetyCategory;
+}>;
+
 export type FallbackReason =
   | "disabled"
   | "missing_configuration"

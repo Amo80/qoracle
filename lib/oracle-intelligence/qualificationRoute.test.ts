@@ -32,6 +32,21 @@ describe("Preview Oracle Intelligence qualification route", () => {
     process.env.VERCEL_ENV = "production";
     process.env.ORACLE_INTELLIGENCE_DIAGNOSTICS_ENABLED = "true";
     expect((await POST(request(validBody), context("default"))).status).toBe(404);
+    expect((await POST(request(validBody), context("full-standard"))).status).toBe(404);
+    expect((await POST(request(validBody), context("compact-standard"))).status).toBe(404);
+  });
+
+  it("accepts only server-selected full and compact A/B profiles in Preview", async () => {
+    process.env = { ...process.env, NODE_ENV: "production" };
+    process.env.VERCEL_ENV = "preview";
+    process.env.ORACLE_INTELLIGENCE_DIAGNOSTICS_ENABLED = "true";
+    process.env.ORACLE_INTELLIGENCE_ENABLED = "false";
+    for (const profile of ["full-standard", "compact-standard"]) {
+      const response = await POST(request(validBody), context(profile));
+      expect(response.status).toBe(200);
+      expect((await response.json()).diagnostic.profile).toBe(profile);
+    }
+    expect((await POST(request(validBody), context("compact-custom"))).status).toBe(404);
   });
 
   it("returns 404 when disabled or when the profile is not approved", async () => {
