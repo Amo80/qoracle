@@ -29,10 +29,11 @@ const APPROVED_ADDITIVE_ROUTES = new Set([
   "app/api/oracle/intelligence/love-preview/route.ts",
   "app/api/oracle/intelligence/dungeon-preview/route.ts",
   "app/api/oracle/intelligence/chaos-preview/route.ts",
+  "app/api/oracle/intelligence/eclipse-preview/route.ts",
 ]);
 
 const PHASE_2_PROTECTED_BASELINE =
-  "055762945ee229731cbf9fe0cfdb86532045b3c830e3587027cca4f1ebd35336";
+  "aeb717a5a4daa5de3a018d1e173a67dbb5783b99ec9acb292f11cff3e92b141c";
 
 function canonicalizeText(bytes: Buffer) {
   return bytes
@@ -66,7 +67,7 @@ describe("Phase 2 protected production baseline", () => {
       digest.update("\0");
       const source = canonicalizeText(readFileSync(file.absolute));
       // Phase 4C permits only these presentation-copy substitutions in
-      // OracleQR. Phase 6 then permits the reviewed Jester, Love, Dungeon, and Chaos intelligence
+      // OracleQR. Phase 6 then permits the reviewed Jester, Love, Dungeon, Chaos, and Eclipse intelligence
       // coordinators while retaining the exact answer library separately.
       // Canonicalize the copy back to the protected Phase 2 wording. UTF-8 BOMs
       // are removed and CRLF/lone CR are normalized to LF before hashing so

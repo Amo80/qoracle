@@ -1,6 +1,7 @@
 import type { MotionPreference } from "@/lib/experience/preferences";
 import type { OracleId } from "@/lib/oracles/registry";
 import type { CharacterPhase } from "./machine";
+import type { EclipsePresentation as EclipseIntelligencePresentation } from "@/lib/oracle-intelligence/types";
 
 export const ECLIPSE_3D_MANIFEST = {
   version: 1,
@@ -37,6 +38,7 @@ export type EclipseCelestialPresentation = Readonly<{
   sunX: number; moonX: number; sunY: number; moonY: number;
   sunZ: number; moonZ: number; scale: number; orbit: number;
   corona: number; rays: number; altarGlow: number;
+  solarEmphasis: number; lunarEmphasis: number;
 }>;
 
 export type EclipseViewportProfile = Readonly<{
@@ -117,7 +119,7 @@ export function getEclipsePose(phase: CharacterPhase, elapsed: number): EclipseP
 export function getEclipseCelestialPresentation(phase: CharacterPhase, elapsed: number): EclipseCelestialPresentation {
   const t = Math.max(0, elapsed);
   const baseOrbit = t * 0.24;
-  const base = { sunX: 0.78, moonX: -0.78, sunY: 0.35, moonY: 0.28, sunZ: 0.12, moonZ: 0.34, scale: 1, orbit: baseOrbit, corona: 0.18, rays: 0.1, altarGlow: 0.22 };
+  const base = { sunX: 0.78, moonX: -0.78, sunY: 0.35, moonY: 0.28, sunZ: 0.12, moonZ: 0.34, scale: 1, orbit: baseOrbit, corona: 0.18, rays: 0.1, altarGlow: 0.22, solarEmphasis: 1, lunarEmphasis: 1 };
   if (phase === "listening") return { ...base, orbit: t * 0.08, sunX: 0.68, moonX: -0.68, corona: 0.24, altarGlow: 0.34 };
   if (phase === "awakening") { const w = smooth(t / 0.35); return { ...base, sunX: 0.78 - 0.28 * w, moonX: -0.78 + 0.28 * w, sunY: 0.35 + 0.08 * w, moonY: 0.28 + 0.15 * w, scale: 1 + 0.1 * w, orbit: t * 0.38, corona: 0.35 + 0.2 * w, rays: 0.25, altarGlow: 0.62 }; }
   if (phase === "anticipating") return { ...base, sunX: 0.31, moonX: -0.31, sunY: 0.42, moonY: 0.42, sunZ: 0.12, moonZ: 0.46, scale: 1.18, orbit: t * 0.62, corona: 0.72, rays: 0.48, altarGlow: 0.82 };
@@ -125,6 +127,34 @@ export function getEclipseCelestialPresentation(phase: CharacterPhase, elapsed: 
   if (phase === "reacting") { const pulse = Math.sin(clamp01(t / 0.65) * Math.PI); return { ...base, sunX: 0, moonX: 0, sunY: 0.42, moonY: 0.42, sunZ: 0.08, moonZ: 0.58, scale: 1.66 + pulse * 0.16, orbit: t * 0.5, corona: 1.5 + pulse * 0.38, rays: 1.3 + pulse * 0.25, altarGlow: 1 + pulse * 0.25 }; }
   if (phase === "returning") { if (t >= 0.45) return { ...base, orbit: t * 0.3 }; const w = smooth(t / 0.45); return { ...base, sunX: 0.78 * w, moonX: -0.78 * w, sunY: 0.42 - 0.07 * w, moonY: 0.42 - 0.14 * w, sunZ: 0.08 + 0.04 * w, moonZ: 0.58 - 0.24 * w, scale: 1.66 - 0.66 * w, orbit: t * 0.3, corona: 1.5 - 1.32 * w, rays: 1.3 - 1.2 * w, altarGlow: 1 - 0.78 * w }; }
   return base;
+}
+
+const MAX_TRUSTED_ECLIPSE_ROTATION = 11.5 * DEG;
+
+export function applyEclipseIntelligencePose(base: EclipsePose, semantic: EclipseIntelligencePresentation | null): EclipsePose {
+  if (!semantic) return base;
+  const intensity = semantic.intensity === 1 ? 0.82 : semantic.intensity === 3 ? 1.1 : 1;
+  const delivery = semantic.delivery === "solemn" ? 0.94 : semantic.delivery === "dual" ? 1.06 : 1;
+  const gesture = semantic.gesture === "eclipse_presentation" ? 1.08 : 0.98;
+  const scale = intensity * delivery * gesture;
+  return Object.fromEntries(Object.entries(base).map(([name, offset]) => [name, {
+    x: Math.max(-MAX_TRUSTED_ECLIPSE_ROTATION, Math.min(MAX_TRUSTED_ECLIPSE_ROTATION, offset.x * scale)),
+    y: Math.max(-MAX_TRUSTED_ECLIPSE_ROTATION, Math.min(MAX_TRUSTED_ECLIPSE_ROTATION, offset.y * scale)),
+    z: Math.max(-MAX_TRUSTED_ECLIPSE_ROTATION, Math.min(MAX_TRUSTED_ECLIPSE_ROTATION, offset.z * scale)),
+  }])) as EclipsePose;
+}
+
+/** Semantic cues may change illumination only; celestial geometry is copied unchanged. */
+export function applyEclipseIntelligencePresentation(base: EclipseCelestialPresentation, phase: CharacterPhase, semantic: EclipseIntelligencePresentation | null): EclipseCelestialPresentation {
+  if (!semantic) return base;
+  const intensity = semantic.intensity === 1 ? 0.82 : semantic.intensity === 3 ? 1.12 : 1;
+  const reveal = phase === "speaking" || phase === "reacting" ? semantic.reveal === "dramatic" ? 1.12 : semantic.reveal === "subtle" ? 0.86 : 1 : 1;
+  const reaction = phase === "reacting" ? semantic.reaction === "strong" ? 1.12 : semantic.reaction === "restrained" ? 0.86 : 0.78 : 1;
+  const emphasis = intensity * reveal * reaction;
+  const solarEmphasis = semantic.environment === "solar_emphasis" ? 1.16 : semantic.environment === "balanced" ? 1 : 0.96;
+  const lunarEmphasis = semantic.environment === "lunar_emphasis" ? 1.16 : semantic.environment === "balanced" ? 1 : 0.96;
+  const coronaScale = semantic.environment === "corona_low" ? 0.78 : semantic.environment === "corona_strong" ? 1.14 : 1;
+  return { ...base, corona: Math.min(2.15, base.corona * emphasis * coronaScale), rays: Math.min(1.72, base.rays * emphasis * coronaScale), altarGlow: Math.min(1.42, base.altarGlow * emphasis), solarEmphasis, lunarEmphasis };
 }
 
 export function shouldLoadEclipse3D({ oracleId, livingOracleEnabled, eclipse3DEnabled, motion, webGLSupported }: { oracleId: OracleId | null; livingOracleEnabled: boolean; eclipse3DEnabled: boolean; motion: MotionPreference; webGLSupported: boolean }) {

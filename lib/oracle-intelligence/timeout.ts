@@ -8,6 +8,7 @@ export const JESTER_PREVIEW_PROVIDER_TIMEOUT_MS = 4250;
 export const LOVE_PREVIEW_PROVIDER_TIMEOUT_MS = 4250;
 export const DUNGEON_PREVIEW_PROVIDER_TIMEOUT_MS = 4250;
 export const CHAOS_PREVIEW_PROVIDER_TIMEOUT_MS = 4250;
+export const ECLIPSE_PREVIEW_PROVIDER_TIMEOUT_MS = 4250;
 
 async function generateWithBoundedTimeout({
   provider,
@@ -169,4 +170,10 @@ export function generateWithChaosPreviewTimeout({
     timeoutCeilingMs: CHAOS_PREVIEW_PROVIDER_TIMEOUT_MS,
     diagnostics,
   });
+}
+
+export function generateWithEclipsePreviewTimeout({ provider, request, parentSignal, diagnostics }: {
+  provider: OracleIntelligenceProvider; request: OracleIntelligenceRequestV1; parentSignal?: AbortSignal; diagnostics?: ProviderDiagnosticRecorder;
+}) {
+  return generateWithBoundedTimeout({ provider, request, parentSignal, timeoutMs: ECLIPSE_PREVIEW_PROVIDER_TIMEOUT_MS, timeoutCeilingMs: ECLIPSE_PREVIEW_PROVIDER_TIMEOUT_MS, diagnostics });
 }

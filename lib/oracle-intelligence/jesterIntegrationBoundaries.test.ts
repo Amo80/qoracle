@@ -35,11 +35,11 @@ describe("Jester intelligence integration boundaries", () => {
     expect(route).toContain("createOpenAICompactProviderFromEnvironment()");
   });
 
-  it("keeps the remaining unintegrated Oracles and protected systems outside the integration", () => {
+  it("keeps provider access out of the Eclipse stage", () => {
     const oracle = read("components/OracleQR.tsx");
     expect(oracle).toContain('activeTheme === "jester" && jesterIntelligenceEnabled');
     for (const stage of ["eclipse/Eclipse3DStage.tsx"]) {
-      expect(read(`components/living-oracle/${stage}`)).not.toContain("oracle-intelligence");
+      expect(read(`components/living-oracle/${stage}`)).not.toMatch(/fetch\s*\(/);
     }
   });
 

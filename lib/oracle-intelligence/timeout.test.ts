@@ -11,6 +11,8 @@ import {
   DUNGEON_PREVIEW_PROVIDER_TIMEOUT_MS,
   generateWithChaosPreviewTimeout,
   CHAOS_PREVIEW_PROVIDER_TIMEOUT_MS,
+  generateWithEclipsePreviewTimeout,
+  ECLIPSE_PREVIEW_PROVIDER_TIMEOUT_MS,
   ORACLE_INTELLIGENCE_QUALIFICATION_TIMEOUT_MS,
   ORACLE_INTELLIGENCE_TIMEOUT_MS,
 } from "./timeout";
@@ -85,6 +87,20 @@ describe("Oracle provider timeout and cancellation", () => {
     await expect(pending).resolves.toEqual({ ok: false, kind: "timeout" });
     expect(CHAOS_PREVIEW_PROVIDER_TIMEOUT_MS).toBe(4250);
     expect(DUNGEON_PREVIEW_PROVIDER_TIMEOUT_MS).toBe(4250);
+    expect(ORACLE_INTELLIGENCE_TIMEOUT_MS).toBe(1550);
+  });
+
+  it("gives Eclipse the same bounded Preview ceiling without changing normal behavior", async () => {
+    vi.useFakeTimers();
+    const eclipseRequest = { ...request, oracleId: "eclipse" as const };
+    const provider: OracleIntelligenceProvider = { generate: async (_request, signal) => new Promise((resolve) => {
+      signal.addEventListener("abort", () => resolve({ ok: false, kind: "cancelled" }), { once: true });
+    }) };
+    const pending = generateWithEclipsePreviewTimeout({ provider, request: eclipseRequest });
+    await vi.advanceTimersByTimeAsync(ECLIPSE_PREVIEW_PROVIDER_TIMEOUT_MS);
+    await expect(pending).resolves.toEqual({ ok: false, kind: "timeout" });
+    expect(ECLIPSE_PREVIEW_PROVIDER_TIMEOUT_MS).toBe(4250);
+    expect(CHAOS_PREVIEW_PROVIDER_TIMEOUT_MS).toBe(4250);
     expect(ORACLE_INTELLIGENCE_TIMEOUT_MS).toBe(1550);
   });
 

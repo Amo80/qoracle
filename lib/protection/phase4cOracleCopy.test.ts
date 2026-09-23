@@ -4,13 +4,13 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const PHASE_6_DUNGEON_INTEGRATED_ORACLE_QR_SHA256 =
-  "636692b75213fabb5ee52043f591e0c06e7049c349ec0116bea67b19816af05f";
+  "a09efe0cfab0f65114de065d0b332c3b0cc16f0f0cd9cc543764adb72c23773e";
 
 function canonicalizeText(source: string) {
   return source.replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n");
 }
 
-describe("approved Dungeon copy in the Phase 6 Chaos-integrated OracleQR", () => {
+describe("approved Dungeon copy in the Phase 6 Eclipse-integrated OracleQR", () => {
   it("retains the approved Dungeon-facing strings in the canonical source", () => {
     const source = canonicalizeText(
       readFileSync(join(process.cwd(), "components/OracleQR.tsx"), "utf8")

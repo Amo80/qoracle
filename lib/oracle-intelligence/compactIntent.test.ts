@@ -110,6 +110,14 @@ describe("compact semantic-intent experiment", () => {
     expect(deriveCompactPresentation("chaos", intent)).toEqual(direction);
   });
 
+  it("derives Eclipse-only cues and restrains sensitive celestial presentation", () => {
+    const intent = { answer: "Light and shadow can both tell the truth. Let the tension settle, then choose the step that remains clear when urgency has passed.", emotion: "contemplative", intensity: 2, delivery: "measured", safetyCategory: "sensitive" } as const;
+    const direction = deriveCompactPresentation("eclipse", intent);
+    expect(direction).toMatchObject({ oracleId: "eclipse", gesture: "celestial_guidance", reveal: "subtle", reaction: "restrained", environment: "balanced" });
+    expect(JSON.stringify(direction)).not.toMatch(/open_hands|heart_|d20_|fragments_|orbit_/);
+    expect(deriveCompactPresentation("eclipse", intent)).toEqual(direction);
+  });
+
   it("expands into the existing full trusted boundary with server-owned metadata", () => {
     const expanded = expandCompactIntent("jester", jesterIntent);
     expect(expanded).toMatchObject({

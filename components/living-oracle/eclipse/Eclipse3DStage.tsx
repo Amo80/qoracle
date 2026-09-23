@@ -14,12 +14,14 @@ import {
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import {
   ECLIPSE_3D_MANIFEST, ECLIPSE_CAMERA_FRAMING, ECLIPSE_PROCEDURAL_BONES,
+  applyEclipseIntelligencePose, applyEclipseIntelligencePresentation,
   getEclipseCelestialPresentation, getEclipsePose, getEclipseViewportProfile,
 } from "@/lib/living-oracle/eclipse3d";
 import type { CharacterPhase } from "@/lib/living-oracle/machine";
+import type { EclipsePresentation } from "@/lib/oracle-intelligence/types";
 
-type Props = Readonly<{ target: HTMLElement; phase: CharacterPhase; onReady: () => void; onError: () => void }>;
-type Controller = Readonly<{ setPhase: (phase: CharacterPhase) => void; dispose: () => void }>;
+type Props = Readonly<{ target: HTMLElement; phase: CharacterPhase; presentation?: EclipsePresentation | null; onReady: () => void; onError: () => void }>;
+type Controller = Readonly<{ setPhase: (phase: CharacterPhase) => void; setPresentation: (presentation: EclipsePresentation | null) => void; dispose: () => void }>;
 
 function disposeObject(root: Object3D) {
   const textures = new Set<Texture>(); const materials = new Set<Material>(); const geometries = new Set<BufferGeometry>();
@@ -94,8 +96,8 @@ function resolveActiveBones(root: Object3D) {
   throw new Error(`Eclipse active skin did not resolve ${ECLIPSE_PROCEDURAL_BONES.length} approved bones.`);
 }
 
-async function createController({ canvas, container, initialPhase, onReady, onError, isActive, registerCleanup }: { canvas: HTMLCanvasElement; container: HTMLElement; initialPhase: CharacterPhase; onReady: () => void; onError: () => void; isActive: () => boolean; registerCleanup: (cleanup: () => void) => void }): Promise<Controller> {
-  let disposed = false; let phase = initialPhase; let phaseElapsed = 0; let elapsed = 0;
+async function createController({ canvas, container, initialPhase, initialPresentation, onReady, onError, isActive, registerCleanup }: { canvas: HTMLCanvasElement; container: HTMLElement; initialPhase: CharacterPhase; initialPresentation: EclipsePresentation | null; onReady: () => void; onError: () => void; isActive: () => boolean; registerCleanup: (cleanup: () => void) => void }): Promise<Controller> {
+  let disposed = false; let phase = initialPhase; let phaseElapsed = 0; let elapsed = 0; let semanticPresentation = initialPresentation;
   const loader = new GLTFLoader(); const clock = new Clock(); const scene = new Scene();
   const camera = new PerspectiveCamera(35, 1, .05, 100); const renderer = new WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "high-performance" });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5)); renderer.outputColorSpace = SRGBColorSpace; renderer.toneMapping = ACESFilmicToneMapping; renderer.toneMappingExposure = 1.12; renderer.setClearColor(new Color(0), 0);
@@ -158,10 +160,10 @@ async function createController({ canvas, container, initialPhase, onReady, onEr
     if(disposed||!isActive())return;
     const delta=Math.min(clock.getDelta(),.05);elapsed+=delta;phaseElapsed+=delta;mixer!.update(delta);
     bones.forEach((bone,name)=>{const q=neutral.get(name);if(q)bone.quaternion.copy(q);});
-    const pose=getEclipsePose(phase,phaseElapsed);
+    const pose=applyEclipseIntelligencePose(getEclipsePose(phase,phaseElapsed),semanticPresentation);
     for(const [name,offset] of Object.entries(pose)){const bone=bones.get(name);if(bone)bone.quaternion.multiply(new Quaternion().setFromEuler(new Euler(offset.x,offset.y,offset.z,"XYZ")));}
     empressGltf.scene.updateMatrixWorld(true);
-    const p=getEclipseCelestialPresentation(phase,phaseElapsed);const spin=p.orbit;const profile=getEclipseViewportProfile(stageAspect,phase);
+    const p=applyEclipseIntelligencePresentation(getEclipseCelestialPresentation(phase,phaseElapsed),phase,semanticPresentation);const spin=p.orbit;const profile=getEclipseViewportProfile(stageAspect,phase);
     const separation=Math.min(1,Math.abs(p.sunX-p.moonX)/1.56);const convergence=1-separation;const orbitRadius=(narrow?.022:.035)*profile.separateOrbit*separation;
     const sunAnchor=rightHandAnchor.clone().lerp(celestialCenter,convergence);const moonAnchor=leftHandAnchor.clone().lerp(celestialCenter,convergence);
     sunAnchor.x=celestialCenter.x+(sunAnchor.x-celestialCenter.x)*profile.separateOrbit;moonAnchor.x=celestialCenter.x+(moonAnchor.x-celestialCenter.x)*profile.separateOrbit;
@@ -177,22 +179,23 @@ async function createController({ canvas, container, initialPhase, onReady, onEr
     for(const child of sharpCorona.children){const material=(child as Mesh).material as MeshBasicMaterial;material.opacity=(child===sharpCorona.children[0] ? .7 : .42)*Math.min(1,convergence*1.8);}
     for(const child of prominences.children){((child as Mesh).material as MeshBasicMaterial).opacity=.62*Math.min(1,convergence*1.7);}
     orbitLine.position.copy(celestialCenter);orbitLine.rotation.z=spin*.25;orbitLine.scale.setScalar(profile.separateOrbit);orbitLine.material.opacity=(.1+Math.min(.28,p.rays*.14))*separation;
-    sunLight.position.copy(sun.position);sunLight.intensity=2.4+p.corona*1.8;altarLight.intensity=.5+p.altarGlow*3.1;(solarPlasma.material as ShaderMaterial).uniforms.uTime.value=elapsed;
+    sunLight.position.copy(sun.position);sunLight.intensity=(2.4+p.corona*1.8)*p.solarEmphasis;(moonRim.material as ShaderMaterial).uniforms.uStrength.value=.82*p.lunarEmphasis;altarLight.intensity=.5+p.altarGlow*3.1;(solarPlasma.material as ShaderMaterial).uniforms.uTime.value=elapsed;
     renderer.render(scene,camera);bones.forEach((bone,name)=>{const q=neutral.get(name);if(q)bone.quaternion.copy(q);});
   };
   renderer.setAnimationLoop(render); onReady();
-  return {setPhase(next){if(next===phase)return;phase=next;phaseElapsed=0;if(next==="idle")elapsed=0;if(next==="paused")renderer.setAnimationLoop(null);else renderer.setAnimationLoop(render);},dispose(){cleanup();void compositionBounds;}};
+  return {setPhase(next){if(next===phase)return;phase=next;phaseElapsed=0;if(next==="idle")elapsed=0;if(next==="paused")renderer.setAnimationLoop(null);else renderer.setAnimationLoop(render);},setPresentation(next){semanticPresentation=next;},dispose(){cleanup();void compositionBounds;}};
   } catch (error) {
     cleanup();
     throw error;
   }
 }
 
-export function Eclipse3DStage({target,phase,onReady,onError}:Props){const canvasRef=useRef<HTMLCanvasElement>(null);const stageRef=useRef<HTMLDivElement>(null);const controllerRef=useRef<Controller|null>(null);
-  useEffect(()=>{const canvas=canvasRef.current,stage=stageRef.current;if(!canvas||!stage)return;let active=true;let controller:Controller|null=null;let pendingCleanup:(()=>void)|null=null;const frame=window.requestAnimationFrame(()=>{if(!active)return;void createController({canvas,container:stage,initialPhase:phase,onReady:()=>{if(active)onReady();},onError:()=>{if(active)onError();},isActive:()=>active,registerCleanup:(cleanup)=>{pendingCleanup=cleanup;if(!active)cleanup();}}).then(created=>{pendingCleanup=null;if(!active){created.dispose();return;}controller=created;controllerRef.current=created;}).catch(()=>{pendingCleanup=null;if(active)onError();});});return()=>{active=false;window.cancelAnimationFrame(frame);pendingCleanup?.();controller?.dispose();if(controllerRef.current===controller)controllerRef.current=null;};
+export function Eclipse3DStage({target,phase,presentation=null,onReady,onError}:Props){const canvasRef=useRef<HTMLCanvasElement>(null);const stageRef=useRef<HTMLDivElement>(null);const controllerRef=useRef<Controller|null>(null);
+  useEffect(()=>{const canvas=canvasRef.current,stage=stageRef.current;if(!canvas||!stage)return;let active=true;let controller:Controller|null=null;let pendingCleanup:(()=>void)|null=null;const frame=window.requestAnimationFrame(()=>{if(!active)return;void createController({canvas,container:stage,initialPhase:phase,initialPresentation:presentation,onReady:()=>{if(active)onReady();},onError:()=>{if(active)onError();},isActive:()=>active,registerCleanup:(cleanup)=>{pendingCleanup=cleanup;if(!active)cleanup();}}).then(created=>{pendingCleanup=null;if(!active){created.dispose();return;}controller=created;controllerRef.current=created;}).catch(()=>{pendingCleanup=null;if(active)onError();});});return()=>{active=false;window.cancelAnimationFrame(frame);pendingCleanup?.();controller?.dispose();if(controllerRef.current===controller)controllerRef.current=null;};
     // The controller receives subsequent phases through setPhase below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   },[onError,onReady,target]);
   useEffect(()=>{controllerRef.current?.setPhase(phase);},[phase]);
+  useEffect(()=>{controllerRef.current?.setPresentation(presentation);},[presentation]);
   return createPortal(<div ref={stageRef} className="eclipse-3d-stage" aria-hidden="true"><canvas ref={canvasRef} tabIndex={-1}/></div>,target);
 }

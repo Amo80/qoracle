@@ -31,7 +31,7 @@ describe("Oracle Intelligence privacy and production isolation", () => {
     expect(chaos).not.toContain("fetch(");
     for (const file of ["eclipse/Eclipse3DStage.tsx"]) {
       const source = readFileSync(join(process.cwd(), "components/living-oracle", file), "utf8");
-      expect(source).not.toContain("oracle-intelligence");
+      expect(source).not.toMatch(/fetch\s*\(/);
       expect(source).not.toContain("resolvePerformanceDirection");
     }
   });

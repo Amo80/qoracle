@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { ECLIPSE_CAMERA_FRAMING, ECLIPSE_CELESTIAL_SIDES, ECLIPSE_PROCEDURAL_BONES, getEclipseCelestialPresentation, getEclipsePose, getEclipseViewportProfile, shouldLoadEclipse3D } from "./eclipse3d";
+import { ECLIPSE_CAMERA_FRAMING, ECLIPSE_CELESTIAL_SIDES, ECLIPSE_PROCEDURAL_BONES, applyEclipseIntelligencePose, applyEclipseIntelligencePresentation, getEclipseCelestialPresentation, getEclipsePose, getEclipseViewportProfile, shouldLoadEclipse3D } from "./eclipse3d";
+import { ORACLE_PERFORMANCE_VOCABULARIES } from "../oracle-intelligence/vocabularies";
+import type { EclipsePresentation } from "../oracle-intelligence/types";
 
 describe("Eclipse 3D presentation contract", () => {
   it("loads only for the eligible full-motion Eclipse", () => {
@@ -87,5 +89,28 @@ describe("Eclipse 3D presentation contract", () => {
     expect(ECLIPSE_CAMERA_FRAMING.narrow.targetY).toBeGreaterThan(0.25);
     expect(getEclipseViewportProfile(16 / 9, "speaking").climaxScale).toBeGreaterThan(1.1);
     expect(getEclipseViewportProfile(400 / 642, "speaking").climaxScale).toBeGreaterThan(1);
+  });
+
+  it("keeps celestial sides, convergence geometry, scale, and camera ordering invariant for every trusted cue", () => {
+    const vocabulary = ORACLE_PERFORMANCE_VOCABULARIES.eclipse;
+    for (const phase of ["idle", "speaking", "reacting", "returning"] as const) {
+      const elapsed = phase === "returning" ? .45 : .9;
+      const base = getEclipseCelestialPresentation(phase, elapsed);
+      for (const emotion of vocabulary.emotions) for (const delivery of vocabulary.deliveries) for (const gesture of vocabulary.gestures) for (const reaction of vocabulary.reactions) for (const environment of vocabulary.environments) for (const intensity of [1, 2, 3] as const) for (const reveal of ["subtle", "standard", "dramatic"] as const) {
+        const semantic: EclipsePresentation = { oracleId: "eclipse", emotion, delivery, gesture, reaction, environment, intensity, reveal };
+        const directed = applyEclipseIntelligencePresentation(base, phase, semantic);
+        expect({ sunX: directed.sunX, moonX: directed.moonX, sunY: directed.sunY, moonY: directed.moonY, sunZ: directed.sunZ, moonZ: directed.moonZ, scale: directed.scale, orbit: directed.orbit }).toEqual({ sunX: base.sunX, moonX: base.moonX, sunY: base.sunY, moonY: base.moonY, sunZ: base.sunZ, moonZ: base.moonZ, scale: base.scale, orbit: base.orbit });
+        if (phase === "idle" || phase === "returning") { expect(directed.sunX).toBeGreaterThan(0); expect(directed.moonX).toBeLessThan(0); }
+        if (phase === "speaking" || phase === "reacting") expect(directed.moonZ).toBeGreaterThan(directed.sunZ);
+      }
+    }
+  });
+
+  it("keeps semantic pose changes deterministic and within the qualified 13-bone ceiling", () => {
+    const semantic: EclipsePresentation = { oracleId: "eclipse", emotion: "resolute", intensity: 3, delivery: "dual", gesture: "eclipse_presentation", reveal: "dramatic", reaction: "strong", environment: "corona_strong" };
+    const base = getEclipsePose("speaking", .4); const first = applyEclipseIntelligencePose(base, semantic);
+    expect(first).toEqual(applyEclipseIntelligencePose(base, semantic));
+    expect(Object.keys(first).every((bone) => (ECLIPSE_PROCEDURAL_BONES as readonly string[]).includes(bone))).toBe(true);
+    for (const offset of Object.values(first)) for (const rotation of [offset.x, offset.y, offset.z]) expect(Math.abs(rotation)).toBeLessThanOrEqual(11.5 * Math.PI / 180 + 1e-10);
   });
 });

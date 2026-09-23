@@ -144,3 +144,11 @@ export function isChaosIntelligencePreviewIntegrationEnabled(
     Boolean(environment.OPENAI_API_KEY?.trim())
   );
 }
+
+/** Server-only gate for the visitor-facing Eclipse Preview qualification. */
+export function isEclipseIntelligencePreviewIntegrationEnabled(
+  environment: ChamberEnvironment = process.env
+) {
+  const previewRuntime = environment.VERCEL_ENV === "preview" || environment.NODE_ENV === "development";
+  return previewRuntime && isOracleIntelligenceEnabledFor("eclipse", environment) && Boolean(environment.OPENAI_API_KEY?.trim());
+}

@@ -29,7 +29,7 @@ import { getOracle, ORACLE_IDS, type OracleId } from "@/lib/oracles/registry";
 import { normalizeClientPresentation } from "@/lib/oracle-intelligence/schema";
 import type { JesterPresentation } from "@/lib/oracle-intelligence/types";
 import type { LovePresentation } from "@/lib/oracle-intelligence/types";
-import type { DungeonPresentation, ChaosPresentation } from "@/lib/oracle-intelligence/types";
+import type { DungeonPresentation, ChaosPresentation, EclipsePresentation } from "@/lib/oracle-intelligence/types";
 import {
   JESTER_PRESENTATION_EVENT,
   JESTER_PRESENTATION_RESET_EVENT,
@@ -46,6 +46,7 @@ import {
   CHAOS_PRESENTATION_EVENT,
   CHAOS_PRESENTATION_RESET_EVENT,
 } from "@/lib/oracle-intelligence/chaosIntegration";
+import { ECLIPSE_PRESENTATION_EVENT, ECLIPSE_PRESENTATION_RESET_EVENT } from "@/lib/oracle-intelligence/eclipseIntegration";
 import { Jester3DErrorBoundary } from "./jester/Jester3DErrorBoundary";
 import { Love3DErrorBoundary } from "./love/Love3DErrorBoundary";
 import { Dragon3DErrorBoundary } from "./dragon/Dragon3DErrorBoundary";
@@ -132,10 +133,12 @@ export function LivingOracleLayer({
   const [lovePresentation, setLovePresentation] = useState<LovePresentation | null>(null);
   const [dungeonPresentation, setDungeonPresentation] = useState<DungeonPresentation | null>(null);
   const [chaosPresentation, setChaosPresentation] = useState<ChaosPresentation | null>(null);
+  const [eclipsePresentation, setEclipsePresentation] = useState<EclipsePresentation | null>(null);
   const [jesterIntelligencePending, setJesterIntelligencePending] = useState(false);
   const [loveIntelligencePending, setLoveIntelligencePending] = useState(false);
   const [dungeonIntelligencePending, setDungeonIntelligencePending] = useState(false);
   const [chaosIntelligencePending, setChaosIntelligencePending] = useState(false);
+  const [eclipseIntelligencePending, setEclipseIntelligencePending] = useState(false);
   const [jester3DStatus, setJester3DStatus] = useState<
     "idle" | "loading" | "ready" | "error"
   >("idle");
@@ -183,6 +186,7 @@ export function LivingOracleLayer({
       setLovePresentation(null);
       setDungeonPresentation(null);
       setChaosPresentation(null);
+      setEclipsePresentation(null);
     },
     [cancelSchedules, transition]
   );
@@ -208,6 +212,20 @@ export function LivingOracleLayer({
     },
     [transition]
   );
+
+  useEffect(() => {
+    const onPresentation = (event: Event) => {
+      if (!(event instanceof CustomEvent) || oracleRef.current !== "eclipse") return;
+      const detail = event.detail as { oracleId?: unknown; presentation?: unknown } | null;
+      if (detail?.oracleId !== "eclipse") return;
+      const trusted = normalizeClientPresentation(detail.presentation, "eclipse");
+      if (trusted?.oracleId === "eclipse") setEclipsePresentation(trusted);
+    };
+    const onReset = () => setEclipsePresentation(null);
+    window.addEventListener(ECLIPSE_PRESENTATION_EVENT, onPresentation);
+    window.addEventListener(ECLIPSE_PRESENTATION_RESET_EVENT, onReset);
+    return () => { window.removeEventListener(ECLIPSE_PRESENTATION_EVENT, onPresentation); window.removeEventListener(ECLIPSE_PRESENTATION_RESET_EVENT, onReset); };
+  }, []);
 
   useEffect(() => {
     const onPresentation = (event: Event) => {
@@ -299,6 +317,7 @@ export function LivingOracleLayer({
         setLoveIntelligencePending(false);
         setDungeonIntelligencePending(false);
         setChaosIntelligencePending(false);
+        setEclipseIntelligencePending(false);
         root.removeAttribute("data-living-oracle");
         root.removeAttribute("data-living-oracle-id");
         root.removeAttribute("data-living-oracle-phase");
@@ -345,6 +364,9 @@ export function LivingOracleLayer({
       );
       setChaosIntelligencePending(
         detected === "chaos" && page.dataset.chaosIntelligence === "pending"
+      );
+      setEclipseIntelligencePending(
+        detected === "eclipse" && page.dataset.eclipseIntelligence === "pending"
       );
 
       const busy = Boolean(page.querySelector(BUSY_SELECTOR));
@@ -436,7 +458,7 @@ export function LivingOracleLayer({
       childList: true,
       subtree: true,
       attributes: true,
-      attributeFilter: ["class", "data-jester-intelligence", "data-love-intelligence", "data-dungeon-intelligence", "data-chaos-intelligence"],
+      attributeFilter: ["class", "data-jester-intelligence", "data-love-intelligence", "data-dungeon-intelligence", "data-chaos-intelligence", "data-eclipse-intelligence"],
     });
     document.addEventListener("focusin", onFocusIn);
     document.addEventListener("focusout", onFocusOut);
@@ -693,16 +715,16 @@ export function LivingOracleLayer({
       {loadEclipse3D && eclipseTarget && eclipse3DStatus !== "error" ? (
         <Eclipse3DErrorBoundary onError={handleEclipseError}>
           <Suspense fallback={null}>
-            <LazyEclipse3DStage target={eclipseTarget} phase={character.phase} onReady={handleEclipseReady} onError={handleEclipseError} />
+            <LazyEclipse3DStage target={eclipseTarget} phase={character.phase} presentation={eclipsePresentation} onReady={handleEclipseReady} onError={handleEclipseError} />
           </Suspense>
         </Eclipse3DErrorBoundary>
       ) : null}
       <p
         className="qb-visually-hidden"
-        aria-live={jesterIntelligencePending || loveIntelligencePending || dungeonIntelligencePending || chaosIntelligencePending ? "off" : "polite"}
+        aria-live={jesterIntelligencePending || loveIntelligencePending || dungeonIntelligencePending || chaosIntelligencePending || eclipseIntelligencePending ? "off" : "polite"}
         aria-atomic="true"
       >
-        {jesterIntelligencePending || loveIntelligencePending || dungeonIntelligencePending || chaosIntelligencePending ? "" : `${oracle.name} Oracle: ${character.phase.replace("-", " ")}`}
+        {jesterIntelligencePending || loveIntelligencePending || dungeonIntelligencePending || chaosIntelligencePending || eclipseIntelligencePending ? "" : `${oracle.name} Oracle: ${character.phase.replace("-", " ")}`}
       </p>
     </div>
   );

@@ -44,8 +44,8 @@ describe("Chaos intelligence integration boundaries", () => {
   it("preserves approved Jester, Love, and Dungeon boundaries canonically", () => {
     for (const [path, digest] of Object.entries(approvedFiles)) expect(canonicalSha(path), path).toBe(digest);
   });
-  it("keeps Eclipse intelligence-disconnected and preserves the celestial invariant", () => {
-    expect(read("components/living-oracle/eclipse/Eclipse3DStage.tsx")).not.toContain("oracle-intelligence");
+  it("preserves the Eclipse celestial invariant while keeping provider access out of its stage", () => {
+    expect(read("components/living-oracle/eclipse/Eclipse3DStage.tsx")).not.toMatch(/fetch\s*\(/);
     expect(read("lib/living-oracle/eclipse3d.test.ts")).toContain("keeps the Sun on gold and Moon on violet");
   });
   it("adds Chaos busy semantics and cancellation", () => {

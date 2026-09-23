@@ -34,6 +34,7 @@ import {
   runChaosIntelligenceCycle,
   type ChaosCycleIdentity,
 } from "@/lib/oracle-intelligence/chaosIntegration";
+import { createEclipseCycleIdentity, emitEclipsePresentation, resetEclipsePresentation, runEclipseIntelligenceCycle, type EclipseCycleIdentity } from "@/lib/oracle-intelligence/eclipseIntegration";
 
 export default function OracleQR({
   theme,
@@ -42,6 +43,7 @@ export default function OracleQR({
   loveIntelligenceEnabled = false,
   dungeonIntelligenceEnabled = false,
   chaosIntelligenceEnabled = false,
+  eclipseIntelligenceEnabled = false,
 }: {
   theme: string;
   code: string;
@@ -49,6 +51,7 @@ export default function OracleQR({
   loveIntelligenceEnabled?: boolean;
   dungeonIntelligenceEnabled?: boolean;
   chaosIntelligenceEnabled?: boolean;
+  eclipseIntelligenceEnabled?: boolean;
 }) {
   const searchParams = useSearchParams();
   // Normalize theme names so URLs like ?theme=Jester and legacy Classic links work.
@@ -84,6 +87,7 @@ const chaosIntelligenceCycleRef = useRef<Readonly<{
   identity: ChaosCycleIdentity;
   controller: AbortController;
 }> | null>(null);
+const eclipseIntelligenceCycleRef = useRef<Readonly<{ identity: EclipseCycleIdentity; controller: AbortController }> | null>(null);
 const [intelligenceAnnouncement, setIntelligenceAnnouncement] = useState("");
 
 function cancelJesterIntelligenceCycle() {
@@ -109,6 +113,11 @@ function cancelChaosIntelligenceCycle() {
   chaosIntelligenceCycleRef.current = null;
   resetChaosPresentation();
 }
+function cancelEclipseIntelligenceCycle() {
+  eclipseIntelligenceCycleRef.current?.controller.abort("eclipse-cycle-superseded");
+  eclipseIntelligenceCycleRef.current = null;
+  resetEclipsePresentation();
+}
 
 useEffect(() => {
   const activeAudio = [loveMusicRef.current, dndMusicRef.current, chaosMusicRef.current, jesterLaughRef.current];
@@ -125,6 +134,8 @@ useEffect(() => {
     dungeonIntelligenceCycleRef.current = null;
     chaosIntelligenceCycleRef.current?.controller.abort("chaos-oracle-unmounted");
     chaosIntelligenceCycleRef.current = null;
+    eclipseIntelligenceCycleRef.current?.controller.abort("eclipse-oracle-unmounted");
+    eclipseIntelligenceCycleRef.current = null;
   };
 }, [activeTheme]);
 
@@ -388,6 +399,22 @@ if (activeTheme === "chaos" && chaosMusicRef.current) {
     return;
   }
 
+  if (activeTheme === "eclipse" && eclipseIntelligenceEnabled) {
+    cancelEclipseIntelligenceCycle();
+    const identity = createEclipseCycleIdentity(); const controller = new AbortController();
+    eclipseIntelligenceCycleRef.current = { identity, controller };
+    setIntelligenceAnnouncement("The Oracle is considering your question.");
+    const list = ORACLE_ANSWERS.eclipse; const fallbackAnswer = list[Math.floor(Math.random() * list.length)];
+    const decision = await runEclipseIntelligenceCycle({ identity, question: question.trim(), fallbackAnswer, controller });
+    const activeCycle = eclipseIntelligenceCycleRef.current;
+    if (!activeCycle || activeCycle.identity.oracleId !== "eclipse" || activeCycle.identity.cycleId !== decision.identity.cycleId || activeCycle.identity.requestId !== decision.identity.requestId || decision.fallbackReason === "cancelled") return;
+    eclipseIntelligenceCycleRef.current = null;
+    if (decision.presentation) emitEclipsePresentation(identity, decision.presentation); else resetEclipsePresentation();
+    setIntelligenceAnnouncement("");
+    console.info("[QRystal Eclipse intelligence]", { attempted: true, source: decision.source, fallbackReason: decision.fallbackReason ?? null, clientDecisionElapsedMs: Math.round(decision.clientDecisionElapsedMs), diagnostic: decision.diagnostic ?? null, semanticPresentation: decision.presentation });
+    setAnswer(decision.answer); setBusy(false); setLovePage(3); return;
+  }
+
   // Let the rolling animation play
   await new Promise((resolve) => setTimeout(resolve, 1800));
 
@@ -469,6 +496,7 @@ function askAgain() {
   cancelLoveIntelligenceCycle();
   cancelDungeonIntelligenceCycle();
   cancelChaosIntelligenceCycle();
+  cancelEclipseIntelligenceCycle();
   setIntelligenceAnnouncement("");
   setAnswer("");
   setQuestion("");
@@ -1017,7 +1045,11 @@ if (activeTheme === "dnd") {
 
   if (activeTheme === "eclipse") {
     return (
-      <main className="oracle-page theme-eclipse">
+      <main
+        className="oracle-page theme-eclipse"
+        aria-busy={eclipseIntelligenceEnabled && busy ? "true" : undefined}
+        data-eclipse-intelligence={eclipseIntelligenceEnabled && busy ? "pending" : "idle"}
+      >
 
         {/* =================================================
             PAGE 1 — INVITATION
@@ -1216,6 +1248,10 @@ if (activeTheme === "dnd") {
           </section>
         )}
 
+
+        <p className="qb-visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+          {intelligenceAnnouncement}
+        </p>
 
       </main>
     );

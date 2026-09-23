@@ -52,9 +52,9 @@ describe("Dungeon intelligence integration boundaries", () => {
     }
   });
 
-  it("keeps Eclipse disconnected from visitor intelligence", () => {
+  it("keeps provider access out of the Eclipse stage", () => {
     for (const stage of ["eclipse/Eclipse3DStage.tsx"]) {
-      expect(read(`components/living-oracle/${stage}`)).not.toContain("oracle-intelligence");
+      expect(read(`components/living-oracle/${stage}`)).not.toMatch(/fetch\s*\(/);
     }
   });
 

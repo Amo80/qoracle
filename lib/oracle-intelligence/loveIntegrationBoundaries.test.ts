@@ -42,9 +42,9 @@ describe("Love intelligence integration boundaries", () => {
     expect(canonicalSha("lib/living-oracle/jester3d.ts")).toBe("25fb20aaf1564f28d3cdbc64cedd93664c08df8b641e3468707d51ba01405868");
   });
 
-  it("keeps the remaining unintegrated Oracles outside visitor intelligence", () => {
+  it("keeps provider access out of the Eclipse stage", () => {
     for (const stage of ["eclipse/Eclipse3DStage.tsx"]) {
-      expect(read(`components/living-oracle/${stage}`)).not.toContain("oracle-intelligence");
+      expect(read(`components/living-oracle/${stage}`)).not.toMatch(/fetch\s*\(/);
     }
   });
 
