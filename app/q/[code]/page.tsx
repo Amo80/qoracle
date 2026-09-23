@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import OracleQR from "@/components/OracleQR";
 import { createClient } from "@/lib/supabase/server";
+import { isJesterIntelligencePreviewIntegrationEnabled } from "@/lib/experience/featureFlags";
 
 export default async function QRPage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
@@ -61,5 +62,9 @@ if (!data.active) {
 
   await supabase.from("scans").insert({ qr_code_id: data.code });
 
-  return <OracleQR theme={data.theme} code={data.code} />;
+  return <OracleQR
+    theme={data.theme}
+    code={data.code}
+    jesterIntelligenceEnabled={isJesterIntelligencePreviewIntegrationEnabled()}
+  />;
 }

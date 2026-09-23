@@ -6,13 +6,22 @@ import { normalizeOracleId } from "@/lib/oracles/registry";
 import { ORACLE_ANSWERS } from "@/lib/oracles/answers";
 import { stopOracleAudio } from "@/lib/oracles/audioLifecycle";
 import { focusWithoutViewportScroll } from "@/lib/oracles/focusWithoutScroll";
+import {
+  createJesterCycleIdentity,
+  emitJesterPresentation,
+  resetJesterPresentation,
+  runJesterIntelligenceCycle,
+  type JesterCycleIdentity,
+} from "@/lib/oracle-intelligence/jesterIntegration";
 
 export default function OracleQR({
   theme,
   code,
+  jesterIntelligenceEnabled = false,
 }: {
   theme: string;
   code: string;
+  jesterIntelligenceEnabled?: boolean;
 }) {
   const searchParams = useSearchParams();
   // Normalize theme names so URLs like ?theme=Jester and legacy Classic links work.
@@ -32,10 +41,28 @@ const dndMusicRef = useRef<HTMLAudioElement | null>(null);
 const chaosMusicRef = useRef<HTMLAudioElement | null>(null);
 const jesterLaughRef = useRef<HTMLAudioElement | null>(null);
 const answerRegionRef = useRef<HTMLDivElement | null>(null);
+const intelligenceCycleRef = useRef<Readonly<{
+  identity: JesterCycleIdentity;
+  controller: AbortController;
+}> | null>(null);
+const [intelligenceAnnouncement, setIntelligenceAnnouncement] = useState("");
+
+function cancelJesterIntelligenceCycle() {
+  intelligenceCycleRef.current?.controller.abort("jester-cycle-superseded");
+  intelligenceCycleRef.current = null;
+  resetJesterPresentation();
+}
 
 useEffect(() => {
   const activeAudio = [loveMusicRef.current, dndMusicRef.current, chaosMusicRef.current, jesterLaughRef.current];
   return () => stopOracleAudio(activeAudio);
+}, [activeTheme]);
+
+useEffect(() => {
+  return () => {
+    intelligenceCycleRef.current?.controller.abort("jester-oracle-unmounted");
+    intelligenceCycleRef.current = null;
+  };
 }, [activeTheme]);
 
 useEffect(() => {
@@ -99,6 +126,59 @@ if (activeTheme === "chaos" && chaosMusicRef.current) {
     } catch (error) {
       console.log("Love Oracle music could not autoplay:", error);
     }
+  }
+
+  if (activeTheme === "jester" && jesterIntelligenceEnabled) {
+    cancelJesterIntelligenceCycle();
+    const identity = createJesterCycleIdentity();
+    const controller = new AbortController();
+    intelligenceCycleRef.current = { identity, controller };
+    setIntelligenceAnnouncement("The Oracle is considering your question.");
+
+    const list = ORACLE_ANSWERS.jester;
+    const fallbackAnswer = list[Math.floor(Math.random() * list.length)];
+    const decision = await runJesterIntelligenceCycle({
+      identity,
+      question: question.trim(),
+      fallbackAnswer,
+      controller,
+    });
+    const activeCycle = intelligenceCycleRef.current;
+    if (
+      !activeCycle ||
+      activeCycle.identity.oracleId !== "jester" ||
+      activeCycle.identity.cycleId !== decision.identity.cycleId ||
+      activeCycle.identity.requestId !== decision.identity.requestId ||
+      decision.fallbackReason === "cancelled"
+    ) return;
+
+    intelligenceCycleRef.current = null;
+    if (decision.presentation) emitJesterPresentation(identity, decision.presentation);
+    else resetJesterPresentation();
+    setIntelligenceAnnouncement("");
+
+    const laugh = document.getElementById("jesterLaugh") as HTMLAudioElement | null;
+    if (laugh) {
+      laugh.currentTime = 0;
+      laugh.volume = 0.75;
+      try {
+        await laugh.play();
+      } catch (error) {
+        console.log("Jester laugh could not play:", error);
+      }
+    }
+
+    console.info("[QRystal Jester intelligence]", {
+      attempted: true,
+      source: decision.source,
+      fallbackReason: decision.fallbackReason ?? null,
+      clientDecisionElapsedMs: Math.round(decision.clientDecisionElapsedMs),
+      diagnostic: decision.diagnostic ?? null,
+      semanticPresentation: decision.presentation,
+    });
+    setAnswer(decision.answer);
+    setBusy(false);
+    return;
   }
 
   // Let the rolling animation play
@@ -178,6 +258,8 @@ if (activeTheme === "love" || activeTheme === "dnd" || activeTheme === "eclipse"
 }
 
 function askAgain() {
+  cancelJesterIntelligenceCycle();
+  setIntelligenceAnnouncement("");
   setAnswer("");
   setQuestion("");
   setBusy(false);
@@ -917,7 +999,11 @@ if (activeTheme === "dnd") {
      ========================================================= */
   if (activeTheme === "jester") {
     return (
-      <main className="oracle-page theme-jester">
+      <main
+        className="oracle-page theme-jester"
+        aria-busy={jesterIntelligenceEnabled && busy ? "true" : undefined}
+        data-jester-intelligence={jesterIntelligenceEnabled && busy ? "pending" : "idle"}
+      >
 <audio
   ref={jesterLaughRef}
   id="jesterLaugh"
@@ -988,6 +1074,10 @@ if (activeTheme === "dnd") {
             </button>
           </div>
         )}
+
+        <p className="qb-visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+          {intelligenceAnnouncement}
+        </p>
 
         <p className="small">
           QR: {code} • For entertainment only.

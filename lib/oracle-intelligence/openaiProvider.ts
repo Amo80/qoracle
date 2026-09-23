@@ -236,3 +236,16 @@ export function createOpenAIProviderFromEnvironment(
     environment.ORACLE_INTELLIGENCE_MODEL?.trim() || DEFAULT_ORACLE_INTELLIGENCE_MODEL
   );
 }
+
+/** Compact provider used only by the gated visitor-facing Jester Preview route. */
+export function createOpenAICompactProviderFromEnvironment(
+  environment: Readonly<Record<string, string | undefined>> = process.env
+) {
+  const apiKey = environment.OPENAI_API_KEY?.trim();
+  if (!apiKey) return null;
+  const client = new OpenAI({ apiKey, maxRetries: 0 });
+  return new OpenAICompactIntentQualificationProvider(
+    client as unknown as OpenAIResponsesClient,
+    environment.ORACLE_INTELLIGENCE_MODEL?.trim() || DEFAULT_ORACLE_INTELLIGENCE_MODEL
+  );
+}

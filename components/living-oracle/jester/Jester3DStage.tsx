@@ -34,16 +34,19 @@ import {
   getJesterAnimationPlan,
 } from "@/lib/living-oracle/jester3d";
 import type { CharacterPhase } from "@/lib/living-oracle/machine";
+import type { JesterPresentation } from "@/lib/oracle-intelligence/types";
 
 type Jester3DStageProps = Readonly<{
   target: HTMLElement;
   phase: CharacterPhase;
+  presentation?: JesterPresentation | null;
   onReady: () => void;
   onError: () => void;
 }>;
 
 type JesterController = Readonly<{
   setPhase: (phase: CharacterPhase) => void;
+  setPresentation: (presentation: JesterPresentation | null) => void;
   dispose: () => void;
 }>;
 
@@ -80,17 +83,20 @@ async function createJesterController({
   initialPhase,
   onReady,
   onError,
+  initialPresentation,
 }: {
   canvas: HTMLCanvasElement;
   container: HTMLElement;
   initialPhase: CharacterPhase;
   onReady: () => void;
   onError: () => void;
+  initialPresentation: JesterPresentation | null;
 }): Promise<JesterController> {
   let disposed = false;
   let currentPhase = initialPhase;
   let currentAction: AnimationAction | null = null;
   let requestedClip = "";
+  let presentation = initialPresentation;
   const loader = new GLTFLoader();
   const clock = new Clock();
   const actions = new Map<string, AnimationAction>();
@@ -185,6 +191,15 @@ async function createJesterController({
     }
   });
 
+  const ballMaterials: MeshStandardMaterial[] = [];
+  ball.scene.traverse((object) => {
+    if (!(object instanceof Mesh)) return;
+    const materials = Array.isArray(object.material) ? object.material : [object.material];
+    for (const material of materials) {
+      if (material instanceof MeshStandardMaterial) ballMaterials.push(material);
+    }
+  });
+
   const mixer = new AnimationMixer(base.scene);
   const idle = base.animations.find(
     (clip) => clip.name === JESTER_3D_MANIFEST.clips.idle.name
@@ -240,7 +255,11 @@ async function createJesterController({
     action.enabled = true;
     action.reset();
     action.time = Math.min(plan.startAtSeconds, action.getClip().duration);
-    action.setEffectiveTimeScale(plan.timeScale);
+    const performanceScale = presentation
+      ? (presentation.intensity === 1 ? 0.92 : presentation.intensity === 3 ? 1.12 : 1) *
+        (presentation.delivery === "theatrical" ? 1.05 : presentation.delivery === "sincere" ? 0.96 : 1)
+      : 1;
+    action.setEffectiveTimeScale(plan.timeScale * performanceScale);
     action.setLoop(plan.loop ? LoopRepeat : LoopOnce, plan.loop ? Infinity : 1);
     action.clampWhenFinished = !plan.loop;
     action.play();
@@ -263,6 +282,15 @@ async function createJesterController({
           intensity;
       ballGroup.rotation.y += delta * 0.34 * intensity;
       ballGroup.rotation.z = Math.sin(elapsed * 0.7) * 0.035;
+      const ballEnergy = !presentation
+        ? 0.4
+        : presentation.environment === "ball_low"
+          ? 0.32
+          : presentation.environment === "ball_bright"
+            ? 0.68
+            : 0.48;
+      const emissiveIntensity = presentation ? ballEnergy * intensity : 0.4;
+      for (const material of ballMaterials) material.emissiveIntensity = emissiveIntensity;
     }
     renderer.render(scene, camera);
   };
@@ -288,6 +316,9 @@ async function createJesterController({
       }
       void playPhase(phase).catch(reportActiveError);
     },
+    setPresentation(nextPresentation) {
+      presentation = nextPresentation;
+    },
     dispose() {
       disposed = true;
       renderer.setAnimationLoop(null);
@@ -304,6 +335,7 @@ async function createJesterController({
 export function Jester3DStage({
   target,
   phase,
+  presentation = null,
   onReady,
   onError,
 }: Jester3DStageProps) {
@@ -322,6 +354,7 @@ export function Jester3DStage({
       initialPhase: phase,
       onReady,
       onError,
+      initialPresentation: presentation,
     })
       .then((created) => {
         if (!active) {
@@ -347,6 +380,10 @@ export function Jester3DStage({
   useEffect(() => {
     controllerRef.current?.setPhase(phase);
   }, [phase]);
+
+  useEffect(() => {
+    controllerRef.current?.setPresentation(presentation);
+  }, [presentation]);
 
   return createPortal(
     <div className="jester-3d-stage" aria-hidden="true">

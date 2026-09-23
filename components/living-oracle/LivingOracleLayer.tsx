@@ -26,6 +26,12 @@ import { shouldLoadChaos3D } from "@/lib/living-oracle/chaos3d";
 import { shouldLoadEclipse3D } from "@/lib/living-oracle/eclipse3d";
 import { detectWebGLSupport } from "@/lib/living-oracle/webgl";
 import { getOracle, ORACLE_IDS, type OracleId } from "@/lib/oracles/registry";
+import { normalizeClientPresentation } from "@/lib/oracle-intelligence/schema";
+import type { JesterPresentation } from "@/lib/oracle-intelligence/types";
+import {
+  JESTER_PRESENTATION_EVENT,
+  JESTER_PRESENTATION_RESET_EVENT,
+} from "@/lib/oracle-intelligence/jesterIntegration";
 import { Jester3DErrorBoundary } from "./jester/Jester3DErrorBoundary";
 import { Love3DErrorBoundary } from "./love/Love3DErrorBoundary";
 import { Dragon3DErrorBoundary } from "./dragon/Dragon3DErrorBoundary";
@@ -108,6 +114,8 @@ export function LivingOracleLayer({
   const [chaosTarget, setChaosTarget] = useState<HTMLElement | null>(null);
   const [eclipseTarget, setEclipseTarget] = useState<HTMLElement | null>(null);
   const [webGLSupported, setWebGLSupported] = useState(false);
+  const [jesterPresentation, setJesterPresentation] = useState<JesterPresentation | null>(null);
+  const [jesterIntelligencePending, setJesterIntelligencePending] = useState(false);
   const [jester3DStatus, setJester3DStatus] = useState<
     "idle" | "loading" | "ready" | "error"
   >("idle");
@@ -151,6 +159,7 @@ export function LivingOracleLayer({
       oracleRef.current = nextOracle;
       cancelSchedules();
       transition({ type: "RESET" });
+      setJesterPresentation(null);
     },
     [cancelSchedules, transition]
   );
@@ -182,6 +191,23 @@ export function LivingOracleLayer({
   }, [cancelSchedules]);
 
   useEffect(() => {
+    const onPresentation = (event: Event) => {
+      if (!(event instanceof CustomEvent) || oracleRef.current !== "jester") return;
+      const detail = event.detail as { oracleId?: unknown; presentation?: unknown } | null;
+      if (detail?.oracleId !== "jester") return;
+      const trusted = normalizeClientPresentation(detail.presentation, "jester");
+      if (trusted?.oracleId === "jester") setJesterPresentation(trusted);
+    };
+    const onReset = () => setJesterPresentation(null);
+    window.addEventListener(JESTER_PRESENTATION_EVENT, onPresentation);
+    window.addEventListener(JESTER_PRESENTATION_RESET_EVENT, onReset);
+    return () => {
+      window.removeEventListener(JESTER_PRESENTATION_EVENT, onPresentation);
+      window.removeEventListener(JESTER_PRESENTATION_RESET_EVENT, onReset);
+    };
+  }, []);
+
+  useEffect(() => {
     const root = document.documentElement;
     const timings = getCharacterTimings(motion);
 
@@ -195,6 +221,7 @@ export function LivingOracleLayer({
         setDragonTarget(null);
         setChaosTarget(null);
         setEclipseTarget(null);
+        setJesterIntelligencePending(false);
         root.removeAttribute("data-living-oracle");
         root.removeAttribute("data-living-oracle-id");
         root.removeAttribute("data-living-oracle-phase");
@@ -230,6 +257,9 @@ export function LivingOracleLayer({
       });
       root.dataset.livingOracle = "true";
       root.dataset.livingOracleId = detected;
+      setJesterIntelligencePending(
+        detected === "jester" && page.dataset.jesterIntelligence === "pending"
+      );
 
       const busy = Boolean(page.querySelector(BUSY_SELECTOR));
       const answered = hasRenderedAnswer(page);
@@ -320,7 +350,7 @@ export function LivingOracleLayer({
       childList: true,
       subtree: true,
       attributes: true,
-      attributeFilter: ["class"],
+      attributeFilter: ["class", "data-jester-intelligence"],
     });
     document.addEventListener("focusin", onFocusIn);
     document.addEventListener("focusout", onFocusOut);
@@ -528,6 +558,7 @@ export function LivingOracleLayer({
             <LazyJester3DStage
               target={jesterTarget}
               phase={character.phase}
+              presentation={jesterPresentation}
               onReady={handleJesterReady}
               onError={handleJesterError}
             />
@@ -577,8 +608,12 @@ export function LivingOracleLayer({
           </Suspense>
         </Eclipse3DErrorBoundary>
       ) : null}
-      <p className="qb-visually-hidden" aria-live="polite" aria-atomic="true">
-        {oracle.name} Oracle: {character.phase.replace("-", " ")}
+      <p
+        className="qb-visually-hidden"
+        aria-live={jesterIntelligencePending ? "off" : "polite"}
+        aria-atomic="true"
+      >
+        {jesterIntelligencePending ? "" : `${oracle.name} Oracle: ${character.phase.replace("-", " ")}`}
       </p>
     </div>
   );

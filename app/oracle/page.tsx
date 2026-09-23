@@ -1,5 +1,6 @@
 import OracleQR from "@/components/OracleQR";
 import { normalizeOracleId } from "@/lib/oracles/registry";
+import { isJesterIntelligencePreviewIntegrationEnabled } from "@/lib/experience/featureFlags";
 
 export default async function OraclePage({
   searchParams,
@@ -14,5 +15,9 @@ export default async function OraclePage({
   const theme = normalizeOracleId(params.theme);
   const code = params.code || "web";
 
-  return <OracleQR theme={theme} code={code} />;
+  return <OracleQR
+    theme={theme}
+    code={code}
+    jesterIntelligenceEnabled={isJesterIntelligencePreviewIntegrationEnabled()}
+  />;
 }

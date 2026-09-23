@@ -2,7 +2,9 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { OracleIntelligenceProvider } from "./provider";
 import {
   generateWithQualificationTimeout,
+  generateWithJesterPreviewTimeout,
   generateWithTimeout,
+  JESTER_PREVIEW_PROVIDER_TIMEOUT_MS,
   ORACLE_INTELLIGENCE_QUALIFICATION_TIMEOUT_MS,
   ORACLE_INTELLIGENCE_TIMEOUT_MS,
 } from "./timeout";
@@ -19,6 +21,22 @@ describe("Oracle provider timeout and cancellation", () => {
     await expect(generateWithTimeout({ provider, request, timeoutMs: 5 })).resolves.toEqual({ ok: false, kind: "timeout" });
     expect(aborted).toBe(true);
     expect(ORACLE_INTELLIGENCE_TIMEOUT_MS).toBeLessThan(1800);
+  });
+
+  it("caps the isolated Jester Preview provider below its 4.5 second client deadline", async () => {
+    vi.useFakeTimers();
+    const provider: OracleIntelligenceProvider = { generate: async (_request, signal) => new Promise((resolve) => {
+      signal.addEventListener("abort", () => resolve({ ok: false, kind: "cancelled" }), { once: true });
+    }) };
+    const pending = generateWithJesterPreviewTimeout({ provider, request });
+    await vi.advanceTimersByTimeAsync(JESTER_PREVIEW_PROVIDER_TIMEOUT_MS - 1);
+    let settled = false;
+    void pending.then(() => { settled = true; });
+    await Promise.resolve();
+    expect(settled).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+    await expect(pending).resolves.toEqual({ ok: false, kind: "timeout" });
+    expect(JESTER_PREVIEW_PROVIDER_TIMEOUT_MS).toBeLessThan(4500);
   });
 
   it("propagates parent cancellation", async () => {

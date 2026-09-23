@@ -88,3 +88,17 @@ export function isOracleIntelligenceEnabledFor(
     getOracleIntelligenceRolloutPercent(environment) > 0
   );
 }
+
+/** Server-only gate for the visitor-facing Jester Preview qualification. */
+export function isJesterIntelligencePreviewIntegrationEnabled(
+  environment: ChamberEnvironment = process.env
+) {
+  const previewRuntime =
+    environment.VERCEL_ENV === "preview" ||
+    environment.NODE_ENV === "development";
+  return (
+    previewRuntime &&
+    isOracleIntelligenceEnabledFor("jester", environment) &&
+    Boolean(environment.OPENAI_API_KEY?.trim())
+  );
+}

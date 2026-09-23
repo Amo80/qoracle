@@ -6,6 +6,7 @@ import { validateIntelligenceRequest, validateProviderOutput } from "./schema";
 import { buildTrustedOracleResponse } from "./trust";
 import { generateWithTimeout } from "./timeout";
 import { generateWithQualificationTimeout } from "./timeout";
+import { generateWithJesterPreviewTimeout } from "./timeout";
 import type { PreviewIntelligenceDiagnosticRecorder } from "./diagnostics";
 import type { OracleIntelligenceProvider, ProviderFailureKind } from "./provider";
 import type { OracleIntelligenceRateLimiter } from "./rateLimit";
@@ -48,6 +49,7 @@ export async function runOracleIntelligenceService({
   environment = process.env,
   signal,
   qualificationMode = false,
+  jesterPreviewMode = false,
   diagnostics,
 }: {
   candidateRequest: unknown;
@@ -58,6 +60,7 @@ export async function runOracleIntelligenceService({
   environment?: Readonly<Record<string, string | undefined>>;
   signal?: AbortSignal;
   qualificationMode?: boolean;
+  jesterPreviewMode?: boolean;
   diagnostics?: PreviewIntelligenceDiagnosticRecorder;
 }): Promise<IntelligenceServiceResult | null> {
   const validatedRequest = validateIntelligenceRequest(candidateRequest);
@@ -97,9 +100,11 @@ export async function runOracleIntelligenceService({
   }
 
   const startedAt = Date.now();
-  const generated = qualificationMode
-    ? await generateWithQualificationTimeout({ provider, request, parentSignal: signal, diagnostics })
-    : await generateWithTimeout({ provider, request, parentSignal: signal, diagnostics });
+  const generated = jesterPreviewMode
+    ? await generateWithJesterPreviewTimeout({ provider, request, parentSignal: signal, diagnostics })
+    : qualificationMode
+      ? await generateWithQualificationTimeout({ provider, request, parentSignal: signal, diagnostics })
+      : await generateWithTimeout({ provider, request, parentSignal: signal, diagnostics });
   const latencyMs = Date.now() - startedAt;
   if (!generated.ok) {
     const reason = providerFailureReason(generated.kind);

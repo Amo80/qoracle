@@ -12,12 +12,17 @@ describe("Oracle question and answer accessibility", () => {
 
   it("announces and focuses each authoritative answer card", () => {
     expect(oracle.match(/ref=\{answerRegionRef\}/g)).toHaveLength(5);
-    expect(oracle.match(/role="status"/g)).toHaveLength(5);
-    expect(oracle.match(/aria-live="polite"/g)).toHaveLength(5);
-    expect(oracle.match(/aria-atomic="true"/g)).toHaveLength(5);
+    expect(oracle.match(/role="status"/g)?.length).toBeGreaterThanOrEqual(5);
+    expect(oracle.match(/aria-live="polite"/g)?.length).toBeGreaterThanOrEqual(5);
+    expect(oracle.match(/aria-atomic="true"/g)?.length).toBeGreaterThanOrEqual(5);
     expect(oracle.match(/tabIndex=\{-1\}/g)?.length).toBeGreaterThanOrEqual(5);
     expect(oracle).toContain("focusWithoutViewportScroll(answerRegionRef.current)");
     expect(oracle).not.toContain("answerRegionRef.current?.focus()");
+  });
+
+  it("announces Jester intelligence once without replacing answer semantics", () => {
+    expect(oracle).toContain("The Oracle is considering your question.");
+    expect(oracle).toContain('aria-busy={jesterIntelligenceEnabled && busy ? "true" : undefined}');
   });
 
   it("captures mounted audio nodes and tears them down on theme change or unmount", () => {

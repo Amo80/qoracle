@@ -49,7 +49,7 @@ describe("Living Oracle integration contracts", () => {
   });
 
   it("exposes an accessible status and decorative-only atmosphere", () => {
-    expect(layerSource).toContain('aria-live="polite"');
+    expect(layerSource).toContain('aria-live={jesterIntelligencePending ? "off" : "polite"}');
     expect(layerSource).toContain('aria-atomic="true"');
     expect(layerSource).toContain('aria-hidden="true"');
     expect(livingCss).toContain("min-height: 44px");

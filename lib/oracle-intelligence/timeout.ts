@@ -4,6 +4,7 @@ import type { OracleIntelligenceRequestV1 } from "./types";
 
 export const ORACLE_INTELLIGENCE_TIMEOUT_MS = 1550;
 export const ORACLE_INTELLIGENCE_QUALIFICATION_TIMEOUT_MS = 5000;
+export const JESTER_PREVIEW_PROVIDER_TIMEOUT_MS = 4250;
 
 async function generateWithBoundedTimeout({
   provider,
@@ -79,6 +80,27 @@ export function generateWithQualificationTimeout({
     parentSignal,
     timeoutMs,
     timeoutCeilingMs: ORACLE_INTELLIGENCE_QUALIFICATION_TIMEOUT_MS,
+    diagnostics,
+  });
+}
+
+export function generateWithJesterPreviewTimeout({
+  provider,
+  request,
+  parentSignal,
+  diagnostics,
+}: {
+  provider: OracleIntelligenceProvider;
+  request: OracleIntelligenceRequestV1;
+  parentSignal?: AbortSignal;
+  diagnostics?: ProviderDiagnosticRecorder;
+}) {
+  return generateWithBoundedTimeout({
+    provider,
+    request,
+    parentSignal,
+    timeoutMs: JESTER_PREVIEW_PROVIDER_TIMEOUT_MS,
+    timeoutCeilingMs: JESTER_PREVIEW_PROVIDER_TIMEOUT_MS,
     diagnostics,
   });
 }
