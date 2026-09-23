@@ -1,11 +1,7 @@
 import OracleQR from "@/components/OracleQR";
 import { normalizeOracleId } from "@/lib/oracles/registry";
 import {
-  isJesterIntelligencePreviewIntegrationEnabled,
-  isLoveIntelligencePreviewIntegrationEnabled,
-  isDungeonIntelligencePreviewIntegrationEnabled,
-  isChaosIntelligencePreviewIntegrationEnabled,
-  isEclipseIntelligencePreviewIntegrationEnabled,
+  isOracleIntelligenceLiveIntegrationEnabled,
 } from "@/lib/experience/featureFlags";
 
 export default async function OraclePage({
@@ -24,10 +20,10 @@ export default async function OraclePage({
   return <OracleQR
     theme={theme}
     code={code}
-    jesterIntelligenceEnabled={isJesterIntelligencePreviewIntegrationEnabled()}
-    loveIntelligenceEnabled={isLoveIntelligencePreviewIntegrationEnabled()}
-    dungeonIntelligenceEnabled={isDungeonIntelligencePreviewIntegrationEnabled()}
-    chaosIntelligenceEnabled={isChaosIntelligencePreviewIntegrationEnabled()}
-    eclipseIntelligenceEnabled={isEclipseIntelligencePreviewIntegrationEnabled()}
+    jesterIntelligenceEnabled={isOracleIntelligenceLiveIntegrationEnabled("jester")}
+    loveIntelligenceEnabled={isOracleIntelligenceLiveIntegrationEnabled("love")}
+    dungeonIntelligenceEnabled={isOracleIntelligenceLiveIntegrationEnabled("dnd")}
+    chaosIntelligenceEnabled={isOracleIntelligenceLiveIntegrationEnabled("chaos")}
+    eclipseIntelligenceEnabled={isOracleIntelligenceLiveIntegrationEnabled("eclipse")}
   />;
 }

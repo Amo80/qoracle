@@ -83,7 +83,7 @@ export async function runLoveIntelligenceCycle({
     }, LOVE_INTELLIGENCE_CLIENT_DEADLINE_MS);
   });
 
-  const request = fetcher("/api/oracle/intelligence/love-preview", {
+  const request = fetcher("/api/oracle/intelligence/live", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "same-origin",

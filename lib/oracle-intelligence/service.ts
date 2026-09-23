@@ -11,6 +11,7 @@ import { generateWithLovePreviewTimeout } from "./timeout";
 import { generateWithDungeonPreviewTimeout } from "./timeout";
 import { generateWithChaosPreviewTimeout } from "./timeout";
 import { generateWithEclipsePreviewTimeout } from "./timeout";
+import { generateWithLiveTimeout } from "./timeout";
 import type { PreviewIntelligenceDiagnosticRecorder } from "./diagnostics";
 import type { OracleIntelligenceProvider, ProviderFailureKind } from "./provider";
 import type { OracleIntelligenceRateLimiter } from "./rateLimit";
@@ -58,6 +59,7 @@ export async function runOracleIntelligenceService({
   dungeonPreviewMode = false,
   chaosPreviewMode = false,
   eclipsePreviewMode = false,
+  liveMode = false,
   diagnostics,
 }: {
   candidateRequest: unknown;
@@ -73,6 +75,7 @@ export async function runOracleIntelligenceService({
   dungeonPreviewMode?: boolean;
   chaosPreviewMode?: boolean;
   eclipsePreviewMode?: boolean;
+  liveMode?: boolean;
   diagnostics?: PreviewIntelligenceDiagnosticRecorder;
 }): Promise<IntelligenceServiceResult | null> {
   const validatedRequest = validateIntelligenceRequest(candidateRequest);
@@ -112,7 +115,9 @@ export async function runOracleIntelligenceService({
   }
 
   const startedAt = Date.now();
-  const generated = eclipsePreviewMode
+  const generated = liveMode
+    ? await generateWithLiveTimeout({ provider, request, parentSignal: signal })
+    : eclipsePreviewMode
     ? await generateWithEclipsePreviewTimeout({ provider, request, parentSignal: signal, diagnostics })
     : chaosPreviewMode
     ? await generateWithChaosPreviewTimeout({ provider, request, parentSignal: signal, diagnostics })

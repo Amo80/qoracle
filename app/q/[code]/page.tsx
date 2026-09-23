@@ -2,11 +2,7 @@ import { notFound } from "next/navigation";
 import OracleQR from "@/components/OracleQR";
 import { createClient } from "@/lib/supabase/server";
 import {
-  isJesterIntelligencePreviewIntegrationEnabled,
-  isLoveIntelligencePreviewIntegrationEnabled,
-  isDungeonIntelligencePreviewIntegrationEnabled,
-  isChaosIntelligencePreviewIntegrationEnabled,
-  isEclipseIntelligencePreviewIntegrationEnabled,
+  isOracleIntelligenceLiveIntegrationEnabled,
 } from "@/lib/experience/featureFlags";
 
 export default async function QRPage({ params }: { params: Promise<{ code: string }> }) {
@@ -71,10 +67,10 @@ if (!data.active) {
   return <OracleQR
     theme={data.theme}
     code={data.code}
-    jesterIntelligenceEnabled={isJesterIntelligencePreviewIntegrationEnabled()}
-    loveIntelligenceEnabled={isLoveIntelligencePreviewIntegrationEnabled()}
-    dungeonIntelligenceEnabled={isDungeonIntelligencePreviewIntegrationEnabled()}
-    chaosIntelligenceEnabled={isChaosIntelligencePreviewIntegrationEnabled()}
-    eclipseIntelligenceEnabled={isEclipseIntelligencePreviewIntegrationEnabled()}
+    jesterIntelligenceEnabled={isOracleIntelligenceLiveIntegrationEnabled("jester")}
+    loveIntelligenceEnabled={isOracleIntelligenceLiveIntegrationEnabled("love")}
+    dungeonIntelligenceEnabled={isOracleIntelligenceLiveIntegrationEnabled("dnd")}
+    chaosIntelligenceEnabled={isOracleIntelligenceLiveIntegrationEnabled("chaos")}
+    eclipseIntelligenceEnabled={isOracleIntelligenceLiveIntegrationEnabled("eclipse")}
   />;
 }

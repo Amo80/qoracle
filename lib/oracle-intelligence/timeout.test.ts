@@ -15,6 +15,8 @@ import {
   ECLIPSE_PREVIEW_PROVIDER_TIMEOUT_MS,
   ORACLE_INTELLIGENCE_QUALIFICATION_TIMEOUT_MS,
   ORACLE_INTELLIGENCE_TIMEOUT_MS,
+  ORACLE_INTELLIGENCE_LIVE_PROVIDER_TIMEOUT_MS,
+  generateWithLiveTimeout,
 } from "./timeout";
 
 const request = { schemaVersion: "1", requestId: "request_1", cycleId: "cycle_1", oracleId: "jester", question: "What now?" } as const;
@@ -101,6 +103,19 @@ describe("Oracle provider timeout and cancellation", () => {
     await expect(pending).resolves.toEqual({ ok: false, kind: "timeout" });
     expect(ECLIPSE_PREVIEW_PROVIDER_TIMEOUT_MS).toBe(4250);
     expect(CHAOS_PREVIEW_PROVIDER_TIMEOUT_MS).toBe(4250);
+    expect(ORACLE_INTELLIGENCE_TIMEOUT_MS).toBe(1550);
+  });
+
+  it("keeps the production-capable live route inside the 4.5 second client deadline", async () => {
+    vi.useFakeTimers();
+    const provider: OracleIntelligenceProvider = { generate: async (_request, signal) => new Promise((resolve) => {
+      signal.addEventListener("abort", () => resolve({ ok: false, kind: "cancelled" }), { once: true });
+    }) };
+    const pending = generateWithLiveTimeout({ provider, request });
+    await vi.advanceTimersByTimeAsync(ORACLE_INTELLIGENCE_LIVE_PROVIDER_TIMEOUT_MS);
+    await expect(pending).resolves.toEqual({ ok: false, kind: "timeout" });
+    expect(ORACLE_INTELLIGENCE_LIVE_PROVIDER_TIMEOUT_MS).toBe(4250);
+    expect(ORACLE_INTELLIGENCE_LIVE_PROVIDER_TIMEOUT_MS).toBeLessThan(4500);
     expect(ORACLE_INTELLIGENCE_TIMEOUT_MS).toBe(1550);
   });
 

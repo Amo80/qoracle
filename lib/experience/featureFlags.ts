@@ -89,6 +89,34 @@ export function isOracleIntelligenceEnabledFor(
   );
 }
 
+export function hasProductionIntelligenceRateLimitConfiguration(
+  environment: ChamberEnvironment = process.env
+) {
+  return Boolean(
+    environment.NEXT_PUBLIC_SUPABASE_URL?.trim() &&
+    environment.SUPABASE_SERVICE_ROLE_KEY?.trim() &&
+    environment.ORACLE_INTELLIGENCE_RATE_LIMIT_SECRET?.trim() &&
+    environment.ORACLE_INTELLIGENCE_RATE_LIMIT_SECRET.trim().length >= 32
+  );
+}
+
+/** Server-only gate for the production-capable visitor route. */
+export function isOracleIntelligenceLiveIntegrationEnabled(
+  oracleId: keyof typeof INTELLIGENCE_ORACLE_FLAGS,
+  environment: ChamberEnvironment = process.env
+) {
+  const runtimeAllowed =
+    environment.VERCEL_ENV === "production" ||
+    environment.VERCEL_ENV === "preview" ||
+    environment.NODE_ENV === "development";
+  const productionLimiterReady =
+    environment.VERCEL_ENV !== "production" ||
+    hasProductionIntelligenceRateLimitConfiguration(environment);
+  return runtimeAllowed && productionLimiterReady &&
+    isOracleIntelligenceEnabledFor(oracleId, environment) &&
+    Boolean(environment.OPENAI_API_KEY?.trim());
+}
+
 /** Server-only gate for the visitor-facing Jester Preview qualification. */
 export function isJesterIntelligencePreviewIntegrationEnabled(
   environment: ChamberEnvironment = process.env

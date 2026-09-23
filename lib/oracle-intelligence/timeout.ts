@@ -9,6 +9,7 @@ export const LOVE_PREVIEW_PROVIDER_TIMEOUT_MS = 4250;
 export const DUNGEON_PREVIEW_PROVIDER_TIMEOUT_MS = 4250;
 export const CHAOS_PREVIEW_PROVIDER_TIMEOUT_MS = 4250;
 export const ECLIPSE_PREVIEW_PROVIDER_TIMEOUT_MS = 4250;
+export const ORACLE_INTELLIGENCE_LIVE_PROVIDER_TIMEOUT_MS = 4250;
 
 async function generateWithBoundedTimeout({
   provider,
@@ -176,4 +177,18 @@ export function generateWithEclipsePreviewTimeout({ provider, request, parentSig
   provider: OracleIntelligenceProvider; request: OracleIntelligenceRequestV1; parentSignal?: AbortSignal; diagnostics?: ProviderDiagnosticRecorder;
 }) {
   return generateWithBoundedTimeout({ provider, request, parentSignal, timeoutMs: ECLIPSE_PREVIEW_PROVIDER_TIMEOUT_MS, timeoutCeilingMs: ECLIPSE_PREVIEW_PROVIDER_TIMEOUT_MS, diagnostics });
+}
+
+export function generateWithLiveTimeout({ provider, request, parentSignal }: {
+  provider: OracleIntelligenceProvider;
+  request: OracleIntelligenceRequestV1;
+  parentSignal?: AbortSignal;
+}) {
+  return generateWithBoundedTimeout({
+    provider,
+    request,
+    parentSignal,
+    timeoutMs: ORACLE_INTELLIGENCE_LIVE_PROVIDER_TIMEOUT_MS,
+    timeoutCeilingMs: ORACLE_INTELLIGENCE_LIVE_PROVIDER_TIMEOUT_MS,
+  });
 }

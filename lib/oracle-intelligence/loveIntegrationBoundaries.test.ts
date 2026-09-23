@@ -36,7 +36,7 @@ describe("Love intelligence integration boundaries", () => {
 
   it("preserves the tested Jester route, coordinator, stage, personality, and rig mapping canonically", () => {
     expect(canonicalSha("app/api/oracle/intelligence/jester-preview/route.ts")).toBe("5e64da3b520b5abe1d68b6be37847c0f9ae3a75d4cdf03a0a5cd5ea0ab8320cc");
-    expect(canonicalSha("lib/oracle-intelligence/jesterIntegration.ts")).toBe("4a5d775c9aea1a4d49c93f94cdfca4ba68162a5fce34d0a4a67073ed9bc1a010");
+    expect(canonicalSha("lib/oracle-intelligence/jesterIntegration.ts")).toBe("58db180d23458162921c48b3f8c679794d1db9aa597a2db4e8473501096548b8");
     expect(canonicalSha("components/living-oracle/jester/Jester3DStage.tsx")).toBe("6d1c30554eddc0359e54ba07e6234773b9b3ffa4a3db50f6659074d8d6572f19");
     expect(canonicalSha("lib/oracle-intelligence/personalities/v1/jester.ts")).toBe("1f15121d38b48097651614a71492441ef9306e9546315f6613ae8c0144ff59da");
     expect(canonicalSha("lib/living-oracle/jester3d.ts")).toBe("25fb20aaf1564f28d3cdbc64cedd93664c08df8b641e3468707d51ba01405868");

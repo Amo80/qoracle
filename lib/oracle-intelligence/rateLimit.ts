@@ -1,3 +1,6 @@
+import { createHash } from "node:crypto";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+
 export type RateLimitRequest = Readonly<{
   sessionId: string;
   now?: number;
@@ -53,12 +56,66 @@ export class UnavailableOracleIntelligenceRateLimiter implements OracleIntellige
   }
 }
 
+type DistributedLimitRow = Readonly<{
+  allowed: boolean;
+  reason: "short_window" | "daily_soft_limit" | null;
+  remaining_minute: number;
+  remaining_day: number;
+}>;
+
+type RateLimitRpcClient = Pick<SupabaseClient, "rpc">;
+
+export class SupabaseOracleIntelligenceRateLimiter implements OracleIntelligenceRateLimiter {
+  constructor(
+    private readonly client: RateLimitRpcClient,
+    private readonly privacySecret: string,
+    private readonly minuteLimit = 6,
+    private readonly dailyLimit = 100
+  ) {}
+
+  async check({ sessionId }: RateLimitRequest): Promise<RateLimitResult> {
+    try {
+      const sessionHash = createHash("sha256")
+        .update(this.privacySecret, "utf8")
+        .update("\0")
+        .update(sessionId, "utf8")
+        .digest("hex");
+      const { data, error } = await this.client.rpc("check_oracle_intelligence_rate_limit", {
+        p_session_hash: sessionHash,
+        p_minute_limit: this.minuteLimit,
+        p_daily_limit: this.dailyLimit,
+      });
+      if (error) return { allowed: false, reason: "unavailable" };
+      const candidate = Array.isArray(data) ? data[0] : data;
+      if (!candidate || typeof candidate !== "object") return { allowed: false, reason: "unavailable" };
+      const row = candidate as DistributedLimitRow;
+      if (row.allowed === true && Number.isInteger(row.remaining_minute) && Number.isInteger(row.remaining_day)) {
+        return { allowed: true, remainingMinute: Math.max(0, row.remaining_minute), remainingDay: Math.max(0, row.remaining_day) };
+      }
+      if (row.allowed === false && (row.reason === "short_window" || row.reason === "daily_soft_limit")) {
+        return { allowed: false, reason: row.reason };
+      }
+      return { allowed: false, reason: "unavailable" };
+    } catch {
+      return { allowed: false, reason: "unavailable" };
+    }
+  }
+}
+
 export function createDefaultRateLimiter(
   environment: Readonly<Record<string, string | undefined>> = process.env
 ): OracleIntelligenceRateLimiter {
-  // Preview and local qualification may use process-local counters. Production
-  // rollout must supply a distributed implementation before enabling AI.
-  return environment.NODE_ENV !== "production" || environment.VERCEL_ENV === "preview"
-    ? new InMemoryOracleIntelligenceRateLimiter()
-    : new UnavailableOracleIntelligenceRateLimiter();
+  if (environment.NODE_ENV !== "production" || environment.VERCEL_ENV === "preview") {
+    return new InMemoryOracleIntelligenceRateLimiter();
+  }
+  const url = environment.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const serviceKey = environment.SUPABASE_SERVICE_ROLE_KEY?.trim();
+  const privacySecret = environment.ORACLE_INTELLIGENCE_RATE_LIMIT_SECRET?.trim();
+  if (!url || !serviceKey || !privacySecret || privacySecret.length < 32) {
+    return new UnavailableOracleIntelligenceRateLimiter();
+  }
+  const client = createClient(url, serviceKey, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+  });
+  return new SupabaseOracleIntelligenceRateLimiter(client, privacySecret);
 }

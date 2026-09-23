@@ -12,12 +12,12 @@ const canonicalSha = (path: string) => createHash("sha256")
 
 const approvedFiles = {
   "app/api/oracle/intelligence/jester-preview/route.ts": "5e64da3b520b5abe1d68b6be37847c0f9ae3a75d4cdf03a0a5cd5ea0ab8320cc",
-  "lib/oracle-intelligence/jesterIntegration.ts": "4a5d775c9aea1a4d49c93f94cdfca4ba68162a5fce34d0a4a67073ed9bc1a010",
+  "lib/oracle-intelligence/jesterIntegration.ts": "58db180d23458162921c48b3f8c679794d1db9aa597a2db4e8473501096548b8",
   "components/living-oracle/jester/Jester3DStage.tsx": "6d1c30554eddc0359e54ba07e6234773b9b3ffa4a3db50f6659074d8d6572f19",
   "lib/oracle-intelligence/personalities/v1/jester.ts": "1f15121d38b48097651614a71492441ef9306e9546315f6613ae8c0144ff59da",
   "lib/living-oracle/jester3d.ts": "25fb20aaf1564f28d3cdbc64cedd93664c08df8b641e3468707d51ba01405868",
   "app/api/oracle/intelligence/love-preview/route.ts": "c413590256e24f8953483ad1217c3e468a876e22b398b55408df367f47952e62",
-  "lib/oracle-intelligence/loveIntegration.ts": "a45615f1580f378490835997ed5ac68a515f45324c1bbbb6e93ff59215ab2c9a",
+  "lib/oracle-intelligence/loveIntegration.ts": "77dd7fca25c278477efa9bbf58a09850ecf25576da6a227ab52e7d60cdb91fd8",
   "components/living-oracle/love/Love3DStage.tsx": "aafd6aa6bf748339eb54305f5e99de55becf1f7dad8716db506dcc713b3e7844",
   "lib/oracle-intelligence/personalities/v1/love.ts": "f9d30c94675548d9cebed0299584ad17998614bacd1690720d5c2450d2d8d283",
   "lib/living-oracle/love3d.ts": "8e6f450a665f37b137bdec9966d60be772e8c4ab90454927aa9d32f30cf64cf9",

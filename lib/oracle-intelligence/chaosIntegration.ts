@@ -38,7 +38,7 @@ export async function runChaosIntelligenceCycle({ identity, question, fallbackAn
   const deadline = new Promise<"deadline">((resolve) => {
     deadlineTimer = globalThis.setTimeout(() => { controller.abort("chaos-intelligence-deadline"); resolve("deadline"); }, CHAOS_INTELLIGENCE_CLIENT_DEADLINE_MS);
   });
-  const request = fetcher("/api/oracle/intelligence/chaos-preview", {
+  const request = fetcher("/api/oracle/intelligence/live", {
     method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin", cache: "no-store", signal: controller.signal,
     body: JSON.stringify({ schemaVersion: "1", ...identity, question }),
   }).then(async (response): Promise<RouteEnvelope> => {

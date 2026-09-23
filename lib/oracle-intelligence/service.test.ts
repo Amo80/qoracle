@@ -50,6 +50,30 @@ describe("server Oracle Intelligence service", () => {
     expect(calls).toBe(0);
   });
 
+  it("applies stable partial cohort eligibility before provider or limiter cost", async () => {
+    let providerCalls = 0; let limiterCalls = 0;
+    const provider: OracleIntelligenceProvider = { generate: async () => { providerCalls += 1; return { ok: false, kind: "provider_error" }; } };
+    const limiter = { check: async () => { limiterCalls += 1; return { allowed: true as const, remainingMinute: 5, remainingDay: 99 }; } };
+    const partial = { ...environment, ORACLE_INTELLIGENCE_ROLLOUT_PERCENT: "1" };
+    let excludedSession = "";
+    for (let index = 0; index < 500; index += 1) {
+      const candidate = `session-${index}`;
+      const result = await runOracleIntelligenceService({ candidateRequest: request(), sessionId: candidate, provider, rateLimiter: limiter, environment: partial });
+      if (result && !result.ok && result.action === "use_protected_library" && result.reason === "disabled") {
+        excludedSession = candidate;
+        break;
+      }
+    }
+    expect(excludedSession).not.toBe(""); expect(providerCalls).toBe(0); expect(limiterCalls).toBe(0);
+  });
+
+  it("supports all five canonical Oracle IDs through the same trusted service boundary", async () => {
+    for (const oracleId of ["jester", "love", "dnd", "chaos", "eclipse"] as const) {
+      const result = await run({ candidateRequest: { ...request(), oracleId } });
+      expect(result).toMatchObject({ ok: true, action: "use_response", response: { oracleId } });
+    }
+  });
+
   it("falls back safely for missing configuration, limiter failure, and ordinary provider failures", async () => {
     await expect(run({ provider: null })).resolves.toMatchObject({ reason: "missing_configuration" });
     await expect(run({ rateLimiter: new UnavailableOracleIntelligenceRateLimiter() })).resolves.toMatchObject({ reason: "rate_limited" });

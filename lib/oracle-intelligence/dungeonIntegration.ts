@@ -83,7 +83,7 @@ export async function runDungeonIntelligenceCycle({
     }, DUNGEON_INTELLIGENCE_CLIENT_DEADLINE_MS);
   });
 
-  const request = fetcher("/api/oracle/intelligence/dungeon-preview", {
+  const request = fetcher("/api/oracle/intelligence/live", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "same-origin",

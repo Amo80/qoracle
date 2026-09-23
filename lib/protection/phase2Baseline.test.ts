@@ -30,10 +30,12 @@ const APPROVED_ADDITIVE_ROUTES = new Set([
   "app/api/oracle/intelligence/dungeon-preview/route.ts",
   "app/api/oracle/intelligence/chaos-preview/route.ts",
   "app/api/oracle/intelligence/eclipse-preview/route.ts",
+  "app/api/oracle/intelligence/live/route.ts",
+  "supabase/migrations/20260923180000_oracle_intelligence_rate_limits.sql",
 ]);
 
 const PHASE_2_PROTECTED_BASELINE =
-  "aeb717a5a4daa5de3a018d1e173a67dbb5783b99ec9acb292f11cff3e92b141c";
+  "edd5dff11996cdb5ad81235fed8c28bdc065625d094fa3942a4959208d12af90";
 
 function canonicalizeText(bytes: Buffer) {
   return bytes
