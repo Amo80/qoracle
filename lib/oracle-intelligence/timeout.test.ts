@@ -7,6 +7,8 @@ import {
   JESTER_PREVIEW_PROVIDER_TIMEOUT_MS,
   LOVE_PREVIEW_PROVIDER_TIMEOUT_MS,
   generateWithLovePreviewTimeout,
+  generateWithDungeonPreviewTimeout,
+  DUNGEON_PREVIEW_PROVIDER_TIMEOUT_MS,
   ORACLE_INTELLIGENCE_QUALIFICATION_TIMEOUT_MS,
   ORACLE_INTELLIGENCE_TIMEOUT_MS,
 } from "./timeout";
@@ -50,6 +52,21 @@ describe("Oracle provider timeout and cancellation", () => {
     const pending = generateWithLovePreviewTimeout({ provider, request: loveRequest });
     await vi.advanceTimersByTimeAsync(LOVE_PREVIEW_PROVIDER_TIMEOUT_MS);
     await expect(pending).resolves.toEqual({ ok: false, kind: "timeout" });
+    expect(LOVE_PREVIEW_PROVIDER_TIMEOUT_MS).toBe(4250);
+    expect(JESTER_PREVIEW_PROVIDER_TIMEOUT_MS).toBe(4250);
+    expect(ORACLE_INTELLIGENCE_TIMEOUT_MS).toBe(1550);
+  });
+
+  it("gives Dungeon the same bounded Preview ceiling without changing earlier timeouts", async () => {
+    vi.useFakeTimers();
+    const dungeonRequest = { ...request, oracleId: "dnd" as const };
+    const provider: OracleIntelligenceProvider = { generate: async (_request, signal) => new Promise((resolve) => {
+      signal.addEventListener("abort", () => resolve({ ok: false, kind: "cancelled" }), { once: true });
+    }) };
+    const pending = generateWithDungeonPreviewTimeout({ provider, request: dungeonRequest });
+    await vi.advanceTimersByTimeAsync(DUNGEON_PREVIEW_PROVIDER_TIMEOUT_MS);
+    await expect(pending).resolves.toEqual({ ok: false, kind: "timeout" });
+    expect(DUNGEON_PREVIEW_PROVIDER_TIMEOUT_MS).toBe(4250);
     expect(LOVE_PREVIEW_PROVIDER_TIMEOUT_MS).toBe(4250);
     expect(JESTER_PREVIEW_PROVIDER_TIMEOUT_MS).toBe(4250);
     expect(ORACLE_INTELLIGENCE_TIMEOUT_MS).toBe(1550);

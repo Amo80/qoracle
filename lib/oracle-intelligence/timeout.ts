@@ -6,6 +6,7 @@ export const ORACLE_INTELLIGENCE_TIMEOUT_MS = 1550;
 export const ORACLE_INTELLIGENCE_QUALIFICATION_TIMEOUT_MS = 5000;
 export const JESTER_PREVIEW_PROVIDER_TIMEOUT_MS = 4250;
 export const LOVE_PREVIEW_PROVIDER_TIMEOUT_MS = 4250;
+export const DUNGEON_PREVIEW_PROVIDER_TIMEOUT_MS = 4250;
 
 async function generateWithBoundedTimeout({
   provider,
@@ -123,6 +124,27 @@ export function generateWithLovePreviewTimeout({
     parentSignal,
     timeoutMs: LOVE_PREVIEW_PROVIDER_TIMEOUT_MS,
     timeoutCeilingMs: LOVE_PREVIEW_PROVIDER_TIMEOUT_MS,
+    diagnostics,
+  });
+}
+
+export function generateWithDungeonPreviewTimeout({
+  provider,
+  request,
+  parentSignal,
+  diagnostics,
+}: {
+  provider: OracleIntelligenceProvider;
+  request: OracleIntelligenceRequestV1;
+  parentSignal?: AbortSignal;
+  diagnostics?: ProviderDiagnosticRecorder;
+}) {
+  return generateWithBoundedTimeout({
+    provider,
+    request,
+    parentSignal,
+    timeoutMs: DUNGEON_PREVIEW_PROVIDER_TIMEOUT_MS,
+    timeoutCeilingMs: DUNGEON_PREVIEW_PROVIDER_TIMEOUT_MS,
     diagnostics,
   });
 }

@@ -8,6 +8,7 @@ import { generateWithTimeout } from "./timeout";
 import { generateWithQualificationTimeout } from "./timeout";
 import { generateWithJesterPreviewTimeout } from "./timeout";
 import { generateWithLovePreviewTimeout } from "./timeout";
+import { generateWithDungeonPreviewTimeout } from "./timeout";
 import type { PreviewIntelligenceDiagnosticRecorder } from "./diagnostics";
 import type { OracleIntelligenceProvider, ProviderFailureKind } from "./provider";
 import type { OracleIntelligenceRateLimiter } from "./rateLimit";
@@ -52,6 +53,7 @@ export async function runOracleIntelligenceService({
   qualificationMode = false,
   jesterPreviewMode = false,
   lovePreviewMode = false,
+  dungeonPreviewMode = false,
   diagnostics,
 }: {
   candidateRequest: unknown;
@@ -64,6 +66,7 @@ export async function runOracleIntelligenceService({
   qualificationMode?: boolean;
   jesterPreviewMode?: boolean;
   lovePreviewMode?: boolean;
+  dungeonPreviewMode?: boolean;
   diagnostics?: PreviewIntelligenceDiagnosticRecorder;
 }): Promise<IntelligenceServiceResult | null> {
   const validatedRequest = validateIntelligenceRequest(candidateRequest);
@@ -103,7 +106,9 @@ export async function runOracleIntelligenceService({
   }
 
   const startedAt = Date.now();
-  const generated = lovePreviewMode
+  const generated = dungeonPreviewMode
+    ? await generateWithDungeonPreviewTimeout({ provider, request, parentSignal: signal, diagnostics })
+    : lovePreviewMode
     ? await generateWithLovePreviewTimeout({ provider, request, parentSignal: signal, diagnostics })
     : jesterPreviewMode
     ? await generateWithJesterPreviewTimeout({ provider, request, parentSignal: signal, diagnostics })

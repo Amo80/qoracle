@@ -3,14 +3,14 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
-const PHASE_6_LOVE_INTEGRATED_ORACLE_QR_SHA256 =
-  "d6259ba7678dfdc9cd6fd8087f809f3ad61259817e212e14e3387043601db27a";
+const PHASE_6_DUNGEON_INTEGRATED_ORACLE_QR_SHA256 =
+  "35d577868db3804cd8af626e10eb9c5affa9e697b34e6d3077b4e3f2dca5d8f0";
 
 function canonicalizeText(source: string) {
   return source.replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n");
 }
 
-describe("approved Dungeon copy in the Phase 6 Love-integrated OracleQR", () => {
+describe("approved Dungeon copy in the Phase 6 Dungeon-integrated OracleQR", () => {
   it("retains the approved Dungeon-facing strings in the canonical source", () => {
     const source = canonicalizeText(
       readFileSync(join(process.cwd(), "components/OracleQR.tsx"), "utf8")
@@ -26,7 +26,7 @@ describe("approved Dungeon copy in the Phase 6 Love-integrated OracleQR", () => 
       .split("The QRystal Balls • DUNGEON").join("The QRystal Balls • D&D")
       .split("✦ Theme: Dungeon").join("⚙ Theme: D&D");
     expect(createHash("sha256").update(canonical).digest("hex")).toBe(
-      PHASE_6_LOVE_INTEGRATED_ORACLE_QR_SHA256
+      PHASE_6_DUNGEON_INTEGRATED_ORACLE_QR_SHA256
     );
   });
 });

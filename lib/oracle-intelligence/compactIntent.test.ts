@@ -82,6 +82,26 @@ describe("compact semantic-intent experiment", () => {
     expect(deriveCompactPresentation("love", loveIntent)).toEqual(direction);
   });
 
+  it("derives Dungeon-only cues and restrains sensitive guardian delivery", () => {
+    const intent = {
+      answer: "A failed trial still leaves a map. Carry its lesson, prepare with care, and approach the next gate without mistaking fear for prophecy.",
+      emotion: "watchful",
+      intensity: 2,
+      delivery: "measured",
+      safetyCategory: "sensitive",
+    } as const;
+    const direction = deriveCompactPresentation("dnd", intent);
+    expect(direction).toMatchObject({
+      oracleId: "dnd",
+      gesture: "guardian_focus",
+      reveal: "subtle",
+      reaction: "restrained",
+      environment: "altar_low",
+    });
+    expect(JSON.stringify(direction)).not.toMatch(/open_hands|heart_|fragments_|celestial_/);
+    expect(deriveCompactPresentation("dnd", intent)).toEqual(direction);
+  });
+
   it("expands into the existing full trusted boundary with server-owned metadata", () => {
     const expanded = expandCompactIntent("jester", jesterIntent);
     expect(expanded).toMatchObject({

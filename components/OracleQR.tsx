@@ -20,17 +20,26 @@ import {
   runLoveIntelligenceCycle,
   type LoveCycleIdentity,
 } from "@/lib/oracle-intelligence/loveIntegration";
+import {
+  createDungeonCycleIdentity,
+  emitDungeonPresentation,
+  resetDungeonPresentation,
+  runDungeonIntelligenceCycle,
+  type DungeonCycleIdentity,
+} from "@/lib/oracle-intelligence/dungeonIntegration";
 
 export default function OracleQR({
   theme,
   code,
   jesterIntelligenceEnabled = false,
   loveIntelligenceEnabled = false,
+  dungeonIntelligenceEnabled = false,
 }: {
   theme: string;
   code: string;
   jesterIntelligenceEnabled?: boolean;
   loveIntelligenceEnabled?: boolean;
+  dungeonIntelligenceEnabled?: boolean;
 }) {
   const searchParams = useSearchParams();
   // Normalize theme names so URLs like ?theme=Jester and legacy Classic links work.
@@ -58,6 +67,10 @@ const loveIntelligenceCycleRef = useRef<Readonly<{
   identity: LoveCycleIdentity;
   controller: AbortController;
 }> | null>(null);
+const dungeonIntelligenceCycleRef = useRef<Readonly<{
+  identity: DungeonCycleIdentity;
+  controller: AbortController;
+}> | null>(null);
 const [intelligenceAnnouncement, setIntelligenceAnnouncement] = useState("");
 
 function cancelJesterIntelligenceCycle() {
@@ -72,6 +85,12 @@ function cancelLoveIntelligenceCycle() {
   resetLovePresentation();
 }
 
+function cancelDungeonIntelligenceCycle() {
+  dungeonIntelligenceCycleRef.current?.controller.abort("dungeon-cycle-superseded");
+  dungeonIntelligenceCycleRef.current = null;
+  resetDungeonPresentation();
+}
+
 useEffect(() => {
   const activeAudio = [loveMusicRef.current, dndMusicRef.current, chaosMusicRef.current, jesterLaughRef.current];
   return () => stopOracleAudio(activeAudio);
@@ -83,6 +102,8 @@ useEffect(() => {
     intelligenceCycleRef.current = null;
     loveIntelligenceCycleRef.current?.controller.abort("love-oracle-unmounted");
     loveIntelligenceCycleRef.current = null;
+    dungeonIntelligenceCycleRef.current?.controller.abort("dungeon-oracle-unmounted");
+    dungeonIntelligenceCycleRef.current = null;
   };
 }, [activeTheme]);
 
@@ -244,6 +265,78 @@ if (activeTheme === "chaos" && chaosMusicRef.current) {
     return;
   }
 
+  if (activeTheme === "dnd" && dungeonIntelligenceEnabled) {
+    cancelDungeonIntelligenceCycle();
+    const identity = createDungeonCycleIdentity();
+    const controller = new AbortController();
+    dungeonIntelligenceCycleRef.current = { identity, controller };
+    setIntelligenceAnnouncement("The Oracle is considering your question.");
+
+    const list = ORACLE_ANSWERS.dnd;
+    const fallbackAnswer = list[Math.floor(Math.random() * list.length)];
+    const decision = await runDungeonIntelligenceCycle({
+      identity,
+      question: question.trim(),
+      fallbackAnswer,
+      controller,
+    });
+    const activeCycle = dungeonIntelligenceCycleRef.current;
+    if (
+      !activeCycle ||
+      activeCycle.identity.oracleId !== "dnd" ||
+      activeCycle.identity.cycleId !== decision.identity.cycleId ||
+      activeCycle.identity.requestId !== decision.identity.requestId ||
+      decision.fallbackReason === "cancelled"
+    ) return;
+
+    dungeonIntelligenceCycleRef.current = null;
+    if (decision.presentation) emitDungeonPresentation(identity, decision.presentation);
+    else resetDungeonPresentation();
+    setIntelligenceAnnouncement("");
+
+    const upper = decision.answer.toUpperCase();
+    let roll: number;
+    if (
+      upper.includes("YES") || upper.includes("ABSOLUTELY") ||
+      upper.includes("VERY LIKELY") || upper.includes("ADVANTAGE") ||
+      upper.includes("GREAT ADVENTURE")
+    ) {
+      roll = 20;
+    } else if (
+      upper.includes("NO") || upper.includes("DON'T") || upper.includes("DONT") ||
+      upper.includes("CRITICAL FAIL") || upper.includes("POORLY") ||
+      upper.includes("DISADVANTAGE")
+    ) {
+      roll = 1;
+    } else if (
+      upper.includes("UNCERTAIN") || upper.includes("ROLL AGAIN") ||
+      upper.includes("ASK AGAIN")
+    ) {
+      roll = Math.floor(Math.random() * 7) + 8;
+    } else if (
+      upper.includes("PROBABLY") || upper.includes("FATES") ||
+      upper.includes("DM HAS SPOKEN")
+    ) {
+      roll = Math.floor(Math.random() * 5) + 15;
+    } else {
+      roll = Math.floor(Math.random() * 6) + 2;
+    }
+    setDndRoll(roll);
+
+    console.info("[QRystal Dungeon intelligence]", {
+      attempted: true,
+      source: decision.source,
+      fallbackReason: decision.fallbackReason ?? null,
+      clientDecisionElapsedMs: Math.round(decision.clientDecisionElapsedMs),
+      diagnostic: decision.diagnostic ?? null,
+      semanticPresentation: decision.presentation,
+    });
+    setAnswer(decision.answer);
+    setBusy(false);
+    setLovePage(3);
+    return;
+  }
+
   // Let the rolling animation play
   await new Promise((resolve) => setTimeout(resolve, 1800));
 
@@ -323,6 +416,7 @@ if (activeTheme === "love" || activeTheme === "dnd" || activeTheme === "eclipse"
 function askAgain() {
   cancelJesterIntelligenceCycle();
   cancelLoveIntelligenceCycle();
+  cancelDungeonIntelligenceCycle();
   setIntelligenceAnnouncement("");
   setAnswer("");
   setQuestion("");
@@ -599,7 +693,11 @@ if (activeTheme === "eclipse") {
 
 if (activeTheme === "dnd") {
   return (
-    <main className="oracle-page theme-dnd">
+    <main
+      className="oracle-page theme-dnd"
+      aria-busy={dungeonIntelligenceEnabled && busy ? "true" : undefined}
+      data-dungeon-intelligence={dungeonIntelligenceEnabled && busy ? "pending" : "idle"}
+    >
 
 <audio
   ref={dndMusicRef}
@@ -852,6 +950,10 @@ if (activeTheme === "dnd") {
 
         </section>
       )}
+
+      <p className="qb-visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+        {intelligenceAnnouncement}
+      </p>
 
     </main>
   );

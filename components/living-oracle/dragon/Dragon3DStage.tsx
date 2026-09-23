@@ -33,18 +33,22 @@ import {
   getDragonCameraDistance,
   getDragonPoseMagnitude,
   getDragonPresentation,
+  applyDungeonIntelligencePresentation,
   type DragonProceduralBone,
 } from "@/lib/living-oracle/dragon3d";
 import type { CharacterPhase } from "@/lib/living-oracle/machine";
+import type { DungeonPresentation } from "@/lib/oracle-intelligence/types";
 
 type Props = Readonly<{
   target: HTMLElement;
   phase: CharacterPhase;
+  presentation?: DungeonPresentation | null;
   onReady: () => void;
   onError: () => void;
 }>;
 type Controller = Readonly<{
   setPhase: (phase: CharacterPhase) => void;
+  setPresentation: (presentation: DungeonPresentation | null) => void;
   dispose: () => void;
 }>;
 
@@ -109,16 +113,18 @@ function normalizeByWidth(
   return scale;
 }
 
-async function createController({ canvas, container, initialPhase, onReady, onError, isActive }: {
+async function createController({ canvas, container, initialPhase, initialPresentation, onReady, onError, isActive }: {
   canvas: HTMLCanvasElement;
   container: HTMLElement;
   initialPhase: CharacterPhase;
+  initialPresentation: DungeonPresentation | null;
   onReady: () => void;
   onError: () => void;
   isActive: () => boolean;
 }): Promise<Controller> {
   let disposed = false;
   let phase = initialPhase;
+  let intelligencePresentation = initialPresentation;
   let phaseElapsed = 0;
   let elapsed = 0;
   let d20Spin = 0;
@@ -271,7 +277,11 @@ async function createController({ canvas, container, initialPhase, onReady, onEr
   const render = () => {
     const delta = Math.min(clock.getDelta(), 0.05);
     if (phase !== "paused") { elapsed += delta; phaseElapsed += delta; }
-    const presentation = getDragonPresentation(phase, phaseElapsed);
+    const presentation = applyDungeonIntelligencePresentation(
+      getDragonPresentation(phase, phaseElapsed),
+      phase,
+      intelligencePresentation
+    );
     canvas.dataset.dragonPhase = phase;
     canvas.dataset.dragonPhaseElapsed = phaseElapsed.toFixed(3);
     canvas.dataset.dragonPoseMagnitude = getDragonPoseMagnitude(presentation).toFixed(5);
@@ -335,6 +345,9 @@ async function createController({ canvas, container, initialPhase, onReady, onEr
         renderer.setAnimationLoop(render);
       }
     },
+    setPresentation(next) {
+      intelligencePresentation = next;
+    },
     dispose() {
       disposed = true;
       renderer.setAnimationLoop(null);
@@ -348,7 +361,7 @@ async function createController({ canvas, container, initialPhase, onReady, onEr
   };
 }
 
-export function Dragon3DStage({ target, phase, onReady, onError }: Props) {
+export function Dragon3DStage({ target, phase, presentation = null, onReady, onError }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const controllerRef = useRef<Controller | null>(null);
@@ -368,6 +381,7 @@ export function Dragon3DStage({ target, phase, onReady, onError }: Props) {
         canvas,
         container: stage,
         initialPhase: phase,
+        initialPresentation: presentation,
         onReady: () => { if (active) onReady(); },
         onError: () => { if (active) onError(); },
         isActive: () => active,
@@ -389,6 +403,7 @@ export function Dragon3DStage({ target, phase, onReady, onError }: Props) {
   }, [onError, onReady, target]);
 
   useEffect(() => { controllerRef.current?.setPhase(phase); }, [phase]);
+  useEffect(() => { controllerRef.current?.setPresentation(presentation); }, [presentation]);
 
   return createPortal(
     <div ref={stageRef} className="dragon-3d-stage" aria-hidden="true">

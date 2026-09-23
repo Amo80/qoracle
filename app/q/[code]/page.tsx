@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import {
   isJesterIntelligencePreviewIntegrationEnabled,
   isLoveIntelligencePreviewIntegrationEnabled,
+  isDungeonIntelligencePreviewIntegrationEnabled,
 } from "@/lib/experience/featureFlags";
 
 export default async function QRPage({ params }: { params: Promise<{ code: string }> }) {
@@ -70,5 +71,6 @@ if (!data.active) {
     code={data.code}
     jesterIntelligenceEnabled={isJesterIntelligencePreviewIntegrationEnabled()}
     loveIntelligenceEnabled={isLoveIntelligencePreviewIntegrationEnabled()}
+    dungeonIntelligenceEnabled={isDungeonIntelligencePreviewIntegrationEnabled()}
   />;
 }

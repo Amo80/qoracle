@@ -3,6 +3,7 @@ import { normalizeOracleId } from "@/lib/oracles/registry";
 import {
   isJesterIntelligencePreviewIntegrationEnabled,
   isLoveIntelligencePreviewIntegrationEnabled,
+  isDungeonIntelligencePreviewIntegrationEnabled,
 } from "@/lib/experience/featureFlags";
 
 export default async function OraclePage({
@@ -23,5 +24,6 @@ export default async function OraclePage({
     code={code}
     jesterIntelligenceEnabled={isJesterIntelligencePreviewIntegrationEnabled()}
     loveIntelligenceEnabled={isLoveIntelligencePreviewIntegrationEnabled()}
+    dungeonIntelligenceEnabled={isDungeonIntelligencePreviewIntegrationEnabled()}
   />;
 }

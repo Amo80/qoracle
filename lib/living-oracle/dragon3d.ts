@@ -1,6 +1,7 @@
 import type { MotionPreference } from "@/lib/experience/preferences";
 import type { OracleId } from "@/lib/oracles/registry";
 import type { CharacterPhase } from "./machine";
+import type { DungeonPresentation as DungeonIntelligencePresentation } from "@/lib/oracle-intelligence/types";
 
 export const DRAGON_3D_MANIFEST = {
   version: 1,
@@ -152,6 +153,59 @@ export function getDragonPresentation(
     default:
       return { bones, d20Speed: 0.22, d20Lift: 0.014, d20Pulse: 0.012, d20Glow: 0.52, altarGlow: 0.16 };
   }
+}
+
+const MAX_TRUSTED_DRAGON_ROTATION = 6 * RAD;
+
+/** Scale only the production channels qualified during Phase 4C. */
+export function applyDungeonIntelligencePresentation(
+  base: DragonPresentation,
+  phase: CharacterPhase,
+  presentation: DungeonIntelligencePresentation | null
+): DragonPresentation {
+  if (!presentation) return base;
+
+  const intensityScale = presentation.intensity === 1 ? 0.82 : presentation.intensity === 3 ? 1.12 : 1;
+  const deliveryScale = presentation.delivery === "mythic" ? 1.08 : presentation.delivery === "direct" ? 1.04 : 0.96;
+  const revealScale = phase === "speaking" || phase === "reacting"
+    ? presentation.reveal === "subtle" ? 0.9 : presentation.reveal === "dramatic" ? 1.12 : 1
+    : 1;
+  const reactionScale = phase === "reacting"
+    ? presentation.reaction === "powerful" ? 1.15 : presentation.reaction === "restrained" ? 0.84 : 0.76
+    : 1;
+  const baseScale = intensityScale * deliveryScale * revealScale * reactionScale;
+
+  const emphasized = presentation.gesture === "guardian_focus" || presentation.gesture === "head_neck_emphasis"
+    ? new Set<DragonProceduralBone>(DRAGON_PROCEDURAL_BONES.neckHead)
+    : presentation.gesture === "wing_root_emphasis"
+      ? new Set<DragonProceduralBone>(DRAGON_PROCEDURAL_BONES.wingStructural)
+      : new Set<DragonProceduralBone>(DRAGON_PROCEDURAL_BONES.body);
+  const bones = new Map<DragonProceduralBone, DragonBoneOffset>();
+  for (const [name, value] of base.bones) {
+    const scale = baseScale * (emphasized.has(name) ? 1.12 : 1);
+    bones.set(name, {
+      x: Math.max(-MAX_TRUSTED_DRAGON_ROTATION, Math.min(MAX_TRUSTED_DRAGON_ROTATION, value.x * scale)),
+      y: Math.max(-MAX_TRUSTED_DRAGON_ROTATION, Math.min(MAX_TRUSTED_DRAGON_ROTATION, value.y * scale)),
+      z: Math.max(-MAX_TRUSTED_DRAGON_ROTATION, Math.min(MAX_TRUSTED_DRAGON_ROTATION, value.z * scale)),
+    });
+  }
+
+  const d20Scale = presentation.environment === "d20_low"
+    ? 0.78
+    : presentation.environment === "d20_high" ? 1.18 : 1;
+  const altarScale = presentation.environment === "altar_low"
+    ? 0.78
+    : presentation.environment === "altar_high" ? 1.18 : 1;
+  const magicScale = intensityScale * revealScale;
+
+  return {
+    bones,
+    d20Speed: Math.min(4.8, base.d20Speed * Math.max(0.72, baseScale)),
+    d20Lift: Math.min(0.095, base.d20Lift * magicScale),
+    d20Pulse: Math.min(0.115, base.d20Pulse * magicScale),
+    d20Glow: Math.min(2.45, base.d20Glow * d20Scale * magicScale),
+    altarGlow: Math.min(1.6, base.altarGlow * altarScale * magicScale),
+  };
 }
 
 export function getDragonPoseMagnitude(presentation: DragonPresentation) {

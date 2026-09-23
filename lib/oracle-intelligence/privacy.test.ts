@@ -12,7 +12,7 @@ describe("Oracle Intelligence privacy and production isolation", () => {
     expect(oracle).not.toContain("OPENAI_API_KEY");
   });
 
-  it("keeps provider access out of every stage and intelligence out of non-Jester stages", () => {
+  it("keeps provider access out of integrated stages and intelligence out of remaining stages", () => {
     const jester = readFileSync(join(process.cwd(), "components/living-oracle/jester/Jester3DStage.tsx"), "utf8");
     expect(jester).not.toContain("/api/oracle/intelligence");
     expect(jester).not.toContain("OPENAI_API_KEY");
@@ -21,7 +21,11 @@ describe("Oracle Intelligence privacy and production isolation", () => {
     expect(love).not.toContain("/api/oracle/intelligence");
     expect(love).not.toContain("OPENAI_API_KEY");
     expect(love).not.toContain("fetch(");
-    for (const file of ["dragon/Dragon3DStage.tsx", "chaos/Chaos3DStage.tsx", "eclipse/Eclipse3DStage.tsx"]) {
+    const dungeon = readFileSync(join(process.cwd(), "components/living-oracle/dragon/Dragon3DStage.tsx"), "utf8");
+    expect(dungeon).not.toContain("/api/oracle/intelligence");
+    expect(dungeon).not.toContain("OPENAI_API_KEY");
+    expect(dungeon).not.toContain("fetch(");
+    for (const file of ["chaos/Chaos3DStage.tsx", "eclipse/Eclipse3DStage.tsx"]) {
       const source = readFileSync(join(process.cwd(), "components/living-oracle", file), "utf8");
       expect(source).not.toContain("oracle-intelligence");
       expect(source).not.toContain("resolvePerformanceDirection");

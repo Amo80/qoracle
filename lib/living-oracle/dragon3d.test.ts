@@ -7,6 +7,7 @@ import {
   DUNGEON_D20_PRESENTATION,
   getDragonPoseMagnitude,
   getDragonPresentation,
+  applyDungeonIntelligencePresentation,
   shouldLoadDragon3D,
 } from "./dragon3d";
 
@@ -71,5 +72,48 @@ describe("Dragon 3D presentation contract", () => {
   it("uses restrained external magic lighting", () => {
     expect(DUNGEON_MAGIC_LIGHTING.d20.idleScale).toBeLessThanOrEqual(0.25);
     expect(DUNGEON_MAGIC_LIGHTING.altar.idleScale).toBeLessThanOrEqual(0.2);
+  });
+
+  it("maps trusted Dungeon cues only through bounded qualified channels", () => {
+    const base = getDragonPresentation("speaking", 0.3);
+    const directed = applyDungeonIntelligencePresentation(base, "speaking", {
+      oracleId: "dnd",
+      emotion: "triumphant",
+      intensity: 3,
+      delivery: "mythic",
+      gesture: "wing_root_emphasis",
+      reveal: "dramatic",
+      reaction: "powerful",
+      environment: "d20_high",
+    });
+    expect([...directed.bones.keys()].every((bone) => DRAGON_PROCEDURAL_ALLOWLIST.includes(bone))).toBe(true);
+    expect(getDragonPoseMagnitude(directed)).toBeGreaterThan(getDragonPoseMagnitude(base));
+    expect(getDragonPoseMagnitude(directed)).toBeLessThanOrEqual(6 * Math.PI / 180);
+    expect(directed.d20Glow).toBeGreaterThan(base.d20Glow);
+    expect(directed.d20Speed).toBeLessThanOrEqual(4.8);
+  });
+
+  it("keeps sensitive guardian presentation restrained and deterministic", () => {
+    const base = getDragonPresentation("reacting", 0.3);
+    const cue = {
+      oracleId: "dnd" as const,
+      emotion: "watchful" as const,
+      intensity: 1 as const,
+      delivery: "measured" as const,
+      gesture: "guardian_focus" as const,
+      reveal: "subtle" as const,
+      reaction: "restrained" as const,
+      environment: "altar_low" as const,
+    };
+    const first = applyDungeonIntelligencePresentation(base, "reacting", cue);
+    const second = applyDungeonIntelligencePresentation(base, "reacting", cue);
+    expect(first).toEqual(second);
+    expect(getDragonPoseMagnitude(first)).toBeLessThan(getDragonPoseMagnitude(base));
+    expect(first.altarGlow).toBeLessThan(base.altarGlow);
+  });
+
+  it("returns the exact production presentation when intelligence is absent", () => {
+    const base = getDragonPresentation("anticipating", 0.3);
+    expect(applyDungeonIntelligencePresentation(base, "anticipating", null)).toBe(base);
   });
 });

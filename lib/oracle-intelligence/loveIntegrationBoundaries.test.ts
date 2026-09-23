@@ -42,8 +42,8 @@ describe("Love intelligence integration boundaries", () => {
     expect(canonicalSha("lib/living-oracle/jester3d.ts")).toBe("25fb20aaf1564f28d3cdbc64cedd93664c08df8b641e3468707d51ba01405868");
   });
 
-  it("keeps Dungeon, Chaos, and Eclipse disconnected from visitor intelligence", () => {
-    for (const stage of ["dragon/Dragon3DStage.tsx", "chaos/Chaos3DStage.tsx", "eclipse/Eclipse3DStage.tsx"]) {
+  it("keeps the remaining unintegrated Oracles outside visitor intelligence", () => {
+    for (const stage of ["chaos/Chaos3DStage.tsx", "eclipse/Eclipse3DStage.tsx"]) {
       expect(read(`components/living-oracle/${stage}`)).not.toContain("oracle-intelligence");
     }
   });
