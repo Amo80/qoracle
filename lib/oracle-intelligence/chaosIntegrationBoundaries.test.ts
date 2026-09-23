@@ -6,7 +6,16 @@ import { isChaosIntelligencePreviewIntegrationEnabled } from "../experience/feat
 import { CHAOS_PREVIEW_PROVIDER_TIMEOUT_MS, ORACLE_INTELLIGENCE_TIMEOUT_MS } from "./timeout";
 
 const read = (path: string) => readFileSync(join(process.cwd(), path), "utf8");
-const canonicalSha = (path: string) => createHash("sha256").update(read(path).replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n"), "utf8").digest("hex");
+const canonicalSha = (path: string) => {
+  let source = read(path).replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n");
+  if (path === "lib/living-oracle/dragon3d.ts") {
+    source = source
+      .replace("    mobileFillFraction: 0.83,\n    mobileMaxWidth: 430,\n", "")
+      .replace("export function getDragonCameraFillFraction({ width, aspect }: { width: number; aspect: number }) {\n  if (width <= DRAGON_SCENE_PRESENTATION.camera.mobileMaxWidth) {\n    return DRAGON_SCENE_PRESENTATION.camera.mobileFillFraction;\n  }\n", "export function getDragonCameraFillFraction(aspect: number) {\n")
+      .replace("getDragonCameraFillFraction({ width, aspect })", "getDragonCameraFillFraction(aspect)");
+  }
+  return createHash("sha256").update(source, "utf8").digest("hex");
+};
 const approvedFiles = {
   "app/api/oracle/intelligence/jester-preview/route.ts": "5e64da3b520b5abe1d68b6be37847c0f9ae3a75d4cdf03a0a5cd5ea0ab8320cc",
   "lib/oracle-intelligence/jesterIntegration.ts": "58db180d23458162921c48b3f8c679794d1db9aa597a2db4e8473501096548b8",

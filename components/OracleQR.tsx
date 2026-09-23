@@ -878,7 +878,7 @@ if (activeTheme === "dnd") {
               disabled={!question.trim() || busy}
             >
               <span>◇</span>
-              {busy ? "ROLLING THE DICE..." : "SHAKE THE ORACLE"}
+              {busy ? "ROLLING THE DICE..." : "CONSULT THE ORACLE"}
               <span>◇</span>
             </button>
 
@@ -1451,7 +1451,7 @@ if (activeTheme === "dnd") {
           onClick={ask}
           disabled={!question.trim() || busy}
         >
-          {busy ? "CONSULTING..." : "SHAKE THE ORACLE"}
+          {busy ? "CONSULTING..." : "ASK CHAOS"}
         </button>
       </div>
 

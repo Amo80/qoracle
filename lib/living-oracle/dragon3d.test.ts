@@ -8,6 +8,8 @@ import {
   getDragonPoseMagnitude,
   getDragonPresentation,
   applyDungeonIntelligencePresentation,
+  getDragonCameraFillFraction,
+  getDragonCameraDistance,
   shouldLoadDragon3D,
 } from "./dragon3d";
 
@@ -67,6 +69,18 @@ describe("Dragon 3D presentation contract", () => {
     expect(DRAGON_SCENE_PRESENTATION.d20.centerZ).toBeGreaterThan(
       DRAGON_SCENE_PRESENTATION.dragon.centerZ
     );
+  });
+
+  it("brings the Dragon closer only across the approved mobile widths", () => {
+    for (const width of [375, 390, 400, 430]) {
+      expect(getDragonCameraFillFraction({ width, aspect: width / 844 })).toBe(0.83);
+    }
+    expect(getDragonCameraFillFraction({ width: 431, aspect: 431 / 844 })).toBe(0.68);
+    expect(getDragonCameraFillFraction({ width: 1024, aspect: 16 / 9 })).toBe(0.76);
+
+    const mobileDistance = getDragonCameraDistance({ width: 400, height: 642, aspect: 400 / 642 });
+    const priorMobileDistance = 642 / 2 / (Math.tan(34 * Math.PI / 360) * 0.68);
+    expect(priorMobileDistance / mobileDistance).toBeCloseTo(0.83 / 0.68, 5);
   });
 
   it("uses restrained external magic lighting", () => {

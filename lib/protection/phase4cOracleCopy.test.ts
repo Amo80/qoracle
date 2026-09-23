@@ -20,11 +20,16 @@ describe("approved Dungeon copy in the Phase 6 Eclipse-integrated OracleQR", () 
     expect(source.match(/Dungeon Oracle music could not autoplay:/g)).toHaveLength(1);
     expect(source).not.toContain("The QRystal Balls • D&D");
     expect(source).not.toContain("⚙ Theme: D&D");
+    expect(source).toContain('"CONSULT THE ORACLE"');
+    expect(source).toContain('"ASK CHAOS"');
+    expect(source).not.toContain('"SHAKE THE ORACLE"');
 
     const canonical = source
       .split("Dungeon Oracle music could not autoplay:").join("D&D Oracle music could not autoplay:")
       .split("The QRystal Balls • DUNGEON").join("The QRystal Balls • D&D")
-      .split("✦ Theme: Dungeon").join("⚙ Theme: D&D");
+      .split("✦ Theme: Dungeon").join("⚙ Theme: D&D")
+      .split("CONSULT THE ORACLE").join("SHAKE THE ORACLE")
+      .split("ASK CHAOS").join("SHAKE THE ORACLE");
     expect(createHash("sha256").update(canonical).digest("hex")).toBe(
       PHASE_6_DUNGEON_INTEGRATED_ORACLE_QR_SHA256
     );

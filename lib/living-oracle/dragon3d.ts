@@ -22,6 +22,8 @@ export const DRAGON_SCENE_PRESENTATION = {
     fieldOfView: 34,
     desktopFillFraction: 0.76,
     narrowFillFraction: 0.68,
+    mobileFillFraction: 0.83,
+    mobileMaxWidth: 430,
     narrowAspectThreshold: 0.82,
     minimumClearance: 0.6,
     verticalTargetOffset: -0.08,
@@ -217,7 +219,10 @@ export function getDragonPoseMagnitude(presentation: DragonPresentation) {
   );
 }
 
-export function getDragonCameraFillFraction(aspect: number) {
+export function getDragonCameraFillFraction({ width, aspect }: { width: number; aspect: number }) {
+  if (width <= DRAGON_SCENE_PRESENTATION.camera.mobileMaxWidth) {
+    return DRAGON_SCENE_PRESENTATION.camera.mobileFillFraction;
+  }
   return aspect < DRAGON_SCENE_PRESENTATION.camera.narrowAspectThreshold
     ? DRAGON_SCENE_PRESENTATION.camera.narrowFillFraction
     : DRAGON_SCENE_PRESENTATION.camera.desktopFillFraction;
@@ -225,7 +230,7 @@ export function getDragonCameraFillFraction(aspect: number) {
 
 export function getDragonCameraDistance({ width, height, aspect }: { width: number; height: number; aspect: number }) {
   const halfFov = DRAGON_SCENE_PRESENTATION.camera.fieldOfView * Math.PI / 360;
-  const tangent = Math.tan(halfFov) * getDragonCameraFillFraction(aspect);
+  const tangent = Math.tan(halfFov) * getDragonCameraFillFraction({ width, aspect });
   return Math.max(
     height / 2 / tangent,
     width / 2 / (tangent * Math.max(aspect, 0.1)),

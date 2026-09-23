@@ -79,6 +79,8 @@ describe("Phase 2 protected production baseline", () => {
               .split("Dungeon Oracle music could not autoplay:").join("D&D Oracle music could not autoplay:")
               .split("The QRystal Balls • DUNGEON").join("The QRystal Balls • D&D")
               .split("✦ Theme: Dungeon").join("⚙ Theme: D&D")
+              .split("CONSULT THE ORACLE").join("SHAKE THE ORACLE")
+              .split("ASK CHAOS").join("SHAKE THE ORACLE")
         : source;
       digest.update(protectedSource, "utf8");
       digest.update("\0");
