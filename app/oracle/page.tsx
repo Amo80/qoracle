@@ -1,6 +1,9 @@
 import OracleQR from "@/components/OracleQR";
 import { normalizeOracleId } from "@/lib/oracles/registry";
-import { isJesterIntelligencePreviewIntegrationEnabled } from "@/lib/experience/featureFlags";
+import {
+  isJesterIntelligencePreviewIntegrationEnabled,
+  isLoveIntelligencePreviewIntegrationEnabled,
+} from "@/lib/experience/featureFlags";
 
 export default async function OraclePage({
   searchParams,
@@ -19,5 +22,6 @@ export default async function OraclePage({
     theme={theme}
     code={code}
     jesterIntelligenceEnabled={isJesterIntelligencePreviewIntegrationEnabled()}
+    loveIntelligenceEnabled={isLoveIntelligencePreviewIntegrationEnabled()}
   />;
 }

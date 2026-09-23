@@ -5,6 +5,8 @@ import {
   generateWithJesterPreviewTimeout,
   generateWithTimeout,
   JESTER_PREVIEW_PROVIDER_TIMEOUT_MS,
+  LOVE_PREVIEW_PROVIDER_TIMEOUT_MS,
+  generateWithLovePreviewTimeout,
   ORACLE_INTELLIGENCE_QUALIFICATION_TIMEOUT_MS,
   ORACLE_INTELLIGENCE_TIMEOUT_MS,
 } from "./timeout";
@@ -37,6 +39,20 @@ describe("Oracle provider timeout and cancellation", () => {
     await vi.advanceTimersByTimeAsync(1);
     await expect(pending).resolves.toEqual({ ok: false, kind: "timeout" });
     expect(JESTER_PREVIEW_PROVIDER_TIMEOUT_MS).toBeLessThan(4500);
+  });
+
+  it("gives Love the same bounded Preview ceiling without changing Jester or normal timeouts", async () => {
+    vi.useFakeTimers();
+    const loveRequest = { ...request, oracleId: "love" as const };
+    const provider: OracleIntelligenceProvider = { generate: async (_request, signal) => new Promise((resolve) => {
+      signal.addEventListener("abort", () => resolve({ ok: false, kind: "cancelled" }), { once: true });
+    }) };
+    const pending = generateWithLovePreviewTimeout({ provider, request: loveRequest });
+    await vi.advanceTimersByTimeAsync(LOVE_PREVIEW_PROVIDER_TIMEOUT_MS);
+    await expect(pending).resolves.toEqual({ ok: false, kind: "timeout" });
+    expect(LOVE_PREVIEW_PROVIDER_TIMEOUT_MS).toBe(4250);
+    expect(JESTER_PREVIEW_PROVIDER_TIMEOUT_MS).toBe(4250);
+    expect(ORACLE_INTELLIGENCE_TIMEOUT_MS).toBe(1550);
   });
 
   it("propagates parent cancellation", async () => {

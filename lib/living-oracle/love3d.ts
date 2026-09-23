@@ -1,6 +1,7 @@
 import type { MotionPreference } from "@/lib/experience/preferences";
 import type { OracleId } from "@/lib/oracles/registry";
 import type { CharacterPhase } from "./machine";
+import type { LovePresentation } from "@/lib/oracle-intelligence/types";
 
 export const LOVE_3D_MANIFEST = {
   version: 1,
@@ -194,6 +195,56 @@ export function getLovePoseMagnitude(value: LovePose) {
       .filter(([key]) => !key.startsWith("heart"))
       .map(([, channel]) => Math.abs(channel))
   );
+}
+
+const ROTATION_CHANNELS = [
+  "spineX", "spineY", "spineZ", "neckX", "neckY", "neckZ",
+  "headX", "headY", "headZ", "leftArmX", "leftArmY", "leftArmZ",
+  "rightArmX", "rightArmY", "rightArmZ", "leftForearmX",
+  "leftForearmY", "leftForearmZ", "rightForearmX", "rightForearmY",
+  "rightForearmZ",
+] as const satisfies readonly (keyof LovePose)[];
+
+/**
+ * Applies trusted semantic direction only to Love's already-qualified pose and
+ * heart channels. No new bones, transforms, clips, or lifecycle timing exist
+ * in this layer. A null direction returns the exact protected base pose.
+ */
+export function applyLovePresentationToPose(
+  base: LovePose,
+  phase: CharacterPhase,
+  presentation: LovePresentation | null
+): LovePose {
+  if (!presentation) return base;
+
+  const intensityScale = presentation.intensity === 1 ? 0.82 : presentation.intensity === 3 ? 1.12 : 1;
+  const deliveryScale = presentation.delivery === "tender" ? 0.92 : presentation.delivery === "direct" ? 1.06 : 1;
+  const gestureScale =
+    presentation.gesture === "restrained_open" ? 0.88 :
+    presentation.gesture === "gentle_present" && phase === "speaking" ? 1.06 :
+    presentation.gesture === "heart_inward_outward" && phase === "reacting" ? 1.12 :
+    presentation.gesture === "attentive" && phase === "listening" ? 1.05 : 1;
+  const reactionScale = phase !== "reacting"
+    ? 1
+    : presentation.reaction === "reflective" ? 0.88
+    : presentation.reaction === "reassure" ? 0.94
+    : 1.04;
+  const rotationScale = Math.min(1.18, intensityScale * deliveryScale * gestureScale * reactionScale);
+  const result = { ...base } as Record<keyof LovePose, number>;
+  const maximumQualifiedRotation = 18 * RAD;
+  for (const channel of ROTATION_CHANNELS) {
+    result[channel] = Math.max(
+      -maximumQualifiedRotation,
+      Math.min(maximumQualifiedRotation, base[channel] * rotationScale)
+    );
+  }
+
+  const environmentScale = presentation.environment === "heart_low"
+    ? 0.78
+    : presentation.environment === "heart_strong" ? 1.18 : 1;
+  result.heartIntensity = Math.min(1.8, base.heartIntensity * environmentScale);
+  result.heartPulse = Math.min(0.12, base.heartPulse * environmentScale);
+  return result as LovePose;
 }
 
 export function shouldLoadLove3D({ oracleId, livingOracleEnabled, love3DEnabled, motion, webGLSupported }: {

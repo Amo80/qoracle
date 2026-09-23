@@ -25,6 +25,11 @@ describe("Oracle question and answer accessibility", () => {
     expect(oracle).toContain('aria-busy={jesterIntelligenceEnabled && busy ? "true" : undefined}');
   });
 
+  it("announces Love intelligence once without replacing answer semantics", () => {
+    expect(oracle).toContain('aria-busy={loveIntelligenceEnabled && busy ? "true" : undefined}');
+    expect(oracle).toContain('data-love-intelligence={loveIntelligenceEnabled && busy ? "pending" : "idle"}');
+  });
+
   it("captures mounted audio nodes and tears them down on theme change or unmount", () => {
     expect(oracle).toContain("const activeAudio = [loveMusicRef.current, dndMusicRef.current, chaosMusicRef.current, jesterLaughRef.current]");
     expect(oracle).toContain("return () => stopOracleAudio(activeAudio)");

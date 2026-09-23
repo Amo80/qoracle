@@ -13,15 +13,24 @@ import {
   runJesterIntelligenceCycle,
   type JesterCycleIdentity,
 } from "@/lib/oracle-intelligence/jesterIntegration";
+import {
+  createLoveCycleIdentity,
+  emitLovePresentation,
+  resetLovePresentation,
+  runLoveIntelligenceCycle,
+  type LoveCycleIdentity,
+} from "@/lib/oracle-intelligence/loveIntegration";
 
 export default function OracleQR({
   theme,
   code,
   jesterIntelligenceEnabled = false,
+  loveIntelligenceEnabled = false,
 }: {
   theme: string;
   code: string;
   jesterIntelligenceEnabled?: boolean;
+  loveIntelligenceEnabled?: boolean;
 }) {
   const searchParams = useSearchParams();
   // Normalize theme names so URLs like ?theme=Jester and legacy Classic links work.
@@ -45,12 +54,22 @@ const intelligenceCycleRef = useRef<Readonly<{
   identity: JesterCycleIdentity;
   controller: AbortController;
 }> | null>(null);
+const loveIntelligenceCycleRef = useRef<Readonly<{
+  identity: LoveCycleIdentity;
+  controller: AbortController;
+}> | null>(null);
 const [intelligenceAnnouncement, setIntelligenceAnnouncement] = useState("");
 
 function cancelJesterIntelligenceCycle() {
   intelligenceCycleRef.current?.controller.abort("jester-cycle-superseded");
   intelligenceCycleRef.current = null;
   resetJesterPresentation();
+}
+
+function cancelLoveIntelligenceCycle() {
+  loveIntelligenceCycleRef.current?.controller.abort("love-cycle-superseded");
+  loveIntelligenceCycleRef.current = null;
+  resetLovePresentation();
 }
 
 useEffect(() => {
@@ -62,6 +81,8 @@ useEffect(() => {
   return () => {
     intelligenceCycleRef.current?.controller.abort("jester-oracle-unmounted");
     intelligenceCycleRef.current = null;
+    loveIntelligenceCycleRef.current?.controller.abort("love-oracle-unmounted");
+    loveIntelligenceCycleRef.current = null;
   };
 }, [activeTheme]);
 
@@ -181,6 +202,48 @@ if (activeTheme === "chaos" && chaosMusicRef.current) {
     return;
   }
 
+  if (activeTheme === "love" && loveIntelligenceEnabled) {
+    cancelLoveIntelligenceCycle();
+    const identity = createLoveCycleIdentity();
+    const controller = new AbortController();
+    loveIntelligenceCycleRef.current = { identity, controller };
+    setIntelligenceAnnouncement("The Oracle is considering your question.");
+
+    const list = ORACLE_ANSWERS.love;
+    const fallbackAnswer = list[Math.floor(Math.random() * list.length)];
+    const decision = await runLoveIntelligenceCycle({
+      identity,
+      question: question.trim(),
+      fallbackAnswer,
+      controller,
+    });
+    const activeCycle = loveIntelligenceCycleRef.current;
+    if (
+      !activeCycle ||
+      activeCycle.identity.oracleId !== "love" ||
+      activeCycle.identity.cycleId !== decision.identity.cycleId ||
+      activeCycle.identity.requestId !== decision.identity.requestId ||
+      decision.fallbackReason === "cancelled"
+    ) return;
+
+    loveIntelligenceCycleRef.current = null;
+    if (decision.presentation) emitLovePresentation(identity, decision.presentation);
+    else resetLovePresentation();
+    setIntelligenceAnnouncement("");
+    console.info("[QRystal Love intelligence]", {
+      attempted: true,
+      source: decision.source,
+      fallbackReason: decision.fallbackReason ?? null,
+      clientDecisionElapsedMs: Math.round(decision.clientDecisionElapsedMs),
+      diagnostic: decision.diagnostic ?? null,
+      semanticPresentation: decision.presentation,
+    });
+    setAnswer(decision.answer);
+    setBusy(false);
+    setLovePage(3);
+    return;
+  }
+
   // Let the rolling animation play
   await new Promise((resolve) => setTimeout(resolve, 1800));
 
@@ -259,6 +322,7 @@ if (activeTheme === "love" || activeTheme === "dnd" || activeTheme === "eclipse"
 
 function askAgain() {
   cancelJesterIntelligenceCycle();
+  cancelLoveIntelligenceCycle();
   setIntelligenceAnnouncement("");
   setAnswer("");
   setQuestion("");
@@ -281,7 +345,11 @@ if (activeTheme === "eclipse") {
 
   if (activeTheme === "love") {
     return (
-      <main className="oracle-page theme-love">
+      <main
+        className="oracle-page theme-love"
+        aria-busy={loveIntelligenceEnabled && busy ? "true" : undefined}
+        data-love-intelligence={loveIntelligenceEnabled && busy ? "pending" : "idle"}
+      >
 <audio
   ref={loveMusicRef}
   src="/themes/qoracle-love-theme.wav"
@@ -516,6 +584,10 @@ if (activeTheme === "eclipse") {
 
   </section>
 )}
+
+  <p className="qb-visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+    {intelligenceAnnouncement}
+  </p>
 
   </main>
     );
@@ -976,8 +1048,8 @@ if (activeTheme === "dnd") {
               className="primary eclipse-button eclipse-again-button"
               onClick={askAgain}
             >
-              ASK ANOTHER QUESTION
-            </button>
+      ASK ANOTHER QUESTION
+    </button>
 
             <p className="eclipse-closing">
               ☀ Light and Dark • One Truth ☾

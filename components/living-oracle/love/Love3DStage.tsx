@@ -13,13 +13,15 @@ import {
   LOVE_3D_MANIFEST, LOVE_SCENE_PRESENTATION, getLoveProceduralPose,
   getApprovedLoveBoneName, getLoveCameraDistance, getLoveViewportSize,
   getLovePoseMagnitude,
+  applyLovePresentationToPose,
   scaleToSpan,
   type LovePose,
 } from "@/lib/living-oracle/love3d";
 import type { CharacterPhase } from "@/lib/living-oracle/machine";
+import type { LovePresentation } from "@/lib/oracle-intelligence/types";
 
-type Props = Readonly<{ target: HTMLElement; phase: CharacterPhase; onReady: () => void; onError: () => void }>;
-type Controller = Readonly<{ setPhase: (phase: CharacterPhase) => void; dispose: () => void }>;
+type Props = Readonly<{ target: HTMLElement; phase: CharacterPhase; presentation?: LovePresentation | null; onReady: () => void; onError: () => void }>;
+type Controller = Readonly<{ setPhase: (phase: CharacterPhase) => void; setPresentation: (presentation: LovePresentation | null) => void; dispose: () => void }>;
 
 function disposeObject(root: Object3D) {
   const textures = new Set<Texture>();
@@ -46,14 +48,16 @@ const boneChannels = {
   RightForeArm: ["rightForearmX", "rightForearmY", "rightForearmZ"],
 } as const;
 
-async function createController({ canvas, container, initialPhase, onReady, onError }: {
+async function createController({ canvas, container, initialPhase, initialPresentation, onReady, onError }: {
   canvas: HTMLCanvasElement; container: HTMLElement; initialPhase: CharacterPhase;
+  initialPresentation: LovePresentation | null;
   onReady: () => void; onError: () => void;
 }): Promise<Controller> {
   let disposed = false;
   let phase = initialPhase;
   let phaseElapsed = 0;
   let elapsed = 0;
+  let presentation = initialPresentation;
   const loader = new GLTFLoader();
   const clock = new Clock();
   const scene = new Scene();
@@ -204,7 +208,11 @@ async function createController({ canvas, container, initialPhase, onReady, onEr
   const render = () => {
     const delta = Math.min(clock.getDelta(), 0.05);
     if (phase !== "paused") { elapsed += delta; phaseElapsed += delta; mixer.update(delta); }
-    const pose: LovePose = getLoveProceduralPose(phase, phaseElapsed);
+    const pose: LovePose = applyLovePresentationToPose(
+      getLoveProceduralPose(phase, phaseElapsed),
+      phase,
+      presentation
+    );
     canvas.dataset.lovePhase = phase;
     canvas.dataset.lovePhaseElapsed = phaseElapsed.toFixed(3);
     canvas.dataset.lovePoseMagnitude = getLovePoseMagnitude(pose).toFixed(5);
@@ -231,6 +239,7 @@ async function createController({ canvas, container, initialPhase, onReady, onEr
       if (next === "paused") { mixer.timeScale = 0; renderer.setAnimationLoop(null); render(); }
       else { mixer.timeScale = 1; if (wasPaused) { clock.start(); renderer.setAnimationLoop(render); } }
     },
+    setPresentation(next) { presentation = next; },
     dispose() {
       disposed = true; renderer.setAnimationLoop(null); resizeObserver.disconnect(); canvas.removeEventListener("webglcontextlost", contextLost);
       mixer.stopAllAction(); disposeObject(base.scene); disposeObject(heart.scene); disposeObject(podium.scene); renderer.dispose();
@@ -238,7 +247,7 @@ async function createController({ canvas, container, initialPhase, onReady, onEr
   };
 }
 
-export function Love3DStage({ target, phase, onReady, onError }: Props) {
+export function Love3DStage({ target, phase, presentation = null, onReady, onError }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const controllerRef = useRef<Controller | null>(null);
@@ -247,12 +256,13 @@ export function Love3DStage({ target, phase, onReady, onError }: Props) {
     const stage = stageRef.current;
     if (!canvas || !stage) return;
     let active = true; let controller: Controller | null = null;
-    void createController({ canvas, container: stage, initialPhase: phase, onReady, onError }).then((created) => {
+    void createController({ canvas, container: stage, initialPhase: phase, initialPresentation: presentation, onReady, onError }).then((created) => {
       if (!active) { created.dispose(); return; } controller = created; controllerRef.current = created;
     }).catch(() => { if (active) onError(); });
     return () => { active = false; controller?.dispose(); if (controllerRef.current === controller) controllerRef.current = null; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onError, onReady, target]);
   useEffect(() => { controllerRef.current?.setPhase(phase); }, [phase]);
+  useEffect(() => { controllerRef.current?.setPresentation(presentation); }, [presentation]);
   return createPortal(<div ref={stageRef} className="love-3d-stage" aria-hidden="true"><canvas ref={canvasRef} tabIndex={-1} /></div>, target);
 }

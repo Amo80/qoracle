@@ -10,6 +10,7 @@ import {
   getLoveViewportSize,
   scaleToSpan,
   shouldLoadLove3D,
+  applyLovePresentationToPose,
 } from "./love3d";
 
 describe("Love 3D presentation contract", () => {
@@ -41,6 +42,40 @@ describe("Love 3D presentation contract", () => {
     const reaction = getLoveProceduralPose("reacting", 0.325);
     expect(reaction.heartIntensity).toBeGreaterThan(1);
     expect(reaction.heartPulse).toBeGreaterThan(0.05);
+  });
+
+  it("applies only bounded Love semantic variation and preserves the exact base pose without intent", () => {
+    const base = getLoveProceduralPose("reacting", 0.325);
+    expect(applyLovePresentationToPose(base, "reacting", null)).toBe(base);
+    const directed = applyLovePresentationToPose(base, "reacting", {
+      oracleId: "love",
+      emotion: "warm",
+      intensity: 3,
+      delivery: "tender",
+      gesture: "heart_inward_outward",
+      reveal: "dramatic",
+      reaction: "warm",
+      environment: "heart_strong",
+    });
+    expect(directed.heartIntensity).toBeGreaterThan(base.heartIntensity);
+    expect(directed.heartPulse).toBeGreaterThan(base.heartPulse);
+    expect(getLovePoseMagnitude(directed)).toBeLessThanOrEqual(18 * Math.PI / 180);
+  });
+
+  it("keeps sensitive Love direction visibly restrained", () => {
+    const base = getLoveProceduralPose("speaking", 0.45);
+    const restrained = applyLovePresentationToPose(base, "speaking", {
+      oracleId: "love",
+      emotion: "compassionate",
+      intensity: 1,
+      delivery: "tender",
+      gesture: "attentive",
+      reveal: "subtle",
+      reaction: "reassure",
+      environment: "heart_low",
+    });
+    expect(getLovePoseMagnitude(restrained)).toBeLessThan(getLovePoseMagnitude(base));
+    expect(restrained.heartIntensity).toBeLessThan(base.heartIntensity);
   });
 
   it("produces a visible non-idle pose inside every authoritative lifecycle window", () => {

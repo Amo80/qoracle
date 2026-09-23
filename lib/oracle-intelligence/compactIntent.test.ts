@@ -62,6 +62,26 @@ describe("compact semantic-intent experiment", () => {
     )).size).toBeGreaterThan(1);
   });
 
+  it("derives Love-only cues and restrains sensitive relationship delivery", () => {
+    const loveIntent = {
+      answer: "Your heart can stay open without abandoning its boundaries. Notice whether this relationship makes honest care easier for both of you.",
+      emotion: "compassionate",
+      intensity: 2,
+      delivery: "tender",
+      safetyCategory: "sensitive",
+    } as const;
+    const direction = deriveCompactPresentation("love", loveIntent);
+    expect(direction).toMatchObject({
+      oracleId: "love",
+      gesture: "attentive",
+      reveal: "subtle",
+      reaction: "reassure",
+      environment: "heart_low",
+    });
+    expect(JSON.stringify(direction)).not.toMatch(/open_hands|ball_|d20_|fragments_|celestial_/);
+    expect(deriveCompactPresentation("love", loveIntent)).toEqual(direction);
+  });
+
   it("expands into the existing full trusted boundary with server-owned metadata", () => {
     const expanded = expandCompactIntent("jester", jesterIntent);
     expect(expanded).toMatchObject({

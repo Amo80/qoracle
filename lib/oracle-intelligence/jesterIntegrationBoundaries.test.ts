@@ -35,10 +35,10 @@ describe("Jester intelligence integration boundaries", () => {
     expect(route).toContain("createOpenAICompactProviderFromEnvironment()");
   });
 
-  it("keeps non-Jester Oracles and protected systems outside the integration", () => {
+  it("keeps the remaining unintegrated Oracles and protected systems outside the integration", () => {
     const oracle = read("components/OracleQR.tsx");
     expect(oracle).toContain('activeTheme === "jester" && jesterIntelligenceEnabled');
-    for (const stage of ["love/Love3DStage.tsx", "dragon/Dragon3DStage.tsx", "chaos/Chaos3DStage.tsx", "eclipse/Eclipse3DStage.tsx"]) {
+    for (const stage of ["dragon/Dragon3DStage.tsx", "chaos/Chaos3DStage.tsx", "eclipse/Eclipse3DStage.tsx"]) {
       expect(read(`components/living-oracle/${stage}`)).not.toContain("oracle-intelligence");
     }
   });

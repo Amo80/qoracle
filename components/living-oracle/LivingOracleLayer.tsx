@@ -28,10 +28,15 @@ import { detectWebGLSupport } from "@/lib/living-oracle/webgl";
 import { getOracle, ORACLE_IDS, type OracleId } from "@/lib/oracles/registry";
 import { normalizeClientPresentation } from "@/lib/oracle-intelligence/schema";
 import type { JesterPresentation } from "@/lib/oracle-intelligence/types";
+import type { LovePresentation } from "@/lib/oracle-intelligence/types";
 import {
   JESTER_PRESENTATION_EVENT,
   JESTER_PRESENTATION_RESET_EVENT,
 } from "@/lib/oracle-intelligence/jesterIntegration";
+import {
+  LOVE_PRESENTATION_EVENT,
+  LOVE_PRESENTATION_RESET_EVENT,
+} from "@/lib/oracle-intelligence/loveIntegration";
 import { Jester3DErrorBoundary } from "./jester/Jester3DErrorBoundary";
 import { Love3DErrorBoundary } from "./love/Love3DErrorBoundary";
 import { Dragon3DErrorBoundary } from "./dragon/Dragon3DErrorBoundary";
@@ -115,7 +120,9 @@ export function LivingOracleLayer({
   const [eclipseTarget, setEclipseTarget] = useState<HTMLElement | null>(null);
   const [webGLSupported, setWebGLSupported] = useState(false);
   const [jesterPresentation, setJesterPresentation] = useState<JesterPresentation | null>(null);
+  const [lovePresentation, setLovePresentation] = useState<LovePresentation | null>(null);
   const [jesterIntelligencePending, setJesterIntelligencePending] = useState(false);
+  const [loveIntelligencePending, setLoveIntelligencePending] = useState(false);
   const [jester3DStatus, setJester3DStatus] = useState<
     "idle" | "loading" | "ready" | "error"
   >("idle");
@@ -160,6 +167,7 @@ export function LivingOracleLayer({
       cancelSchedules();
       transition({ type: "RESET" });
       setJesterPresentation(null);
+      setLovePresentation(null);
     },
     [cancelSchedules, transition]
   );
@@ -208,6 +216,23 @@ export function LivingOracleLayer({
   }, []);
 
   useEffect(() => {
+    const onPresentation = (event: Event) => {
+      if (!(event instanceof CustomEvent) || oracleRef.current !== "love") return;
+      const detail = event.detail as { oracleId?: unknown; presentation?: unknown } | null;
+      if (detail?.oracleId !== "love") return;
+      const trusted = normalizeClientPresentation(detail.presentation, "love");
+      if (trusted?.oracleId === "love") setLovePresentation(trusted);
+    };
+    const onReset = () => setLovePresentation(null);
+    window.addEventListener(LOVE_PRESENTATION_EVENT, onPresentation);
+    window.addEventListener(LOVE_PRESENTATION_RESET_EVENT, onReset);
+    return () => {
+      window.removeEventListener(LOVE_PRESENTATION_EVENT, onPresentation);
+      window.removeEventListener(LOVE_PRESENTATION_RESET_EVENT, onReset);
+    };
+  }, []);
+
+  useEffect(() => {
     const root = document.documentElement;
     const timings = getCharacterTimings(motion);
 
@@ -222,6 +247,7 @@ export function LivingOracleLayer({
         setChaosTarget(null);
         setEclipseTarget(null);
         setJesterIntelligencePending(false);
+        setLoveIntelligencePending(false);
         root.removeAttribute("data-living-oracle");
         root.removeAttribute("data-living-oracle-id");
         root.removeAttribute("data-living-oracle-phase");
@@ -259,6 +285,9 @@ export function LivingOracleLayer({
       root.dataset.livingOracleId = detected;
       setJesterIntelligencePending(
         detected === "jester" && page.dataset.jesterIntelligence === "pending"
+      );
+      setLoveIntelligencePending(
+        detected === "love" && page.dataset.loveIntelligence === "pending"
       );
 
       const busy = Boolean(page.querySelector(BUSY_SELECTOR));
@@ -350,7 +379,7 @@ export function LivingOracleLayer({
       childList: true,
       subtree: true,
       attributes: true,
-      attributeFilter: ["class", "data-jester-intelligence"],
+      attributeFilter: ["class", "data-jester-intelligence", "data-love-intelligence"],
     });
     document.addEventListener("focusin", onFocusIn);
     document.addEventListener("focusout", onFocusOut);
@@ -571,6 +600,7 @@ export function LivingOracleLayer({
             <LazyLove3DStage
               target={loveTarget}
               phase={character.phase}
+              presentation={lovePresentation}
               onReady={handleLoveReady}
               onError={handleLoveError}
             />
@@ -610,10 +640,10 @@ export function LivingOracleLayer({
       ) : null}
       <p
         className="qb-visually-hidden"
-        aria-live={jesterIntelligencePending ? "off" : "polite"}
+        aria-live={jesterIntelligencePending || loveIntelligencePending ? "off" : "polite"}
         aria-atomic="true"
       >
-        {jesterIntelligencePending ? "" : `${oracle.name} Oracle: ${character.phase.replace("-", " ")}`}
+        {jesterIntelligencePending || loveIntelligencePending ? "" : `${oracle.name} Oracle: ${character.phase.replace("-", " ")}`}
       </p>
     </div>
   );

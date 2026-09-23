@@ -102,3 +102,17 @@ export function isJesterIntelligencePreviewIntegrationEnabled(
     Boolean(environment.OPENAI_API_KEY?.trim())
   );
 }
+
+/** Server-only gate for the visitor-facing Love Preview qualification. */
+export function isLoveIntelligencePreviewIntegrationEnabled(
+  environment: ChamberEnvironment = process.env
+) {
+  const previewRuntime =
+    environment.VERCEL_ENV === "preview" ||
+    environment.NODE_ENV === "development";
+  return (
+    previewRuntime &&
+    isOracleIntelligenceEnabledFor("love", environment) &&
+    Boolean(environment.OPENAI_API_KEY?.trim())
+  );
+}
